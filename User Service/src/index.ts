@@ -1,11 +1,18 @@
 import express from "express";
 import dotenv from "dotenv";
+import bodyParser from "body-parser";
 import userRoute from "./routes/user.routes";
+import { connectDB } from "./frameworks/mongo/connect";
 
 const app = express();
 dotenv.config();
 
 const port = process.env.PORT || 3000;
+
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+
+connectDB();
 
 app.use("/users", userRoute);
 
