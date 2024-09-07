@@ -1,10 +1,31 @@
 import { IUser } from "../interfaces/IUser";
 import { IUserRepository } from "../interfaces/IUserRepository";
 import User from "../frameworks/models/userModel";
+import { ObjectId } from "mongodb";
 
 export class UserRepository implements IUserRepository {
-  getAllUsers(): Promise<IUser[]> {
-    throw new Error("getAllUsers not implemented.");
+  async findUserById(userId: string): Promise<IUser | null> {
+    try {
+      const user: IUser | null = await User.findById(userId);
+
+      return user;
+    } catch (error: any) {
+      throw error;
+    }
+  }
+  async getAllUsers(): Promise<IUser[]> {
+    try {
+      interface user extends IUser{
+        _id: ObjectId;
+      } 
+      const userList: user[] = await User.find();
+
+      return userList;
+    } catch (error: any) {
+      console.log(`Error while getting all users`);
+
+      throw new Error(`Error getting all users: ${error.message}`);
+    }
   }
   async createUser(user: IUser): Promise<IUser> {
     try {

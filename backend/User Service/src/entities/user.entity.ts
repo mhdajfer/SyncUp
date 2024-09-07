@@ -1,8 +1,9 @@
 import { Schema, model, Types } from "mongoose";
 import bcrypt from "bcrypt";
+import { ObjectId } from "mongodb";
 
 const userSchema = new Schema({
-  _id: { type: Types.ObjectId, default: () => new Types.ObjectId() },
+  _id: { type: ObjectId, default: () => new Types.ObjectId() },
   firstName: { type: String, required: true, trim: true },
   lastName: { type: String, required: true, trim: true },
   email: {

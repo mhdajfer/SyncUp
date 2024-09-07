@@ -2,6 +2,7 @@ import { Request, Response, NextFunction } from "express";
 import { IUserUseCases } from "../interfaces/IUserUseCases";
 import { IUser } from "../interfaces/IUser";
 import { validationResult } from "express-validator";
+import mongoose, { ObjectId } from "mongoose";
 
 export class UserController {
   private userUseCase: IUserUseCases;
@@ -32,17 +33,29 @@ export class UserController {
       }
     }
   }
+  async onGetUserList(req: Request, res: Response, next: NextFunction) {
+    try {
+      const userList = await this.userUseCase.getUsers();
+
+      res.status(200).json(userList);
+    } catch (error: any) {
+      console.log(`Error getting user list : ${error.message}`);
+    }
+  }
   async onUpdateUser(req: Request, res: Response, next: NextFunction) {}
   async onDeleteUser(req: Request, res: Response, next: NextFunction) {}
   async onGetUser(req: Request, res: Response, next: NextFunction) {
     try {
-      const email: string = req.body;
+      const id = req.params.id;
 
-      const data = await this.userUseCase.getUser(email);
+      const user = await this.userUseCase.getUserById(id);
 
-      res.status(201).json(data);
-    } catch (error) {
-      next(error);
+      if (!user) return res.status(404).json({ message: "User not found" });
+      res.status(200).json({ user });
+
+      //res.status(201).json(data);
+    } catch (error: any) {
+      console.log(`Error while retrieving user : ${error.message}`);
     }
   }
 }

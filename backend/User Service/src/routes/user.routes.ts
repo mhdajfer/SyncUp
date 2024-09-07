@@ -12,12 +12,12 @@ const userRepository: IUserRepository = new UserRepository();
 const userUseCase: IUserUseCases = new UserUseCases(userRepository);
 const userController = new UserController(userUseCase);
 
-router.get("/", userController.onGetUser);
+router.get("/:id", userController.onGetUser.bind(userController));
 router.post(
   "/",
   checkSchema(signupValidator()),
   userController.onCreateUser.bind(userController)
 );
-router.put("/", userController.onUpdateUser);
+router.get("/", userController.onGetUserList.bind(userController));
 
 export default router;
