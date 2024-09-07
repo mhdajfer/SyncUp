@@ -1,5 +1,5 @@
 import express, { Request, Response } from "express";
-import { UserRepository } from "../repositories/userRepository";
+import { UserRepository } from "../repositories/UserRepository";
 import { UserController } from "../Controllers/UserController";
 import { UserUseCases } from "../use-cases/UserUseCases";
 import { IUserRepository } from "../interfaces/IUserRepository";
@@ -18,7 +18,6 @@ router.post(
   checkSchema(signupValidator()),
   userController.onCreateUser.bind(userController)
 );
-router.post("/delete/:id", userController.onDeleteUser);
 router.put("/", userController.onUpdateUser);
 
 export default router;

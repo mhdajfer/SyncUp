@@ -8,7 +8,6 @@ const userSchema = new Schema({
   email: {
     type: String,
     required: true,
-    unique: true,
     validate: {
       validator: (email: string) => {
         const emailRegex =
@@ -21,19 +20,10 @@ const userSchema = new Schema({
   password: {
     type: String,
     required: true,
-    set(value: string) {
-      const saltRounds = 10; // Adjust the salt rounds as needed
-      bcrypt.hash(value, saltRounds, (err, hash) => {
-        if (err) {
-          throw new Error("Error hashing password");
-        }
-        this.setDataValue("password", hash);
-      });
-    },
   },
   isBlocked: { type: Boolean, default: false },
   age: { type: Number, required: true, min: 0, max: 120 },
-  phoneNumber: { type: Number, required: true, unique: true },
+  phoneNumber: { type: Number, required: true },
   role: { type: String, enum: ["admin", "user"], default: "user" },
 });
 
@@ -52,4 +42,4 @@ userSchema.pre("save", function (next) {
   });
 });
 
-export default model("User", userSchema);
+export default userSchema;

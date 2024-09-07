@@ -9,26 +9,40 @@ export class UserUseCases implements IUserUseCases {
   constructor(userRepository: IUserRepository) {
     this.userRepository = userRepository;
   }
+  async getUser(email: string): Promise<IUser | null> {
+    try {
+      return await this.userRepository.findUser(email);
+    } catch (error: any) {
+      throw new Error(error);
+    }
+  }
 
-  createUser(user: IUser) {
+  async createUser(user: IUser) {
     try {
+      //checking duplicates
+      const existUser: IUser | null = await this.userRepository.findUser(
+        user.email
+      );
 
-      this.userRepository.createUser(user);
-    } catch (error) {}
+      if (existUser) throw new Error("User already exists");
+
+      return await this.userRepository.createUser(user);
+    } catch (error: any) {
+      throw error;
+    }
   }
-  getUsers() {
+  async getUsers() {
     try {
-      this.userRepository.getAllUsers();
-    } catch (error) {}
+      return await this.userRepository.getAllUsers();
+    } catch (error: any) {
+      throw new Error(error);
+    }
   }
-  updateUser(user: IUser) {
+  async updateUser(user: IUser) {
     try {
-      this.userRepository.updateUser(user);
-    } catch (error) {}
-  }
-  deleteUser(userId: ObjectId) {
-    try {
-      // this.userRepository.
-    } catch (error) {}
+      return await this.userRepository.updateUser(user);
+    } catch (error: any) {
+      throw new Error(error);
+    }
   }
 }

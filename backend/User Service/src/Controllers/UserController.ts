@@ -21,11 +21,28 @@ export class UserController {
       const data = await this.userUseCase.createUser(user);
 
       res.status(201).json(data);
-    } catch (error) {
-      next(error);
+    } catch (error: any) {
+      if (error.message === "User already exists") {
+        return res.status(400).json({
+          message: "User with the same email or phone number already exists.",
+        });
+      } else {
+        console.error("Error creating user:", error);
+        return res.status(500).json({ message: "Internal server error" });
+      }
     }
   }
   async onUpdateUser(req: Request, res: Response, next: NextFunction) {}
   async onDeleteUser(req: Request, res: Response, next: NextFunction) {}
-  async onGetUser(req: Request, res: Response, next: NextFunction) {}
+  async onGetUser(req: Request, res: Response, next: NextFunction) {
+    try {
+      const email: string = req.body;
+
+      const data = await this.userUseCase.getUser(email);
+
+      res.status(201).json(data);
+    } catch (error) {
+      next(error);
+    }
+  }
 }
