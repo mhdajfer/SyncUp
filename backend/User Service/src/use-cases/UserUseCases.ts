@@ -9,7 +9,16 @@ export class UserUseCases implements IUserUseCases {
   constructor(userRepository: IUserRepository) {
     this.userRepository = userRepository;
   }
-  async getUser(email: string): Promise<IUser | null> {
+
+  async getUserById(userId: string): Promise<IUser | null> {
+    try {
+      return await this.userRepository.findUserById(userId);
+    } catch (error: any) {
+      throw error;
+    }
+  }
+
+  async getUserByEmail(email: string): Promise<IUser | null> {
     try {
       return await this.userRepository.findUser(email);
     } catch (error: any) {
@@ -35,7 +44,7 @@ export class UserUseCases implements IUserUseCases {
     try {
       return await this.userRepository.getAllUsers();
     } catch (error: any) {
-      throw new Error(error);
+      throw error
     }
   }
   async updateUser(user: IUser) {
