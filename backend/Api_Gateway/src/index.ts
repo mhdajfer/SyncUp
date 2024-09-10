@@ -1,4 +1,4 @@
-import express from "express";
+import express, { NextFunction, Request } from "express";
 import dotenv from "dotenv";
 import cors from "cors";
 import userRouter from "./routes/user.routes";
@@ -9,8 +9,6 @@ const app = express();
 const port = process.env.PORT || 3000;
 
 app.use(cors());
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
 
 app.use("/users", userRouter);
 

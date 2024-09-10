@@ -44,7 +44,7 @@ export class UserUseCases implements IUserUseCases {
     try {
       return await this.userRepository.getAllUsers();
     } catch (error: any) {
-      throw error
+      throw error;
     }
   }
   async updateUser(user: IUser) {
