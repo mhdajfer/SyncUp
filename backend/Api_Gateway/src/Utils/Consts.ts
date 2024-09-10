@@ -1,1 +1,1 @@
-export const USER_SERVICE_URL = "http://localhost:3002/users";
+export const USER_SERVICE_URL = "http://localhost:3001/users";
