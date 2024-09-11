@@ -3,6 +3,9 @@ import { IAuthRepository } from "../Interfaces/IAuthRepository";
 import { IUser } from "../Interfaces/IUser";
 
 export class AuthRepository implements IAuthRepository {
+  async verifyUser(token: string): Promise<boolean> {
+    throw new Error("Method not implemented.");
+  }
   async findUser(email: string): Promise<IUser | null> {
     try {
       const user = await User.findOne({ email: email });

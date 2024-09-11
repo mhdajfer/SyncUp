@@ -10,5 +10,6 @@ const authUseCases = new AuthUseCases(authRepository);
 const authController = new AuthController(authUseCases);
 
 router.post("/login", authController.userLogin.bind(authController));
+router.post("/verify", authController.isUserLogin.bind(authController));
 
 export default router;
