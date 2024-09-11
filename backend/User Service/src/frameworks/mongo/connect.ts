@@ -2,7 +2,7 @@ import mongoose from "mongoose";
 
 const DB_URL =
   process.env.DB_URL ||
-  "mongodb+srv://ajferaju9961:Achuaju6@cluster.p3idumj.mongodb.net/syncUp";
+  "mongodb+srv://ajferaju9961:Achuaju6@cluster.p3idumj.mongodb.net/syncUp-user-service";
 
 export const connectDB = () => {
   mongoose
