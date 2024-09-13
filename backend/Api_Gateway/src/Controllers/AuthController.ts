@@ -27,7 +27,7 @@ export class AuthController {
           secure: true,
           maxAge: 30 * 24 * 60 * 60 * 1000, //30 days
         })
-        .json({ user: user, accessToken });
+        .json({ user: user, accessToken, success: true });
     } catch (error: any) {
       console.log(`Error while login: ${error}`);
       return res
