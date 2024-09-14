@@ -8,8 +8,13 @@ import {
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { FC } from "react";
+import { CiLogout } from "react-icons/ci";
 
-export default function DevLayout() {
+export default function DevLayout({
+  logoutSuccess,
+}: {
+  logoutSuccess: () => void;
+}) {
   const router = useRouter();
   return (
     <div className="h-screen w-64 bg-gray-900 text-gray-200 relative">
@@ -45,17 +50,27 @@ export default function DevLayout() {
         />
       </nav>
 
-      <div className="absolute bottom-0 flex items-center p-4 border-t border-gray-700 w-full">
-        <Image
-          className="rounded-full"
-          src="https://images.ctfassets.net/h6goo9gw1hh6/2sNZtFAWOdP1lmQ33VwRN3/24e953b920a9cd0ff2e1d587742a2472/1-intro-photo-final.jpg?w=1200&h=992&fl=progressive&q=70&fm=jpg" // Add the profile image
-          alt="Profile"
-          width={40}
-          height={40}
-        />
-        <div className="ml-3">
-          <p className="text-sm font-medium">Ram</p>
-          <p className="text-xs text-gray-400">ram@gmail.com</p>
+      <div className="absolute place-content-between bottom-0 flex items-center p-4 border-t border-gray-700 w-full">
+        <div className="flex">
+          <Image
+            className="rounded-full"
+            src="https://images.ctfassets.net/h6goo9gw1hh6/2sNZtFAWOdP1lmQ33VwRN3/24e953b920a9cd0ff2e1d587742a2472/1-intro-photo-final.jpg?w=1200&h=992&fl=progressive&q=70&fm=jpg" // Add the profile image
+            alt="Profile"
+            width={40}
+            height={40}
+          />
+          <div className="ml-3">
+            <p className="text-sm font-medium">Ram</p>
+            <p className="text-xs text-gray-400">ram@gmail.com</p>
+          </div>
+        </div>
+        <div
+          className="cursor-pointer hover:bg-slate-700 rounded"
+          onClick={() => {
+            logoutSuccess();
+          }}
+        >
+          <CiLogout size={25} />
         </div>
       </div>
     </div>
