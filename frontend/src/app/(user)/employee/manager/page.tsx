@@ -1,8 +1,11 @@
 import { FC } from "react";
-import ManagerLayout from "./layout";
 
 const ManagerDashboard: FC = () => {
-  return <ManagerLayout />;
+  return (
+    <>
+      <h1>manager</h1>
+    </>
+  );
 };
 
 export default ManagerDashboard;

@@ -1,28 +1,22 @@
-"use client"; 
-
-import { FC } from "react";
-import { useRouter } from "next/navigation";
 import {
   FiUsers,
   FiUserCheck,
   FiFolder,
   FiMessageSquare,
   FiCalendar,
-  FiUser,
 } from "react-icons/fi";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
+import { FC } from "react";
 
-const SideBar: FC = () => {
+export default function DevLayout() {
   const router = useRouter();
-
   return (
-    <div className="h-screen w-64 bg-gray-900 text-gray-200">
-      
+    <div className="h-screen w-64 bg-gray-900 text-gray-200 relative">
       <div className="flex items-center justify-center h-20 border-b border-gray-700">
         <h1 className="text-xl font-bold">SyncUp</h1>
       </div>
 
-    
       <nav className="mt-10">
         <SideBarItem
           icon={<FiUsers />}
@@ -31,13 +25,8 @@ const SideBar: FC = () => {
         />
         <SideBarItem
           icon={<FiUserCheck />}
-          label="Testers"
-          onClick={() => router.push("/testers")}
-        />
-        <SideBarItem
-          icon={<FiUser />}
-          label="Project Managers"
-          onClick={() => router.push("/project-managers")}
+          label="Tasks"
+          onClick={() => router.push("/tasks")}
         />
         <SideBarItem
           icon={<FiFolder />}
@@ -56,14 +45,13 @@ const SideBar: FC = () => {
         />
       </nav>
 
-      
       <div className="absolute bottom-0 flex items-center p-4 border-t border-gray-700 w-full">
         <Image
           className="rounded-full"
           src="https://images.ctfassets.net/h6goo9gw1hh6/2sNZtFAWOdP1lmQ33VwRN3/24e953b920a9cd0ff2e1d587742a2472/1-intro-photo-final.jpg?w=1200&h=992&fl=progressive&q=70&fm=jpg" // Add the profile image
           alt="Profile"
-          width={40} 
-          height={40} 
+          width={40}
+          height={40}
         />
         <div className="ml-3">
           <p className="text-sm font-medium">Ram</p>
@@ -72,7 +60,7 @@ const SideBar: FC = () => {
       </div>
     </div>
   );
-};
+}
 
 interface SideBarItemProps {
   icon: React.ReactNode;
@@ -89,5 +77,3 @@ const SideBarItem: FC<SideBarItemProps> = ({ icon, label, onClick }) => (
     <span className="ml-4">{label}</span>
   </div>
 );
-
-export default SideBar;
