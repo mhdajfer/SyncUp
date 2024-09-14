@@ -4,7 +4,7 @@ import React, { useEffect, useState } from "react";
 import DevLayout from "@/Components/Layout/DevLayout";
 import { useRouter } from "next/navigation";
 import { useSelector } from "react-redux";
-import { RootState } from "@/app/store/store";
+import { RootState } from "@/store/store";
 import Loading from "@/./Components/Loading/Loading";
 
 const SideBar = ({ children }: { children: React.ReactNode }) => {

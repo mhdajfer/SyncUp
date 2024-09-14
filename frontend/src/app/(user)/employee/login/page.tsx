@@ -4,9 +4,9 @@ import Login from "../../../../Components/Login/Login";
 import { login } from "@/api/userService/user";
 import { User } from "../../../../interfaces/User";
 import { useRouter } from "next/navigation";
-import { AppDispatch } from "@/app/store/store";
+import { AppDispatch } from "@/store/store";
 import { useDispatch } from "react-redux";
-import { loginSuccess } from "@/app/store/slices/authSlice";
+import { loginSuccess } from "@/store/slices/authSlice";
 
 const Page = () => {
   const router = useRouter();
