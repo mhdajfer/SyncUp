@@ -25,7 +25,7 @@ const userSchema = new Schema({
   isBlocked: { type: Boolean, default: false },
   age: { type: Number, required: true, min: 0, max: 120 },
   phoneNumber: { type: Number, required: true },
-  role: { type: String, enum: ["admin", "user"], default: "user" },
+  role: { type: String, enum: ["manager", "dev", "pManager"], default: "user" },
 });
 
 userSchema.pre("save", function (next) {

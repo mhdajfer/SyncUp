@@ -10,5 +10,6 @@ const projectUseCases = new ProjectUseCases(projectRepository);
 const projectController = new ProjectControllers(projectUseCases);
 
 router.post("/", projectController.createProject.bind(projectController));
+router.get("/", projectController.getProjectList.bind(projectController));
 
 export default router;

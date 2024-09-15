@@ -13,7 +13,7 @@ app.use(express.urlencoded({ extended: true }));
 
 connectDB();
 
-app.use("/project", projectRoutes);
+app.use("/projects", projectRoutes);
 
 app.listen(port, () => {
   console.log(`User server started on ${port}`);

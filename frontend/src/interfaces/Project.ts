@@ -1,10 +1,8 @@
-import mongoose from "mongoose";
-
-export interface IProject {
-  _id?: mongoose.Types.ObjectId;
+export interface Project {
+  _id?: string;
   name: string;
   description: string;
-  managerId?: string;
+  managerId: string;
   start_date: Date;
   due_date: Date;
   status: string;

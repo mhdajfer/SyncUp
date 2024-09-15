@@ -18,4 +18,16 @@ export class ProjectControllers {
       console.log(`Error while creating project ${error.message}`);
     }
   }
+
+  async getProjectList(req: Request, res: Response, next: NextFunction) {
+    try {
+      const result = await this.projectUseCases.getProjectList();
+
+      if (!result) throw new Error(`Error in Project controller`);
+
+      return res.status(201).json({ result });
+    } catch (error: any) {
+      console.log(`Error while creating project ${error.message}`);
+    }
+  }
 }

@@ -8,7 +8,7 @@ import { RootState } from "@/store/store";
 import Loading from "@/./Components/Loading/Loading";
 import { logoutSuccess } from "@/store/slices/authSlice";
 
-const SideBar = ({ children }: { children: React.ReactNode }) => {
+const Layout = ({ children }: { children: React.ReactNode }) => {
   const router = useRouter();
   const dispatch = useDispatch();
 
@@ -43,4 +43,4 @@ const SideBar = ({ children }: { children: React.ReactNode }) => {
   );
 };
 
-export default SideBar;
+export default Layout;

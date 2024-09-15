@@ -1,6 +1,7 @@
 import { IProjectRepository } from "../Interfaces/IProjectRepository";
 import Project from "../Frameworks/models/Project";
 import { IProject } from "../Interfaces/IProject";
+import { resourceLimits } from "worker_threads";
 
 export class ProjectRepository implements IProjectRepository {
   async createProject(input: IProject): Promise<IProject> {
@@ -12,6 +13,17 @@ export class ProjectRepository implements IProjectRepository {
       return result as IProject;
     } catch (error) {
       throw error;
+    }
+  }
+
+  async getAllProjects(): Promise<IProject[]> {
+    try {
+      const projectList = await Project.find();
+
+      return projectList as unknown as IProject[];
+    } catch (error) {
+      console.error("Error fetching projects:", error);
+      return [];
     }
   }
 }

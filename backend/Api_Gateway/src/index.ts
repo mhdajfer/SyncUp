@@ -15,7 +15,7 @@ const port = process.env.PORT || 3001;
 app.use(cors());
 app.use(cookieParser());
 app.use("/users", userRouter);
-app.use("/project", projectRouter);
+app.use("/projects", projectRouter);
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));

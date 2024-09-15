@@ -1,5 +1,5 @@
 import { FC } from "react";
-import SideBar from "./layout";
+import SideBar from "./dashboard/layout";
 
 const Page: FC = () => {
   return (

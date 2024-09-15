@@ -7,7 +7,7 @@ import { connectDB } from "./frameworks/mongo/connect";
 const app = express();
 dotenv.config();
 
-const port = process.env.PORT || 3001;
+const port = process.env.PORT || 3003;
 
 app.use(cors());
 app.use(express.json());

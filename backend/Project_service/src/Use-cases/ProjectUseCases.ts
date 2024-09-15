@@ -6,8 +6,14 @@ export class ProjectUseCases implements IProjectUseCases {
   constructor(private projectRepository: IProjectRepository) {
     this.projectRepository = projectRepository;
   }
-  getProjectList(): Promise<IProject[]> {
-    throw new Error("Method not implemented.");
+  async getProjectList(): Promise<IProject[]> {
+    try {
+      const data = await this.projectRepository.getAllProjects();
+
+      return data;
+    } catch (error) {
+      throw error;
+    }
   }
   async createProject(input: IProject): Promise<IProject> {
     try {
