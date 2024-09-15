@@ -3,7 +3,6 @@ import { IUserUseCases } from "../interfaces/IUserUseCases";
 import { IUser } from "../interfaces/IUser";
 import { validationResult } from "express-validator";
 import bcrypt from "bcrypt";
-import mongoose, { ObjectId } from "mongoose";
 
 export class UserController {
   private userUseCase: IUserUseCases;
@@ -59,24 +58,43 @@ export class UserController {
       console.log(`Error while retrieving user : ${error.message}`);
     }
   }
-  async devLogin(req: Request, res: Response, next: NextFunction) {
+  async userLogin(req: Request, res: Response, next: NextFunction) {
     try {
       const { username, password } = req.body;
-      console.log("got req inside devLogin", username, password);
+      console.log("got req inside userLogin", username, password);
 
-      const user = await this.userUseCase.getUserByEmail(username);
-
-      if (!user) return res.status(401).json({ error: "User not exists.." });
-
-      const resObj = await bcrypt.compare(password, user.password);
-
-      if (!resObj) return res.status(401).json({ error: "Invalid password" });
+      const { user, accessToken, refreshToken } = await this.userUseCase.login({
+        username,
+        password,
+      });
 
       console.log("logged in successfully.....", user);
-      return res.status(200).json({ user });
+      return res
+        .status(200)
+        .cookie("refresh_token", refreshToken, {
+          httpOnly: true,
+          secure: true,
+          maxAge: 30 * 24 * 60 * 60 * 1000,
+        })
+        .json({ user: user, accessToken, success: true });
     } catch (error) {
       console.error("Error logging developer:", error);
       return res.status(500).json({ message: "Internal server error" });
+    }
+  }
+
+  async isUserLogin(req: Request, res: Response, next: NextFunction) {
+    try {
+      const token: string = req.cookies.refresh_token;
+
+      const user = await this.userUseCase.verifyUser(token);
+
+      res.status(200).json({ user });
+    } catch (error: any) {
+      console.log(`Error while login: ${error}`);
+      return res
+        .status(400)
+        .json({ message: "Error while Login", error: error.message });
     }
   }
 }

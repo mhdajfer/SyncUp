@@ -17,7 +17,8 @@ router.post(
   checkSchema(signupValidator()),
   userController.onCreateUser.bind(userController)
 );
-router.post("/dev-login", userController.devLogin.bind(userController));
+router.post("/login", userController.userLogin.bind(userController));
+router.post("/verify", userController.isUserLogin.bind(userController));
 router.get("/", userController.onGetUserList.bind(userController));
 router.get("/:id", userController.onGetUser.bind(userController));
 

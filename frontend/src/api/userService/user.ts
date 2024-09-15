@@ -6,7 +6,7 @@ export const login = async (formData: {
   password: string;
 }) => {
   try {
-    const response = await userInstance.post("/login", formData);
+    const response = await userInstance.post("users/login", formData);
 
     return response.data as {
       success: boolean;

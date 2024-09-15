@@ -1,5 +1,5 @@
 import jwt from "jsonwebtoken";
-import { IUser } from "../Interfaces/IUser";
+import { IUser } from "../interfaces/IUser";
 
 const JWT_AUTHSECRET = process.env.JWT_AUTHSECRET || "secret-key";
 const JWT_REFRESH_TOKEN = process.env.JWT_REFRESH_SECRET || "secret-key01";
