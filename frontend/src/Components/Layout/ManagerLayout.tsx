@@ -23,7 +23,10 @@ export function ManagerLayout({
   function onSideBarClick(val: string) {
     switch (val) {
       case "projects":
-        router.push("dashboard/projects");
+        router.push("/employee/manager/dashboard/projects");
+        break;
+      case "developers":
+        router.push("/employee/manager/dashboard/developers");
         break;
     }
   }
@@ -38,7 +41,7 @@ export function ManagerLayout({
         <SideBarItem
           icon={<FiUsers />}
           label="Developers"
-          onClick={() => router.push("/developers")}
+          onClick={() => onSideBarClick("developers")}
         />
         <SideBarItem
           icon={<FiUserCheck />}

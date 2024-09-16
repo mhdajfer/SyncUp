@@ -2,6 +2,7 @@ import { Request, Response, NextFunction } from "express";
 import { IUserUseCases } from "../interfaces/IUserUseCases";
 import { IUser } from "../interfaces/IUser";
 import { validationResult } from "express-validator";
+import { addAbortListener } from "events";
 
 export class UserController {
   private userUseCase: IUserUseCases;
@@ -39,9 +40,20 @@ export class UserController {
 
       console.log("list of managers", managerList);
 
-      return res.status(200).json(managerList);
+      return res.status(200).json({ success: true, data: managerList });
     } catch (error) {
       console.error("Error retrieving managers list:", error);
+      return res.status(500).json({ message: "Internal server error" });
+    }
+  }
+
+  async onGetAllDevelopers(req: Request, res: Response, next: NextFunction) {
+    try {
+      const devList = await this.userUseCase.getDevList();
+
+      return res.status(200).json({ success: true, data: devList });
+    } catch (error) {
+      console.error("Error retrieving developer list:", error);
       return res.status(500).json({ message: "Internal server error" });
     }
   }

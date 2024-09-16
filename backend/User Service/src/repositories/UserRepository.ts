@@ -4,6 +4,15 @@ import User from "../frameworks/models/userModel";
 import { ObjectId } from "mongodb";
 
 export class UserRepository implements IUserRepository {
+  async findDevList(): Promise<IUser[]> {
+    try {
+      const devList: IUser[] = await User.find({ role: "dev" });
+
+      return devList;
+    } catch (error) {
+      throw error;
+    }
+  }
   async findManagerList(): Promise<IUser[]> {
     try {
       const managerList: IUser[] = await User.find({ role: "pManager" });

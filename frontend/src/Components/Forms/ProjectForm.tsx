@@ -27,7 +27,7 @@ export interface CreateProjectResponse {
 }
 
 export default function ProjectForm() {
-  const [managerList, setManagerList] = useState<User[]>();
+  const [managerList, setManagerList] = useState<User[]>([]);
   const [formData, setFormData] = useState<Project>({
     name: "",
     description: "",
@@ -83,8 +83,8 @@ export default function ProjectForm() {
 
   useEffect(() => {
     async function getData() {
-      const data: User[] = await getProjectManagers();
-      setManagerList(data);
+      const response = await getProjectManagers();
+      setManagerList(response.data);
     }
     getData();
   }, []);

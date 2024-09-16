@@ -1,4 +1,3 @@
-import { ObjectId } from "mongoose";
 import { IUser } from "../interfaces/IUser";
 
 export interface IUserRepository {
@@ -8,4 +7,5 @@ export interface IUserRepository {
   findUserById(userId: string): Promise<IUser | null>;
   getAllUsers(): Promise<IUser[]>;
   findManagerList(): Promise<IUser[]>;
+  findDevList(): Promise<IUser[]>;
 }

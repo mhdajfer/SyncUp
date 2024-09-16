@@ -54,7 +54,7 @@ export default (): Schema => {
     },
     role: {
       isIn: {
-        options: [["admin", "user"]],
+        options: [["manager", "dev", "pManager"]],
         errorMessage: "Role must be either admin or user",
       },
     },

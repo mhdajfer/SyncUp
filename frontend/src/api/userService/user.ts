@@ -22,7 +22,17 @@ export const getProjectManagers = async () => {
   try {
     const response = await userInstance.get("/users/pmanagers");
 
-    return response.data as User[];
+    return response.data as { success: boolean; data: User[] };
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const getDevelopers = async () => {
+  try {
+    const response = await userInstance.get("/users/developers");
+
+    return response.data as { success: boolean; data: User[] };
   } catch (error) {
     throw error;
   }

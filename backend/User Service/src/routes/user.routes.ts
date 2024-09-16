@@ -24,6 +24,10 @@ router.get(
   "/pmanagers",
   userController.onGetUserManagerList.bind(userController)
 );
+router.get(
+  "/developers",
+  userController.onGetAllDevelopers.bind(userController)
+);
 router.get("/:id", userController.onGetUser.bind(userController));
 
 export default router;

@@ -14,6 +14,15 @@ export class UserUseCases implements IUserUseCases {
   constructor(userRepository: IUserRepository) {
     this.userRepository = userRepository;
   }
+  async getDevList(): Promise<IUser[] | null> {
+    try {
+      const devList = await this.userRepository.findDevList();
+
+      return devList as IUser[];
+    } catch (error) {
+      throw error;
+    }
+  }
   async getManagerList(): Promise<IUser[] | null> {
     try {
       const managerList = await this.userRepository.findManagerList();
