@@ -1,4 +1,5 @@
 import { userInstance } from "@/axios";
+import { CreateProjectResponse } from "@/Components/Forms/ProjectForm";
 import { Project } from "@/interfaces/Project";
 
 export const getProjects = async (): Promise<{ result: Project[] }> => {
@@ -11,9 +12,14 @@ export const getProjects = async (): Promise<{ result: Project[] }> => {
   }
 };
 
-export const createProject = async (formData: Project) => {
+export const createProject = async (
+  formData: Project
+): Promise<CreateProjectResponse> => {
   try {
-    const response = await userInstance.post("/projects", formData);
+    const response: { data: CreateProjectResponse } = await userInstance.post(
+      "/projects",
+      formData
+    );
 
     return response.data;
   } catch (error) {

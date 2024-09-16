@@ -15,7 +15,9 @@ export class ProjectControllers {
 
       if (!result) throw new Error(`Error in Project controller`);
 
-      return res.status(201).json({ success: true, result });
+      return res
+        .status(201)
+        .json({ success: true, result, message: "project created" });
     } catch (error: any) {
       console.log(`Error while creating project ${error.message}`);
     }

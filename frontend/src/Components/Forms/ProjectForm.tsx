@@ -18,6 +18,13 @@ import { Project } from "@/interfaces/Project";
 import { createProject } from "@/api/projectService/project";
 import { User } from "@/interfaces/User";
 import { getProjectManagers } from "@/api/userService/user";
+import { toast } from "sonner";
+
+export interface CreateProjectResponse {
+  success: boolean;
+  project: Project;
+  message: string;
+}
 
 export default function ProjectForm() {
   const [managerList, setManagerList] = useState<User[]>();
@@ -36,10 +43,16 @@ export default function ProjectForm() {
 
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
-    // Handle form submission logic here
+
     console.log("Form submitted", formData);
 
-    const response = await createProject(formData);
+    const response: CreateProjectResponse = await createProject(formData);
+
+    if (response.success) {
+      toast.success(response.message);
+    } else {
+      toast.error(response.message);
+    }
 
     console.log(response);
   };

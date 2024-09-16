@@ -1,9 +1,11 @@
 import ProjectForm from "@/Components/Forms/ProjectForm";
 import { Card, CardDescription, CardTitle } from "@/Components/ui/card";
+import { Toaster } from "sonner";
 
 export default function Page() {
   return (
     <>
+      <Toaster richColors />
       <div className="flex flex-col space-y-8 my-14 items-center justify-center">
         <Card className="bg-[#082032] text-white border-0 text-center">
           <CardTitle className="text-2xl">Create New Project</CardTitle>
