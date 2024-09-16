@@ -1,6 +1,6 @@
 "use client";
 import { getProjects } from "@/api/projectService/project";
-import ManagerProjectsTable from "@/Components/Tables/ManagerProjectsTable";
+import ProjectsTable from "@/Components/Tables/ProjectsTable";
 import { Project } from "@/interfaces/Project";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -29,7 +29,7 @@ export default function Page() {
           new Project
         </button>
       </div>
-      <ManagerProjectsTable projectList={projectList} />
+      <ProjectsTable projectList={projectList} />
     </>
   );
 }

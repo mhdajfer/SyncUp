@@ -11,10 +11,10 @@ import {
 } from "@/Components/ui/table";
 import { User } from "@/interfaces/User";
 
-export default function ManagerDevelopersTable({
-  developerList,
+export default function UsersTable({
+  usersList,
 }: {
-  developerList: User[];
+  usersList: User[];
 }) {
   return (
     <Table className="min-w-full table-auto border-collapse bg-white shadow-md rounded-lg">
@@ -41,7 +41,7 @@ export default function ManagerDevelopersTable({
         </TableRow>
       </TableHeader>
       <TableBody>
-        {developerList?.map((developer, index) => (
+        {usersList?.map((developer, index) => (
           <TableRow
             key={index}
             className={`${
@@ -94,7 +94,7 @@ export default function ManagerDevelopersTable({
             Total Developers
           </TableCell>
           <TableCell className="px-4 py-2 text-right text-gray-900 font-semibold border-b border-gray-200">
-            {developerList.length}
+            {usersList.length}
           </TableCell>
         </TableRow>
       </TableFooter>

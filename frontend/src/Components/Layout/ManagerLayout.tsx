@@ -28,6 +28,9 @@ export function ManagerLayout({
       case "developers":
         router.push("/employee/manager/dashboard/developers");
         break;
+      case "pManagers":
+        router.push("/employee/manager/dashboard/pManagers");
+        break;
     }
   }
 
@@ -51,7 +54,7 @@ export function ManagerLayout({
         <SideBarItem
           icon={<FiUser />}
           label="Project Managers"
-          onClick={() => router.push("/project-managers")}
+          onClick={() => onSideBarClick("pManagers")}
         />
         <SideBarItem
           icon={<FiFolder />}

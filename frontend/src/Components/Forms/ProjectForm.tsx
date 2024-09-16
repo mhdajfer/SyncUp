@@ -19,6 +19,7 @@ import { createProject } from "@/api/projectService/project";
 import { User } from "@/interfaces/User";
 import { getProjectManagers } from "@/api/userService/user";
 import { toast } from "sonner";
+import { useRouter } from "next/navigation";
 
 export interface CreateProjectResponse {
   success: boolean;
@@ -27,6 +28,7 @@ export interface CreateProjectResponse {
 }
 
 export default function ProjectForm() {
+  const router = useRouter();
   const [managerList, setManagerList] = useState<User[]>([]);
   const [formData, setFormData] = useState<Project>({
     name: "",
@@ -50,6 +52,7 @@ export default function ProjectForm() {
 
     if (response.success) {
       toast.success(response.message);
+      router.push("/employee/manager/dashboard/projects");
     } else {
       toast.error(response.message);
     }
