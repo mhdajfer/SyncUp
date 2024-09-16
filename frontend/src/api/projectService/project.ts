@@ -10,3 +10,13 @@ export const getProjects = async (): Promise<{ result: Project[] }> => {
     throw error;
   }
 };
+
+export const createProject = async (formData: Project) => {
+  try {
+    const response = await userInstance.post("/projects", formData);
+
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};

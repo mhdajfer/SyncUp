@@ -2,7 +2,6 @@ import { Request, Response, NextFunction } from "express";
 import { IUserUseCases } from "../interfaces/IUserUseCases";
 import { IUser } from "../interfaces/IUser";
 import { validationResult } from "express-validator";
-import bcrypt from "bcrypt";
 
 export class UserController {
   private userUseCase: IUserUseCases;
@@ -33,6 +32,20 @@ export class UserController {
       }
     }
   }
+
+  async onGetUserManagerList(req: Request, res: Response, next: NextFunction) {
+    try {
+      const managerList = await this.userUseCase.getManagerList();
+
+      console.log("list of managers", managerList);
+
+      return res.status(200).json(managerList);
+    } catch (error) {
+      console.error("Error retrieving managers list:", error);
+      return res.status(500).json({ message: "Internal server error" });
+    }
+  }
+
   async onGetUserList(req: Request, res: Response, next: NextFunction) {
     try {
       const userList = await this.userUseCase.getUsers();

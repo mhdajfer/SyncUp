@@ -16,5 +16,5 @@ connectDB();
 app.use("/projects", projectRoutes);
 
 app.listen(port, () => {
-  console.log(`User server started on ${port}`);
+  console.log(`Project server started on ${port}`);
 });

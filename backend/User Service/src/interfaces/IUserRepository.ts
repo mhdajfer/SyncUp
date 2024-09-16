@@ -7,4 +7,5 @@ export interface IUserRepository {
   findUser(email: string): Promise<IUser | null>;
   findUserById(userId: string): Promise<IUser | null>;
   getAllUsers(): Promise<IUser[]>;
+  findManagerList(): Promise<IUser[]>;
 }

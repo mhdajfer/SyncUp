@@ -4,6 +4,15 @@ import User from "../frameworks/models/userModel";
 import { ObjectId } from "mongodb";
 
 export class UserRepository implements IUserRepository {
+  async findManagerList(): Promise<IUser[]> {
+    try {
+      const managerList: IUser[] = await User.find({ role: "pManager" });
+
+      return managerList;
+    } catch (error) {
+      throw error;
+    }
+  }
   async findUserById(userId: string): Promise<IUser | null> {
     try {
       const user: IUser | null = await User.findById(userId);
@@ -15,9 +24,9 @@ export class UserRepository implements IUserRepository {
   }
   async getAllUsers(): Promise<IUser[]> {
     try {
-      interface user extends IUser{
+      interface user extends IUser {
         _id: ObjectId;
-      } 
+      }
       const userList: user[] = await User.find();
 
       return userList;

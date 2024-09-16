@@ -7,13 +7,15 @@ export class ProjectControllers {
 
   async createProject(req: Request, res: Response, next: NextFunction) {
     try {
+      console.log("formData", req.body);
+
       const projectDetails: IProject = req.body;
 
       const result = await this.projectUseCases.createProject(projectDetails);
 
       if (!result) throw new Error(`Error in Project controller`);
 
-      return res.status(201).json({ result });
+      return res.status(201).json({ success: true, result });
     } catch (error: any) {
       console.log(`Error while creating project ${error.message}`);
     }

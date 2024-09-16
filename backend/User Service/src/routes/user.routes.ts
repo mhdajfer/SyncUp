@@ -20,6 +20,10 @@ router.post(
 router.post("/login", userController.userLogin.bind(userController));
 router.post("/verify", userController.isUserLogin.bind(userController));
 router.get("/", userController.onGetUserList.bind(userController));
+router.get(
+  "/pmanagers",
+  userController.onGetUserManagerList.bind(userController)
+);
 router.get("/:id", userController.onGetUser.bind(userController));
 
 export default router;

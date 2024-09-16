@@ -12,4 +12,5 @@ export interface IUserUseCases {
     username: string;
     password: string;
   }): Promise<{ user: IUser; accessToken: string; refreshToken: string }>;
+  getManagerList(): Promise<IUser[] | null>;
 }

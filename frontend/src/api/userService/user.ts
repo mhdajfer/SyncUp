@@ -17,3 +17,13 @@ export const login = async (formData: {
     throw error;
   }
 };
+
+export const getProjectManagers = async () => {
+  try {
+    const response = await userInstance.get("/users/pmanagers");
+
+    return response.data as User[];
+  } catch (error) {
+    throw error;
+  }
+};

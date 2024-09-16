@@ -29,7 +29,7 @@ export function ManagerLayout({
   }
 
   return (
-    <div className="h-screen w-64 bg-gray-900 text-gray-200">
+    <div className="h-screen w-64 bg-gray-900 text-gray-200 relative">
       <div className="flex items-center justify-center h-20 border-b border-gray-700">
         <h1 className="text-xl font-bold">SyncUp</h1>
       </div>
