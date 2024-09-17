@@ -8,4 +8,6 @@ export interface IUserRepository {
   getAllUsers(): Promise<IUser[]>;
   findManagerList(): Promise<IUser[]>;
   findDevList(): Promise<IUser[]>;
+  blockUser(userId: string): Promise<IUser>;
+  s;
 }

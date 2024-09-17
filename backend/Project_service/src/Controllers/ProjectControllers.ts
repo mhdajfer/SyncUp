@@ -20,6 +20,11 @@ export class ProjectControllers {
         .json({ success: true, result, message: "project created" });
     } catch (error: any) {
       console.log(`Error while creating project ${error.message}`);
+      console.log("error", error.message);
+
+      return res
+        .status(400)
+        .json({ success: false, data: null, message: error.message });
     }
   }
 

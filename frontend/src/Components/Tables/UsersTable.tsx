@@ -1,8 +1,8 @@
+import { blockUser } from "@/api/userService/user";
 import { Button } from "@/Components/ui/button";
 import {
   Table,
   TableBody,
-  TableCaption,
   TableCell,
   TableFooter,
   TableHead,
@@ -10,17 +10,38 @@ import {
   TableRow,
 } from "@/Components/ui/table";
 import { User } from "@/interfaces/User";
+import { useEffect, useState } from "react";
+import { toast } from "sonner";
 
-export default function UsersTable({
-  usersList,
-}: {
-  usersList: User[];
-}) {
+export default function UsersTable({ usersList }: { usersList: User[] }) {
+  const [users, setUsers] = useState<User[]>([]);
+  async function handleBlock(userId: string | undefined) {
+    try {
+      if (!userId) return toast.error("Invalid User ID");
+      console.log(userId);
+
+      const response = await blockUser(userId);
+
+      if (response.success) {
+        toast.success(response.message);
+        setUsers((prevUsers) =>
+          prevUsers.map((user) =>
+            user._id === userId ? { ...user, isBlocked: !user.isBlocked } : user
+          )
+        );
+      }
+    } catch (error) {
+      toast.error("Error occured");
+      console.log("error while blocking user", error);
+    }
+  }
+  console.log(users);
+
+  useEffect(() => {
+    setUsers(usersList);
+  }, [usersList]);
   return (
-    <Table className="min-w-full table-auto border-collapse bg-white shadow-md rounded-lg">
-      <TableCaption className="text-lg font-semibold text-gray-700 mb-4">
-        Developer Details
-      </TableCaption>
+    <Table className="min-w-full table-auto border-collapse bg-white shadow-md rounded-lg text-center">
       <TableHeader className="bg-gray-100">
         <TableRow className="text-left text-sm font-semibold uppercase tracking-wide text-gray-700">
           <TableHead className="w-[60px] px-4 py-2 border-b border-gray-200">
@@ -41,7 +62,7 @@ export default function UsersTable({
         </TableRow>
       </TableHeader>
       <TableBody>
-        {usersList?.map((developer, index) => (
+        {users?.map((developer, index) => (
           <TableRow
             key={index}
             className={`${
@@ -64,15 +85,12 @@ export default function UsersTable({
               <div className="flex space-x-2 justify-end">
                 <Button
                   variant="outline"
-                  className="bg-blue-500 text-white hover:bg-blue-600"
+                  className={`min-w-24 ${
+                    developer.isBlocked ? "bg-green-800" : "bg-green-500"
+                  } text-white hover:bg-green-600`}
+                  onClick={() => handleBlock(developer._id)}
                 >
-                  Edit
-                </Button>
-                <Button
-                  variant="outline"
-                  className="bg-green-500 text-white hover:bg-green-600"
-                >
-                  Update
+                  {developer.isBlocked ? "UnBlock" : "Block"}
                 </Button>
                 <Button
                   variant="outline"
@@ -91,10 +109,10 @@ export default function UsersTable({
             colSpan={4}
             className="px-4 py-2 font-semibold text-gray-700 border-b border-gray-200"
           >
-            Total Developers
+            Total Employees
           </TableCell>
           <TableCell className="px-4 py-2 text-right text-gray-900 font-semibold border-b border-gray-200">
-            {usersList.length}
+            {users.length}
           </TableCell>
         </TableRow>
       </TableFooter>

@@ -13,10 +13,10 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
   }
   return (
     <div className="flex ">
-      <div className="w-fit bg-blue-800 fixed">
+      <div className="w-fit  fixed">
         <ManagerLayout logoutSuccess={handleLogout} />
       </div>
-      <div className="ml-64 bg-[#082032] flex flex-col items-center justify-center w-full h-screen p-6 px-4 overflow-y-scroll">
+      <div className="ml-64 bg-[#082032] flex flex-col items-center justify-center w-full h-screen py-10 px-4  overflow-y-scroll">
         <Toaster />
         {children}
       </div>

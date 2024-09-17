@@ -11,17 +11,42 @@ export class UserController {
     this.userUseCase = userUseCases;
   }
 
+  async blockUser(req: Request, res: Response, next: NextFunction) {
+    try {
+      const { userId } = req.body;
+
+      const result = await this.userUseCase.blockUser(userId);
+      const message = result.isBlocked
+        ? "User blocked successfully"
+        : "User unblocked successfully";
+
+      return res.status(200).json({
+        success: true,
+        data: result,
+        message: message,
+      });
+    } catch (error) {
+      console.error("Error blocking user:", error);
+      return res.status(500).json({ message: "Internal server error" });
+    }
+  }
+
   async onCreateUser(req: Request, res: Response, next: NextFunction) {
     try {
       //req validation
       const errors = validationResult(req);
-      if (!errors.isEmpty()) return res.status(400).json({ errors: errors });
+      if (!errors.isEmpty())
+        return res
+          .status(400)
+          .json({ success: false, data: null, message: errors });
 
       const user: IUser = req.body;
 
       const data = await this.userUseCase.createUser(user);
 
-      res.status(201).json(data);
+      return res
+        .status(201)
+        .json({ success: true, data, message: "user created successfully" });
     } catch (error: any) {
       if (error.message === "User already exists") {
         return res.status(400).json({

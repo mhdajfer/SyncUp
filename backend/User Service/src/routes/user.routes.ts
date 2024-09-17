@@ -24,6 +24,7 @@ router.get(
   "/pmanagers",
   userController.onGetUserManagerList.bind(userController)
 );
+router.post("/block", userController.blockUser.bind(userController));
 router.get(
   "/developers",
   userController.onGetAllDevelopers.bind(userController)

@@ -4,7 +4,6 @@ import { FC } from "react";
 import { useRouter } from "next/navigation";
 import {
   FiUsers,
-  FiUserCheck,
   FiFolder,
   FiMessageSquare,
   FiCalendar,
@@ -45,11 +44,6 @@ export function ManagerLayout({
           icon={<FiUsers />}
           label="Developers"
           onClick={() => onSideBarClick("developers")}
-        />
-        <SideBarItem
-          icon={<FiUserCheck />}
-          label="Testers"
-          onClick={() => router.push("/testers")}
         />
         <SideBarItem
           icon={<FiUser />}

@@ -16,10 +16,21 @@ import {
 import { CalendarIcon, Upload } from "lucide-react";
 import { Project } from "@/interfaces/Project";
 import { createProject } from "@/api/projectService/project";
-import { User } from "@/interfaces/User";
 import { getProjectManagers } from "@/api/userService/user";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
+
+export interface UserDetails {
+  _id: string;
+  firstName: string;
+  lastName: string;
+  email: string;
+  password: string;
+  isBlocked?: boolean;
+  age: number;
+  phoneNumber: number;
+  role?: string;
+}
 
 export interface CreateProjectResponse {
   success: boolean;
@@ -29,7 +40,7 @@ export interface CreateProjectResponse {
 
 export default function ProjectForm() {
   const router = useRouter();
-  const [managerList, setManagerList] = useState<User[]>([]);
+  const [managerList, setManagerList] = useState<UserDetails[]>([]);
   const [formData, setFormData] = useState<Project>({
     name: "",
     description: "",
@@ -48,16 +59,21 @@ export default function ProjectForm() {
 
     console.log("Form submitted", formData);
 
-    const response: CreateProjectResponse = await createProject(formData);
+    try {
+      const response: CreateProjectResponse = await createProject(formData);
 
-    if (response.success) {
-      toast.success(response.message);
-      router.push("/employee/manager/dashboard/projects");
-    } else {
-      toast.error(response.message);
+      if (response.success) {
+        toast.success(response.message);
+        router.push("/employee/manager/dashboard/projects");
+      } else {
+        toast.error(response.message);
+      }
+
+      console.log(response);
+    } catch (error) {
+      toast.error("An error occurred");
+      console.log(`Error: ${error}`);
     }
-
-    console.log(response);
   };
 
   // onFormChange function to update the form data
@@ -126,8 +142,8 @@ export default function ProjectForm() {
                   <SelectValue placeholder="Select project Manager" />
                 </SelectTrigger>
                 <SelectContent>
-                  {managerList?.map((manager, i) => (
-                    <SelectItem key={i} value={manager?._id}>
+                  {managerList.map((manager, i) => (
+                    <SelectItem key={i} value={manager._id}>
                       {manager?.firstName}
                     </SelectItem>
                   ))}

@@ -13,6 +13,8 @@ import {
   SelectItem,
 } from "@/Components/ui/select";
 import { toast } from "sonner";
+import { createUser } from "@/api/userService/user";
+import { useRouter } from "next/navigation";
 
 export interface User {
   _id?: string;
@@ -26,7 +28,8 @@ export interface User {
   role?: string;
 }
 
-export default function UserForm() {
+export default function UserForm({ role }: { role: string }) {
+  const router = useRouter();
   const [formData, setFormData] = useState<User>({
     firstName: "",
     lastName: "",
@@ -43,23 +46,35 @@ export default function UserForm() {
 
     console.log("Form submitted", formData);
 
-    toast.success("User created successfully");
+    try {
+      const response = await createUser(formData);
+      if (response.success) {
+        toast.success("User created successfully");
+        router.push("/employee/manager/dashboard/developers");
+      } else {
+        toast.error(`User creation failed : ${response.message}`);
+      }
+    } catch (error) {
+      const err = error as Error;
+      toast.error(err.message);
+      console.log(error);
+    }
   };
 
   const onFormChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
   ) => {
-    const { name, value, type } = e.target;
+    const { name, value } = e.target;
 
     setFormData((prevData) => ({
       ...prevData,
-      [name]:
-        type === "checkbox" ? (e.target as HTMLInputElement).checked : value,
+      [name]: value,
+      role: role,
     }));
   };
 
   return (
-    <Card className="w-full max-w-2xl mx-auto py-8 text-sm bg-[#2C394B] text-white">
+    <Card className="mx-auto max-w-2xl text-sm bg-[#2C394B] text-white py-10">
       <form onSubmit={handleSubmit}>
         <CardContent className="space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -153,30 +168,16 @@ export default function UserForm() {
                 <SelectValue placeholder="Select role" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="admin">Admin</SelectItem>
-                <SelectItem value="user">User</SelectItem>
-                <SelectItem value="manager">Manager</SelectItem>
+                <SelectItem value={role}>
+                  {role == "dev" ? "Developer" : "Project Manager"}
+                </SelectItem>
               </SelectContent>
             </Select>
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="isBlocked">Is Blocked</Label>
-            <div className="flex items-center space-x-2">
-              <Input
-                id="isBlocked"
-                name="isBlocked"
-                type="checkbox"
-                checked={formData.isBlocked}
-                onChange={onFormChange}
-              />
-              <span>Yes</span>
-            </div>
           </div>
         </CardContent>
         <CardFooter>
           <Button type="submit" className="w-full">
-            Create User
+            Invite User
           </Button>
         </CardFooter>
       </form>

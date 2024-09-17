@@ -1,20 +1,20 @@
-import ProjectForm from "@/Components/Forms/ProjectForm";
+import UserForm from "@/Components/Forms/UserForm";
 import { Card, CardDescription, CardTitle } from "@/Components/ui/card";
 
 export default function Page() {
   return (
     <>
-      <div className="min-h-screen w-full py-10  flex flex-col items-center">
+      <div className="min-h-screen w-full py-10  flex flex-col items-center ">
         <div className=" w-full max-w-lg">
           <Card className="bg-[#082032] text-white border-0 text-center">
-            <CardTitle className="text-2xl">Create New Project</CardTitle>
+            <CardTitle className="text-2xl">New Project Manager</CardTitle>
             <CardDescription>
-              Fill in the details to create a new project.
+              Fill in the details to add new project manager.
             </CardDescription>
           </Card>
         </div>
         <div className="w-full py-8 ">
-          <ProjectForm />
+          <UserForm role="pManager" />
         </div>
       </div>
     </>

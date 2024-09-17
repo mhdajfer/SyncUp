@@ -4,6 +4,26 @@ import User from "../frameworks/models/userModel";
 import { ObjectId } from "mongodb";
 
 export class UserRepository implements IUserRepository {
+  async blockUser(userId: string): Promise<IUser> {
+    try {
+
+      const user = await User.findById(userId);
+      if (!user) {
+        throw new Error("User not found");
+      }
+
+      const updatedUser = await User.findByIdAndUpdate(
+        { _id: userId },
+        { isBlocked: !user.isBlocked },
+        { new: true }
+      );
+
+      return updatedUser as unknown as IUser;
+    } catch (error) {
+      throw error;
+    }
+  }
+  s: any;
   async findDevList(): Promise<IUser[]> {
     try {
       const devList: IUser[] = await User.find({ role: "dev" });

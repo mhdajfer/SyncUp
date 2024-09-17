@@ -29,7 +29,7 @@ const LandingPage: FC = () => {
             </button>
             <button
               className="bg-green-600 hover:bg-green-700 text-white py-3 px-6 rounded-lg text-lg"
-              onClick={() => router.push("/employee/manager")}
+              onClick={() => router.push("/employee/manager/dashboard")}
             >
               For Managers
             </button>

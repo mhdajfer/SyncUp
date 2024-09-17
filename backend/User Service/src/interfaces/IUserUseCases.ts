@@ -14,4 +14,5 @@ export interface IUserUseCases {
   }): Promise<{ user: IUser; accessToken: string; refreshToken: string }>;
   getManagerList(): Promise<IUser[] | null>;
   getDevList(): Promise<IUser[] | null>;
+  blockUser(userId: string): Promise<IUser>;
 }

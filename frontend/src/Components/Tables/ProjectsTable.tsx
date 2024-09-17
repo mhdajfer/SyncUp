@@ -2,7 +2,6 @@ import { Button } from "@/Components/ui/button";
 import {
   Table,
   TableBody,
-  TableCaption,
   TableCell,
   TableFooter,
   TableHead,
@@ -18,9 +17,6 @@ export default function ManagerProjectsTable({
   return (
     <>
       <Table className="min-w-full table-auto border-collapse bg-white shadow-md rounded-lg">
-        <TableCaption className="text-lg font-semibold text-gray-700 mb-4">
-          Project details
-        </TableCaption>
         <TableHeader className="bg-gray-100">
           <TableRow className="text-left text-sm font-semibold uppercase tracking-wide text-gray-700">
             <TableHead className="w-[100px] px-4 py-2 border-b border-gray-200">
@@ -72,10 +68,10 @@ export default function ManagerProjectsTable({
               colSpan={3}
               className="px-4 py-2 font-semibold text-gray-700 border-b border-gray-200"
             >
-              Total
+              Total Projects
             </TableCell>
             <TableCell className="px-4 py-2 text-right text-gray-900 font-semibold border-b border-gray-200">
-              $2,500.00
+              {projectList.length}
             </TableCell>
           </TableRow>
         </TableFooter>
