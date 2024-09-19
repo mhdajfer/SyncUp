@@ -1,8 +1,8 @@
 "use client";
 import React, { useState } from "react";
-import Login from "../../../../Components/Login/Login";
+import Login from "../../../../../Components/Login/Login";
 import { login } from "@/api/userService/user";
-import { User } from "../../../../interfaces/User";
+import { User } from "../../../../../interfaces/User";
 import { useRouter } from "next/navigation";
 import { AppDispatch } from "@/store/store";
 import { useDispatch } from "react-redux";

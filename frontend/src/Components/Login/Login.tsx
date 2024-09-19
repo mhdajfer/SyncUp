@@ -1,4 +1,3 @@
-import Head from "next/head";
 import { FormEvent } from "react";
 
 interface loginProps {
@@ -18,10 +17,6 @@ export default function Login({
 }: loginProps) {
   return (
     <div className="flex items-center justify-center min-h-screen bg-gray-900">
-      <Head>
-        <title>Login | Project Management Toolkit</title>
-      </Head>
-
       <div className="bg-gray-800 p-8 rounded-lg shadow-lg w-full max-w-md">
         <h2 className="text-3xl font-semibold text-white text-center mb-6">
           Welcome Back
@@ -90,7 +85,7 @@ export default function Login({
         <p className="mt-6 text-center text-sm text-gray-400">
           Dont have an account?{" "}
           <a
-            href="/register"
+            href="/employee/signup"
             className="font-medium text-indigo-500 hover:text-indigo-400"
           >
             Sign Up

@@ -2,7 +2,6 @@ import express, { NextFunction, Request } from "express";
 import dotenv from "dotenv";
 import cors from "cors";
 import userRouter from "./routes/user.routes";
-import authRouter from "./routes/Auth.routes";
 import projectRouter from "./routes/project.routes";
 import cookieParser from "cookie-parser";
 

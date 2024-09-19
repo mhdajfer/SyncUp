@@ -43,6 +43,8 @@ export const createUser = async (
   userData: User
 ): Promise<{ success: boolean; data: User; message: string }> => {
   try {
+    console.log("createuser");
+
     const response = await userInstance.post("/users", userData);
 
     return response.data as { success: boolean; data: User; message: string };
@@ -56,6 +58,38 @@ export const blockUser = async (
 ): Promise<{ success: boolean; data: User; message: string }> => {
   try {
     const response = await userInstance.post("/users/block", { userId });
+
+    return response.data as Promise<{
+      success: boolean;
+      data: User;
+      message: string;
+    }>;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const deleteUser = async (
+  userId: string
+): Promise<{ success: boolean; data: User; message: string }> => {
+  try {
+    const response = await userInstance.post("/users/delete", { userId });
+
+    return response.data as Promise<{
+      success: boolean;
+      data: User;
+      message: string;
+    }>;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const signup = async (
+  userData: User
+): Promise<{ success: boolean; data: User; message: string }> => {
+  try {
+    const response = await userInstance.post("/users", userData);
 
     return response.data as Promise<{
       success: boolean;

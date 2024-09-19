@@ -8,4 +8,5 @@ export interface User {
   age: number;
   phoneNumber: number;
   role?: string;
+  confirmPassword?: string;
 }
