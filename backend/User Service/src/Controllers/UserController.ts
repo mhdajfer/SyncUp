@@ -2,7 +2,8 @@ import { Request, Response, NextFunction } from "express";
 import { IUserUseCases } from "../interfaces/IUserUseCases";
 import { IUser } from "../interfaces/IUser";
 import { validationResult } from "express-validator";
-import { addAbortListener } from "events";
+import jwt from "jsonwebtoken";
+import { createToken } from "../Utils/Jwt";
 
 export class UserController {
   private userUseCase: IUserUseCases;
@@ -121,25 +122,39 @@ export class UserController {
       console.log("logged in successfully.....", user);
       return res
         .status(200)
-        .cookie("refresh_token", refreshToken, {
-          httpOnly: true,
-          secure: true,
-          maxAge: 30 * 24 * 60 * 60 * 1000,
-        })
-        .json({ user: user, accessToken, success: true });
+        .json({ user: user, refreshToken, accessToken, success: true });
     } catch (error) {
       console.error("Error logging developer:", error);
       return res.status(500).json({ message: "Internal server error" });
     }
   }
 
-  async isUserLogin(req: Request, res: Response, next: NextFunction) {
+  async isUserLogin(
+    req: Request & Partial<{ user: IUser | jwt.JwtPayload }>,
+    res: Response,
+    next: NextFunction
+  ) {
     try {
-      const token: string = req.cookies.refresh_token;
+      let user = req.user;
+      console.log("creating new token for : ", user?.email);
 
-      const user = await this.userUseCase.verifyUser(token);
+      if (!user)
+        return res
+          .status(401)
+          .json({ success: false, message: "User not found", data: null });
 
-      res.status(200).json({ user });
+      delete user.__v;
+      delete user.iat;
+      delete user.exp;
+
+      const newAccessToken = createToken(user as IUser);
+      console.log("sending new access token......");
+
+      res.status(200).json({
+        success: true,
+        newAccessToken,
+        message: "created new access token",
+      });
     } catch (error: any) {
       console.log(`Error while login: ${error}`);
       return res

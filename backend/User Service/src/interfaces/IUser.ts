@@ -10,4 +10,7 @@ export interface IUser {
   age: number;
   phoneNumber: number;
   role?: string;
+  iat?: number;
+  exp?: number;
+  __v?: number;
 }

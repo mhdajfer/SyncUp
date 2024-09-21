@@ -2,11 +2,11 @@ import jwt from "jsonwebtoken";
 import { IUser } from "../interfaces/IUser";
 
 const JWT_AUTHSECRET = process.env.JWT_AUTHSECRET || "secret-key";
-const JWT_REFRESH_TOKEN = process.env.JWT_REFRESH_SECRET || "secret-key01";
+const JWT_REFRESH_TOKEN = process.env.REFRESH_SECRET || "secret-key01";
 
 export const createToken = (data: IUser) => {
   console.log(`creating accessToken......\n`);
-  return jwt.sign(data, JWT_AUTHSECRET, { expiresIn: "10m" });
+  return jwt.sign(data, JWT_AUTHSECRET, { expiresIn: "20s" });
 };
 
 export const createRefreshToken = (data: IUser) => {
@@ -24,13 +24,12 @@ export const verifyAccessToken = (token: string): IUser => {
   }
 };
 
-export const verifyRefreshToken = (token: string) => {
-  console.log(`verifying refreshToken......\n`);
-  return jwt.verify(token, JWT_REFRESH_TOKEN, (err, decoded) => {
-    if (err) {
-      return false;
-    }
-    console.log("decoded", decoded);
-    return decoded;
-  });
+export const verifyRefreshToken = (token: string): IUser => {
+  try {
+    console.log(`verifying refreshToken......\n`);
+    const decoded = jwt.verify(token, JWT_REFRESH_TOKEN);
+    return decoded as IUser;
+  } catch (error) {
+    throw error;
+  }
 };

@@ -7,6 +7,7 @@ import { useRouter } from "next/navigation";
 import { AppDispatch } from "@/store/store";
 import { useDispatch } from "react-redux";
 import { loginSuccess } from "@/store/slices/authSlice";
+import Cookies from "js-cookie";
 
 const Page = () => {
   const router = useRouter();
@@ -19,13 +20,20 @@ const Page = () => {
 
     console.log("Logging in with", { email, password });
 
-    const data: { success: boolean; user: User; accessToken: string } =
-      await login({
-        username: email,
-        password,
-      });
+    const data: {
+      success: boolean;
+      user: User;
+      accessToken: string;
+      refreshToken: string;
+    } = await login({
+      username: email,
+      password,
+    });
 
     if (!data.success) throw new Error("login failed");
+
+    Cookies.set("accessToken", data.accessToken);
+    localStorage.setItem("refreshToken", data.refreshToken);
 
     console.log("logged in successfully.......", data.user.role);
     dispatch(loginSuccess({ accessToken: data.accessToken, user: data.user }));

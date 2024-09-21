@@ -1,6 +1,7 @@
 import { userInstance } from "@/axios";
 import { UserDetails } from "@/Components/Forms/ProjectForm";
 import { User } from "@/interfaces/User";
+import Cookies from "js-cookie";
 
 export const login = async (formData: {
   username: string;
@@ -8,11 +9,13 @@ export const login = async (formData: {
 }) => {
   try {
     const response = await userInstance.post("users/login", formData);
+    console.log(response);
 
     return response.data as {
       success: boolean;
       user: User;
       accessToken: string;
+      refreshToken: string;
     };
   } catch (error) {
     throw error;
@@ -96,6 +99,22 @@ export const signup = async (
       data: User;
       message: string;
     }>;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const verifyRefreshToken = async () => {
+  try {
+    const refreshToken = localStorage.getItem("refreshToken");
+    console.log(refreshToken);
+
+    userInstance.defaults.headers.common["Authorization"] = refreshToken;
+    const response: {
+      data: { success: boolean; data: null; newAccessToken: string };
+    } = await userInstance.post("/users/verify", { refreshToken });
+
+    Cookies.set("accessToken", response.data.newAccessToken);
   } catch (error) {
     throw error;
   }

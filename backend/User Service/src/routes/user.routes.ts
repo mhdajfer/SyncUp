@@ -6,6 +6,8 @@ import { IUserRepository } from "../interfaces/IUserRepository";
 import { IUserUseCases } from "../interfaces/IUserUseCases";
 import { checkSchema } from "express-validator";
 import signupValidator from "../validators/signupValidator";
+import userAuth from "../Middlewares/userAuth";
+import authRefresh from "../Middlewares/authRefresh";
 const router = express.Router();
 
 const userRepository: IUserRepository = new UserRepository();
@@ -18,17 +20,23 @@ router.post(
   userController.onCreateUser.bind(userController)
 );
 router.post("/login", userController.userLogin.bind(userController));
-router.post("/verify", userController.isUserLogin.bind(userController));
-router.get("/", userController.onGetUserList.bind(userController));
+router.post(
+  "/verify",
+  authRefresh,
+  userController.isUserLogin.bind(userController)
+);
+router.get("/", userAuth, userController.onGetUserList.bind(userController));
 router.get(
   "/pmanagers",
+  userAuth,
   userController.onGetUserManagerList.bind(userController)
 );
-router.post("/block", userController.blockUser.bind(userController));
+router.post("/block", userAuth, userController.blockUser.bind(userController));
 router.get(
   "/developers",
+  userAuth,
   userController.onGetAllDevelopers.bind(userController)
 );
-router.get("/:id", userController.onGetUser.bind(userController));
+router.get("/:id", userAuth, userController.onGetUser.bind(userController));
 
 export default router;

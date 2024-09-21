@@ -63,22 +63,25 @@ export default function SignupForm() {
     try {
       const { firstName, lastName, email, phoneNumber, age, password } =
         getValues();
-      // const response = await createUser({
-      //   firstName,
-      //   lastName,
-      //   email,
-      //   phoneNumber,
-      //   role: "manager",
-      //   age,
-      //   password,
-      // });
+[
+  
+]
+      const response = await createUser({
+        firstName,
+        lastName,
+        email,
+        phoneNumber,
+        role: "manager",
+        age,
+        password,
+      });
 
-      // if (response.success) {
-      //   toast.success(response.message);
-      //   console.log("signup successful");
+      if (response.success) {
+        toast.success(response.message);
+        console.log("signup successful");
 
-      //   router.push("/employee/login");
-      // }
+        router.push("/employee/login");
+      }
 
       console.log(firstName, lastName, email, phoneNumber, password, age);
     } catch (error) {
@@ -114,7 +117,7 @@ export default function SignupForm() {
               />
               {errors.firstName && (
                 <p className="text-red-700 text-xs mt-1 bg-red-100 bg-opacity-70 py-1 px-2 rounded-md w-full">
-                  {errors.firstName.message}
+                  {errors.firstName.message || ""}
                 </p>
               )}
             </div>

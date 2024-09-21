@@ -5,6 +5,7 @@ import {
   createRefreshToken,
   createToken,
   verifyAccessToken,
+  verifyRefreshToken,
 } from "../Utils/Jwt";
 import bcrypt from "bcrypt";
 
@@ -65,12 +66,15 @@ export class UserUseCases implements IUserUseCases {
     }
   }
 
-  async verifyUser(token: string): Promise<IUser> {
+  async verifyUser(token: string): Promise<string> {
     try {
-      const user: IUser = verifyAccessToken(token);
+      const user: IUser = verifyRefreshToken(token);
 
       if (!user) throw new Error("User not found");
-      return user;
+
+      const newAccessToken = createToken(user);
+
+      return newAccessToken;
     } catch (error: any) {
       throw new Error(error);
     }

@@ -2,7 +2,7 @@ import { ObjectId } from "mongoose";
 import { IUser } from "./IUser";
 
 export interface IUserUseCases {
-  verifyUser(token: string): Promise<IUser>;
+  verifyUser(token: string): Promise<string>;
   createUser(user: IUser): Promise<IUser>;
   getUsers(): Promise<IUser[]>;
   updateUser(user: IUser): Promise<IUser>;
