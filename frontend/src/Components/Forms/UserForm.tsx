@@ -1,6 +1,5 @@
 "use client";
 
-import { useState } from "react";
 import { Button } from "@/Components/ui/button";
 import { Input } from "@/Components/ui/input";
 import { Label } from "@radix-ui/react-label";
@@ -15,6 +14,9 @@ import {
 import { toast } from "sonner";
 import { createUser } from "@/api/userService/user";
 import { useRouter } from "next/navigation";
+import z from "zod";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
 
 export interface User {
   _id?: string;
@@ -28,29 +30,63 @@ export interface User {
   role?: string;
 }
 
+const userSchema = z.object({
+  firstName: z
+    .string()
+    .trim()
+    .min(3, "firstName must be at least 3 characters long")
+    .regex(/^[a-zA-Z\s]+$/, "Name must only contain letters and spaces"),
+  lastName: z
+    .string()
+    .trim()
+    .min(3, "lastName must be at least 3 characters long")
+    .regex(/^[a-zA-Z\s]+$/, "Name must only contain letters and spaces"),
+  email: z.string().trim().email("Invalid email address"),
+  phoneNumber: z
+    .string()
+    .trim()
+    .min(10, "Phone number must be at least 6 characters long"),
+
+  password: z
+    .string()
+    .trim()
+    .min(6, "password should be at least 6 characters long"),
+  age: z.coerce.number().gt(5).lt(100),
+});
+
 export default function UserForm({ role }: { role: string }) {
   const router = useRouter();
-  const [formData, setFormData] = useState<User>({
-    firstName: "",
-    lastName: "",
-    email: "",
-    password: "",
-    age: 0,
-    phoneNumber: 0,
-    isBlocked: false,
-    role: "",
+  const {
+    register,
+    handleSubmit,
+    getValues,
+    formState: { errors },
+  } = useForm<User>({
+    resolver: zodResolver(userSchema),
+    mode: "onChange",
   });
 
-  const handleSubmit = async (event: React.FormEvent) => {
-    event.preventDefault();
-
-    console.log("Form submitted", formData);
+  const onSubmit = async () => {
+    const { firstName, lastName, age, email, password, phoneNumber } =
+      getValues();
 
     try {
-      const response = await createUser(formData);
+      const response = await createUser({
+        firstName,
+        lastName,
+        age,
+        email,
+        password,
+        phoneNumber,
+        role: role,
+      });
       if (response.success) {
         toast.success("User created successfully");
-        router.push("/employee/manager/dashboard/developers");
+        router.push(
+          role == "dev"
+            ? "/employee/manager/dashboard/developers"
+            : "/employee/manager/dashboard/pManagers"
+        );
       } else {
         toast.error(`User creation failed : ${response.message}`);
       }
@@ -61,44 +97,38 @@ export default function UserForm({ role }: { role: string }) {
     }
   };
 
-  const onFormChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
-  ) => {
-    const { name, value } = e.target;
-
-    setFormData((prevData) => ({
-      ...prevData,
-      [name]: value,
-      role: role,
-    }));
-  };
-
   return (
     <Card className="mx-auto max-w-2xl text-sm bg-[#2C394B] text-white py-10">
-      <form onSubmit={handleSubmit}>
+      <form onSubmit={handleSubmit(onSubmit)} noValidate>
         <CardContent className="space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label htmlFor="firstName">First Name</Label>
               <Input
                 id="firstName"
-                name="firstName"
                 placeholder="Enter first name"
-                value={formData.firstName}
-                onChange={onFormChange}
+                {...register("firstName")}
                 required
               />
+              {errors.firstName && (
+                <p className="text-red-700 text-xs mt-1 bg-red-100 bg-opacity-70 py-1 px-2 rounded-md w-full">
+                  {errors.firstName.message || ""}
+                </p>
+              )}
             </div>
             <div className="space-y-2">
               <Label htmlFor="lastName">Last Name</Label>
               <Input
                 id="lastName"
-                name="lastName"
                 placeholder="Enter last name"
-                value={formData.lastName}
-                onChange={onFormChange}
+                {...register("lastName")}
                 required
               />
+              {errors.lastName && (
+                <p className="text-red-700 text-xs mt-1 bg-red-100 bg-opacity-70 py-1 px-2 rounded-md w-full">
+                  {errors.lastName.message || ""}
+                </p>
+              )}
             </div>
           </div>
 
@@ -106,26 +136,32 @@ export default function UserForm({ role }: { role: string }) {
             <Label htmlFor="email">Email</Label>
             <Input
               id="email"
-              name="email"
               type="email"
               placeholder="Enter email address"
-              value={formData.email}
-              onChange={onFormChange}
+              {...register("email")}
               required
             />
+            {errors.email && (
+              <p className="text-red-700 text-xs mt-1 bg-red-100 bg-opacity-70 py-1 px-2 rounded-md w-full">
+                {errors.email.message || ""}
+              </p>
+            )}
           </div>
 
           <div className="space-y-2">
             <Label htmlFor="password">Password</Label>
             <Input
               id="password"
-              name="password"
               type="password"
               placeholder="Enter password"
-              value={formData.password}
-              onChange={onFormChange}
+              {...register("password")}
               required
             />
+            {errors.password && (
+              <p className="text-red-700 text-xs mt-1 bg-red-100 bg-opacity-70 py-1 px-2 rounded-md w-full">
+                {errors.password.message || ""}
+              </p>
+            )}
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -133,37 +169,37 @@ export default function UserForm({ role }: { role: string }) {
               <Label htmlFor="age">Age</Label>
               <Input
                 id="age"
-                name="age"
                 type="number"
                 placeholder="Enter age"
-                value={formData.age}
-                onChange={onFormChange}
+                {...register("age")}
                 required
               />
+              {errors.age && (
+                <p className="text-red-700 text-xs mt-1 bg-red-100 bg-opacity-70 py-1 px-2 rounded-md w-full">
+                  {errors.age.message || ""}
+                </p>
+              )}
             </div>
             <div className="space-y-2">
               <Label htmlFor="phoneNumber">Phone Number</Label>
               <Input
                 id="phoneNumber"
-                name="phoneNumber"
-                type="tel"
+                type="number"
                 placeholder="Enter phone number"
-                value={formData.phoneNumber}
-                onChange={onFormChange}
+                {...register("phoneNumber")}
                 required
               />
+              {errors.phoneNumber && (
+                <p className="text-red-700 text-xs mt-1 bg-red-100 bg-opacity-70 py-1 px-2 rounded-md w-full">
+                  {errors.phoneNumber.message || ""}
+                </p>
+              )}
             </div>
           </div>
 
           <div className="space-y-2">
             <Label htmlFor="role">Role</Label>
-            <Select
-              name="role"
-              value={formData.role}
-              onValueChange={(value) => {
-                setFormData((prevData) => ({ ...prevData, role: value }));
-              }}
-            >
+            <Select {...register("role")}>
               <SelectTrigger id="role">
                 <SelectValue placeholder="Select role" />
               </SelectTrigger>

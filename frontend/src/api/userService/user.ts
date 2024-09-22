@@ -46,8 +46,6 @@ export const createUser = async (
   userData: User
 ): Promise<{ success: boolean; data: User; message: string }> => {
   try {
-    console.log("createuser");
-
     const response = await userInstance.post("/users", userData);
 
     return response.data as { success: boolean; data: User; message: string };

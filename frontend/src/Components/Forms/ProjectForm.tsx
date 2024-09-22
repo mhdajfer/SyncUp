@@ -41,21 +41,25 @@ export interface CreateProjectResponse {
   message: string;
 }
 
-// Define Zod schema for validation
-const projectSchema = z.object({
-  name: z.string().trim().min(5, "Name must be at least 5 characters"),
-  description: z
-    .string()
-    .trim()
-    .min(5, "Description must be at least 5 characters"),
-  managerId: z.string().optional(),
-  start_date: z.coerce.date(),
-  due_date: z.coerce.date(),
-  status: z.enum(["pending", "in progress", "completed"]),
-  budget: z.coerce.number().positive("Budget must be a positive number"),
-  goal: z.string().trim(),
-  document: z.any(),
-});
+const projectSchema = z
+  .object({
+    name: z.string().trim().min(5, "Name must be at least 5 characters"),
+    description: z
+      .string()
+      .trim()
+      .min(5, "Description must be at least 5 characters"),
+    managerId: z.string(),
+    start_date: z.coerce.date(),
+    due_date: z.coerce.date(),
+    status: z.enum(["pending", "in progress", "completed"]),
+    budget: z.coerce.number().positive("Budget must be a positive number"),
+    goal: z.string().trim(),
+    document: z.any(),
+  })
+  .refine((data) => data.due_date >= data.start_date, {
+    message: "Due date cannot be earlier than start date",
+    path: ["due_date"],
+  });
 
 export default function ProjectForm() {
   const router = useRouter();
@@ -66,9 +70,11 @@ export default function ProjectForm() {
     handleSubmit,
     setValue,
     getValues,
+    trigger,
     formState: { errors },
   } = useForm<Project>({
     resolver: zodResolver(projectSchema),
+    mode: "onChange",
   });
 
   // Fetch project managers on component mount
@@ -84,18 +90,17 @@ export default function ProjectForm() {
   const onSubmit = async () => {
     try {
       const data = getValues();
-      console.log(data);
 
-      // const response: CreateProjectResponse = await createProject({
-      //   ...data,
-      // });
+      const response: CreateProjectResponse = await createProject({
+        ...data,
+      });
 
-      //   if (response.success) {
-      //     toast.success(response.message);
-      //     router.push("/employee/manager/dashboard/projects");
-      //   } else {
-      //     toast.error(response.message);
-      //   }
+      if (response.success) {
+        toast.success(response.message);
+        router.push("/employee/manager/dashboard/projects");
+      } else {
+        toast.error(response.message);
+      }
     } catch (error) {
       toast.error("An error occurred");
       console.log(`Error: ${error}`);
@@ -122,11 +127,20 @@ export default function ProjectForm() {
                 placeholder="Enter project name"
                 {...register("name")}
               />
-              {errors.name && <span>{errors.name.message}</span>}
+              {errors.name && (
+                <p className="text-red-700 text-xs mt-1 bg-red-100 bg-opacity-70 py-1 px-2 rounded-md w-full">
+                  {errors.name.message}
+                </p>
+              )}
             </div>
             <div className="space-y-2">
               <Label htmlFor="manager">Project Manager</Label>
-              <Select {...register("managerId")}>
+              <Select
+                onValueChange={(value) => {
+                  setValue("managerId", value);
+                  trigger("managerId");
+                }}
+              >
                 <SelectTrigger id="managerId">
                   <SelectValue placeholder="Select project Manager" />
                 </SelectTrigger>
@@ -138,7 +152,11 @@ export default function ProjectForm() {
                   ))}
                 </SelectContent>
               </Select>
-              {errors.managerId && <span>{errors.managerId.message}</span>}
+              {errors.managerId && (
+                <p className="text-red-700 text-xs mt-1 bg-red-100 bg-opacity-70 py-1 px-2 rounded-md w-full">
+                  {errors.managerId.message}
+                </p>
+              )}
             </div>
           </div>
           <div className="space-y-2">
@@ -148,7 +166,11 @@ export default function ProjectForm() {
               placeholder="Describe your project"
               {...register("description")}
             />
-            {errors.description && <span>{errors.description.message}</span>}
+            {errors.description && (
+              <p className="text-red-700 text-xs mt-1 bg-red-100 bg-opacity-70 py-1 px-2 rounded-md w-full">
+                {errors.description.message}
+              </p>
+            )}
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-2">
@@ -157,7 +179,11 @@ export default function ProjectForm() {
                 <Input id="startDate" type="date" {...register("start_date")} />
                 <CalendarIcon className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
               </div>
-              {errors.start_date && <span>{errors.start_date.message}</span>}
+              {errors.start_date && (
+                <p className="text-red-700 text-xs mt-1 bg-red-100 bg-opacity-70 py-1 px-2 rounded-md w-full">
+                  {errors.start_date.message}
+                </p>
+              )}
             </div>
             <div className="space-y-2">
               <Label htmlFor="dueDate">Due Date</Label>
@@ -166,13 +192,22 @@ export default function ProjectForm() {
 
                 <CalendarIcon className="absolute right-3 top-1/2 transform -translate-y-1/2  text-gray-400" />
               </div>
-              {errors.due_date && <span>{errors.due_date.message}</span>}
+              {errors.due_date && (
+                <p className="text-red-700 text-xs mt-1 bg-red-100 bg-opacity-70 py-1 px-2 rounded-md w-full">
+                  {errors.due_date.message}
+                </p>
+              )}
             </div>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label htmlFor="status">Status</Label>
-              <Select {...register("status")}>
+              <Select
+                onValueChange={(value) => {
+                  setValue("status", value); // Manually set value when user selects an option
+                  trigger("status"); // Trigger validation for this field
+                }}
+              >
                 <SelectTrigger id="status">
                   <SelectValue placeholder="Select status" />
                 </SelectTrigger>
@@ -182,7 +217,11 @@ export default function ProjectForm() {
                   <SelectItem value="completed">Completed</SelectItem>
                 </SelectContent>
               </Select>
-              {errors.status && <span>{errors.status.message}</span>}
+              {errors.status && (
+                <p className="text-red-700 text-xs mt-1 bg-red-100 bg-opacity-70 py-1 px-2 rounded-md w-full">
+                  {errors.status.message}
+                </p>
+              )}
             </div>
             <div className="space-y-2">
               <Label htmlFor="budget">Budget</Label>
@@ -192,7 +231,11 @@ export default function ProjectForm() {
                 placeholder="Enter budget"
                 {...register("budget")}
               />
-              {errors.budget && <span>{errors.budget.message}</span>}
+              {errors.budget && (
+                <p className="text-red-700 text-xs mt-1 bg-red-100 bg-opacity-70 py-1 px-2 rounded-md w-full">
+                  {errors.budget.message}
+                </p>
+              )}
             </div>
           </div>
           <div className="space-y-2">
@@ -202,7 +245,11 @@ export default function ProjectForm() {
               placeholder="Enter project goal"
               {...register("goal")}
             />
-            {errors.goal && <span>{errors.goal.message}</span>}
+            {errors.goal && (
+              <p className="text-red-700 text-xs mt-1 bg-red-100 bg-opacity-70 py-1 px-2 rounded-md w-full">
+                {errors.goal.message}
+              </p>
+            )}
           </div>
           <div className="space-y-2">
             <Label htmlFor="document">Upload Document</Label>
@@ -222,7 +269,11 @@ export default function ProjectForm() {
               </Button>
               <span className="text-sm text-gray-500">
                 {/* Display file name */}
-                {errors.document && <span>{errors.document.message}</span>}
+                {errors.document && (
+                  <p className="text-red-700 text-xs mt-1 bg-red-100 bg-opacity-70 py-1 px-2 rounded-md w-full">
+                    {errors.document.message}
+                  </p>
+                )}
               </span>
             </div>
           </div>

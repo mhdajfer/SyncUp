@@ -33,7 +33,6 @@ userInstance.interceptors.response.use(
         console.log("creating new access token");
 
         await verifyRefreshToken();
-
         const newAccessToken = Cookies.get("accessToken");
         userInstance.defaults.headers["Authorization"] =
           newAccessToken as AxiosHeaderValue;

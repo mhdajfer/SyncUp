@@ -43,7 +43,7 @@ export default (): Schema => {
     },
     age: {
       isInt: {
-        options: { min: 0, max: 120 },
+        options: { min: 5, max: 100 },
         errorMessage: "Age must be an integer between 0 and 120",
       },
     },

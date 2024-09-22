@@ -36,9 +36,10 @@ export class UserController {
     try {
       //req validation
       const errors = validationResult(req);
+      console.log(errors);
+
       if (!errors.isEmpty())
         return res
-          .status(400)
           .json({ success: false, data: null, message: errors });
 
       const user: IUser = req.body;

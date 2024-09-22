@@ -31,6 +31,7 @@ const authSlice = createSlice({
       state.accessToken = null;
       state.user = null;
       Cookies.remove("accessToken");
+      localStorage.removeItem("refreshToken");
     },
   },
 });
