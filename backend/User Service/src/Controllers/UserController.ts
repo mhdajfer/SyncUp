@@ -32,6 +32,27 @@ export class UserController {
     }
   }
 
+  async verifyOtp(req: Request, res: Response, next: NextFunction) {
+    try {
+      const { email, otp } = req.body;
+      console.log("verifying otp...", email, otp);
+
+      const verified = await this.userUseCase.verifyOtp(email, otp);
+
+      if (verified)
+        return res
+          .status(200)
+          .json({ success: true, message: "user verified" });
+      else
+        return res
+          .status(400)
+          .json({ success: false, message: "user not verified" });
+    } catch (error) {
+      console.error("Error blocking user:", error);
+      return res.status(500).json({ message: "Internal server error" });
+    }
+  }
+
   async onCreateUser(req: Request, res: Response, next: NextFunction) {
     try {
       //req validation
@@ -39,16 +60,18 @@ export class UserController {
       console.log(errors);
 
       if (!errors.isEmpty())
-        return res
-          .json({ success: false, data: null, message: errors });
+        return res.json({ success: false, data: null, message: errors });
 
       const user: IUser = req.body;
 
       const data = await this.userUseCase.createUser(user);
 
-      return res
-        .status(201)
-        .json({ success: true, data, message: "user created successfully" });
+      if (data == false)
+        res.status(200).json({ success: false, data, message: "not verified" });
+      else
+        return res
+          .status(201)
+          .json({ success: true, data, message: "user created successfully" });
     } catch (error: any) {
       if (error.message === "User already exists") {
         return res.status(400).json({
@@ -156,6 +179,25 @@ export class UserController {
         newAccessToken,
         message: "created new access token",
       });
+    } catch (error: any) {
+      console.log(`Error while login: ${error}`);
+      return res
+        .status(400)
+        .json({ message: "Error while Login", error: error.message });
+    }
+  }
+
+  async createNewOtp(req: Request, res: Response, next: NextFunction) {
+    try {
+      const { email } = req.body;
+
+      const isOtpSend = await this.userUseCase.createNewOtp(email);
+
+      if (isOtpSend)
+        return res
+          .status(200)
+          .json({ success: true, message: "new otp sent.." });
+      else return console.log("new otp is not available");
     } catch (error: any) {
       console.log(`Error while login: ${error}`);
       return res

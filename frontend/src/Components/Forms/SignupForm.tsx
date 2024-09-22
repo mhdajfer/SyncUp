@@ -8,11 +8,11 @@ import { toast } from "sonner";
 import { FaGithub } from "react-icons/fa";
 import { FcGoogle } from "react-icons/fc";
 import { createUser } from "@/api/userService/user";
-import { useRouter } from "next/navigation";
 import { z, ZodError } from "zod";
 import { useForm } from "react-hook-form";
 import { User } from "@/interfaces/User";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { userInstance } from "@/axios";
 
 const userSchema = z
   .object({
@@ -35,11 +35,11 @@ const userSchema = z
     password: z
       .string()
       .trim()
-      .min(4, "password should be at least 6 characters long"),
+      .min(6, "password should be at least 6 characters long"),
     confirmPassword: z
       .string()
       .trim()
-      .min(4, "password should be at least 6 characters long"),
+      .min(6, "password should be at least 6 characters long"),
     age: z.coerce.number().gt(5).lt(100),
   })
   .refine((data) => data.password === data.confirmPassword, {
@@ -47,8 +47,13 @@ const userSchema = z
     path: ["confirmPassword"],
   });
 
-export default function SignupForm() {
-  const router = useRouter();
+export default function SignupForm({
+  setOtpPopup,
+  setEmail,
+}: {
+  setOtpPopup: (value: boolean) => void;
+  setEmail: (value: string) => void;
+}) {
   const {
     register,
     handleSubmit,
@@ -63,9 +68,8 @@ export default function SignupForm() {
     try {
       const { firstName, lastName, email, phoneNumber, age, password } =
         getValues();
-[
-  
-]
+      [];
+
       const response = await createUser({
         firstName,
         lastName,
@@ -76,11 +80,17 @@ export default function SignupForm() {
         password,
       });
 
+      setEmail(email);
       if (response.success) {
         toast.success(response.message);
         console.log("signup successful");
+        setOtpPopup(true);
+      } else if (response.message == "not verified") {
+        console.log(`already signed up but: ${response.message}`);
 
-        router.push("/employee/login");
+        toast.error(`already signed up but: ${response.message}`);
+        await userInstance.post("/users/otp/new", { email });
+        setOtpPopup(true);
       }
 
       console.log(firstName, lastName, email, phoneNumber, password, age);

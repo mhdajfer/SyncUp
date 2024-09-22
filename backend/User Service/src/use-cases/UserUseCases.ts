@@ -15,6 +15,24 @@ export class UserUseCases implements IUserUseCases {
   constructor(userRepository: IUserRepository) {
     this.userRepository = userRepository;
   }
+  async createNewOtp(email: string): Promise<Boolean> {
+    try {
+      const otpSend = await this.userRepository.createNewOtp(email);
+
+      return otpSend;
+    } catch (error) {
+      throw error;
+    }
+  }
+  async verifyOtp(email: string, otp: number): Promise<Boolean> {
+    try {
+      const verified = await this.userRepository.verifyOtp(email, otp);
+
+      return verified;
+    } catch (error) {
+      throw error;
+    }
+  }
   async blockUser(userId: string): Promise<IUser> {
     try {
       const devList = await this.userRepository.blockUser(userId);
@@ -103,7 +121,9 @@ export class UserUseCases implements IUserUseCases {
         user.email
       );
 
-      if (existUser) throw new Error("User already exists");
+      if (existUser && existUser.isVerified)
+        throw new Error("User already exists");
+      else if (existUser && !existUser.isVerified) return false;
 
       return await this.userRepository.createUser(user);
     } catch (error: any) {

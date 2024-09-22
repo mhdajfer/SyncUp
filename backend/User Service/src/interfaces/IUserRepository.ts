@@ -9,5 +9,6 @@ export interface IUserRepository {
   findManagerList(): Promise<IUser[]>;
   findDevList(): Promise<IUser[]>;
   blockUser(userId: string): Promise<IUser>;
-  s;
+  verifyOtp(email: string, otp: number): Promise<Boolean>;
+  createNewOtp(email: string): Promise<Boolean>;
 }

@@ -6,7 +6,7 @@ const JWT_REFRESH_TOKEN = process.env.REFRESH_SECRET || "secret-key01";
 
 export const createToken = (data: IUser) => {
   console.log(`creating accessToken......\n`);
-  return jwt.sign(data, JWT_AUTHSECRET, { expiresIn: "20s" });
+  return jwt.sign(data, JWT_AUTHSECRET, { expiresIn: "1h" });
 };
 
 export const createRefreshToken = (data: IUser) => {

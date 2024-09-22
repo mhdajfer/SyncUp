@@ -24,6 +24,8 @@ const userSchema = new Schema({
   },
   isBlocked: { type: Boolean, default: false },
   age: { type: Number, required: true, min: 0, max: 120 },
+  isVerified:{ type: Boolean, default: false},
+  isDeleted:{ type: Boolean, default: false},
   phoneNumber: { type: Number, required: true },
   role: { type: String, enum: ["manager", "dev", "pManager"], default: "user" },
 });

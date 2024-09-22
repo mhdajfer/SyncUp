@@ -9,6 +9,8 @@ export interface IUser {
   isBlocked?: boolean;
   age: number;
   phoneNumber: number;
+  isVerified?: boolean;
+  isDeleted?: boolean;
   role?: string;
   iat?: number;
   exp?: number;

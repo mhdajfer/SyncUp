@@ -2,11 +2,41 @@ import { IUser } from "../interfaces/IUser";
 import { IUserRepository } from "../interfaces/IUserRepository";
 import User from "../frameworks/models/userModel";
 import { ObjectId } from "mongodb";
+import Otp from "../frameworks/models/otpModel";
 
 export class UserRepository implements IUserRepository {
+  async createNewOtp(email: string): Promise<Boolean> {
+    try {
+      const otp = this.generateRandom4DigitNumber();
+      console.log("created new otp  : ", otp);
+
+      const newOtpData = new Otp({ email, otp });
+
+      const data = await newOtpData.save();
+
+      if (data) return true;
+      else return false;
+    } catch (error) {
+      throw error;
+    }
+  }
+  async verifyOtp(email: string, otp: number): Promise<Boolean> {
+    try {
+      const user: { email: string; otp: number } | null = await Otp.findOne({
+        email,
+      });
+
+      if (!user) return false;
+
+      if (user.otp == otp) {
+        return true;
+      } else return false;
+    } catch (error) {
+      throw error;
+    }
+  }
   async blockUser(userId: string): Promise<IUser> {
     try {
-
       const user = await User.findById(userId);
       if (!user) {
         throw new Error("User not found");
@@ -74,6 +104,13 @@ export class UserRepository implements IUserRepository {
       const newUser = new User(user);
       await newUser.save();
 
+      const otp = this.generateRandom4DigitNumber();
+      console.log(`otp for ${user.email} is ${otp}`);
+
+      const newOtpData = new Otp({ email: user.email, otp });
+
+      await newOtpData.save();
+
       return newUser.toObject() as IUser;
     } catch (error: any) {
       console.error("Error creating user in repository: ", error);
@@ -90,5 +127,9 @@ export class UserRepository implements IUserRepository {
     } catch (error: any) {
       throw new Error("error while searching for user: " + error.message);
     }
+  }
+
+  generateRandom4DigitNumber() {
+    return Math.floor(1000 + Math.random() * 9000);
   }
 }
