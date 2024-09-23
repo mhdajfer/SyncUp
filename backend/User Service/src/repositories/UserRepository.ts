@@ -95,7 +95,7 @@ export class UserRepository implements IUserRepository {
       throw new Error(`Error getting all users: ${error.message}`);
     }
   }
-  async createUser(user: IUser): Promise<IUser> {
+  async createUser(user: IUser): Promise<Number> {
     try {
       console.log(user);
 
@@ -111,7 +111,7 @@ export class UserRepository implements IUserRepository {
 
       await newOtpData.save();
 
-      return newUser.toObject() as IUser;
+      return otp;
     } catch (error: any) {
       console.error("Error creating user in repository: ", error);
       throw error;

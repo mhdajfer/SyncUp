@@ -4,6 +4,8 @@ import { IUser } from "../interfaces/IUser";
 import { validationResult } from "express-validator";
 import jwt from "jsonwebtoken";
 import { createToken } from "../Utils/Jwt";
+import { KafkaConnection } from "../Config/kafka/kafkaConnection";
+import { UserProducer } from "../events/Producers/UserProducer";
 
 export class UserController {
   private userUseCase: IUserUseCases;
@@ -65,13 +67,20 @@ export class UserController {
       const user: IUser = req.body;
 
       const data = await this.userUseCase.createUser(user);
-
-      if (data == false)
-        res.status(200).json({ success: false, data, message: "not verified" });
-      else
+      if (!data)
         return res
-          .status(201)
-          .json({ success: true, data, message: "user created successfully" });
+          .status(200)
+          .json({ success: false, data, message: "not verified" });
+
+      const kafkaConnection = new KafkaConnection();
+      const producer = await kafkaConnection.getProducerInstance();
+      const userProducer = new UserProducer(producer);
+
+      await userProducer.sendMessage("create", user, data);
+
+      return res
+        .status(201)
+        .json({ success: true, data, message: "user created successfully" });
     } catch (error: any) {
       if (error.message === "User already exists") {
         return res.status(400).json({

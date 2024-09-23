@@ -3,7 +3,7 @@ import { IUser } from "./IUser";
 
 export interface IUserUseCases {
   verifyUser(token: string): Promise<string>;
-  createUser(user: IUser): Promise<IUser | Boolean>;
+  createUser(user: IUser): Promise<Number | null>;
   getUsers(): Promise<IUser[]>;
   updateUser(user: IUser): Promise<IUser>;
   getUserByEmail(email: string): Promise<IUser | null>;

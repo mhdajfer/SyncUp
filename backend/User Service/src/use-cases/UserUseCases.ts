@@ -114,7 +114,7 @@ export class UserUseCases implements IUserUseCases {
     }
   }
 
-  async createUser(user: IUser) {
+  async createUser(user: IUser): Promise<Number | null> {
     try {
       //checking duplicates
       const existUser: IUser | null = await this.userRepository.findUser(
@@ -123,7 +123,7 @@ export class UserUseCases implements IUserUseCases {
 
       if (existUser && existUser.isVerified)
         throw new Error("User already exists");
-      else if (existUser && !existUser.isVerified) return false;
+      else if (existUser && !existUser.isVerified) return null;
 
       return await this.userRepository.createUser(user);
     } catch (error: any) {
