@@ -47,13 +47,14 @@ const projectSchema = z
     description: z
       .string()
       .trim()
-      .min(5, "Description must be at least 5 characters"),
+      .min(5, "Description must be at least 5 characters")
+      .max(100, "Project name should not exceed 100 characters"),
     managerId: z.string(),
     start_date: z.coerce.date(),
     due_date: z.coerce.date(),
     status: z.enum(["pending", "in progress", "completed"]),
     budget: z.coerce.number().positive("Budget must be a positive number"),
-    goal: z.string().trim(),
+    goal: z.string().trim().min(5, "Description must be at least 5 characters"),
     document: z.any(),
   })
   .refine((data) => data.due_date >= data.start_date, {

@@ -1,12 +1,19 @@
 import { NextFunction, Request, Response } from "express";
 import { IProject } from "../Interfaces/IProject";
 import { IProjectUseCases } from "../Interfaces/IProjectUseCases";
+import { validationResult } from "express-validator";
 
 export class ProjectControllers {
   constructor(private projectUseCases: IProjectUseCases) {}
 
   async createProject(req: Request, res: Response, next: NextFunction) {
     try {
+      //req validation
+      const errors = validationResult(req);
+      console.log(errors);
+
+      if (!errors.isEmpty())
+        return res.json({ success: false, data: null, message: errors });
       console.log("formData", req.body);
 
       const projectDetails: IProject = req.body;
@@ -14,6 +21,7 @@ export class ProjectControllers {
       const result = await this.projectUseCases.createProject(projectDetails);
 
       if (!result) throw new Error(`Error in Project controller`);
+      console.log("created..", result);
 
       return res
         .status(201)
