@@ -15,11 +15,17 @@ export class UserUseCases implements IUserUseCases {
   constructor(userRepository: IUserRepository) {
     this.userRepository = userRepository;
   }
-  async createNewOtp(email: string): Promise<Boolean> {
+  async createNewOtp(
+    email: string
+  ): Promise<{ isOtpSend: Boolean; user: IUser; otp: number }> {
     try {
-      const otpSend = await this.userRepository.createNewOtp(email);
+      const otp = await this.userRepository.createNewOtp(email);
 
-      return otpSend;
+      if (!otp) throw new Error(`error while creating new otp`);
+      const user = await this.userRepository.findUser(email);
+
+      if (user) return { isOtpSend: true, user, otp };
+      else throw new Error(`error while creating new otp`);
     } catch (error) {
       throw error;
     }
@@ -28,7 +34,11 @@ export class UserUseCases implements IUserUseCases {
     try {
       const verified = await this.userRepository.verifyOtp(email, otp);
 
-      return verified;
+      if (!verified) throw new Error("Error while verifying OTP");
+
+      const isUserVerified = this.userRepository.updateVerify(email);
+
+      return isUserVerified;
     } catch (error) {
       throw error;
     }
@@ -69,7 +79,7 @@ export class UserUseCases implements IUserUseCases {
       const user: IUser | null = await this.userRepository.findUser(
         data.username
       );
-      if (!user) throw new Error(`User ${data.username} not found`);
+      if (!user) throw new Error(`User ${data.username} not exist`);
 
       const accessToken = createToken(user);
       const refreshToken = createRefreshToken(user);
@@ -120,12 +130,29 @@ export class UserUseCases implements IUserUseCases {
       const existUser: IUser | null = await this.userRepository.findUser(
         user.email
       );
+      console.log("existing user", existUser);
 
-      if (existUser && existUser.isVerified)
+      if (existUser && existUser.isVerified) {
         throw new Error("User already exists");
-      else if (existUser && !existUser.isVerified) return null;
+      } else if (existUser && !existUser.isVerified) return null;
 
       return await this.userRepository.createUser(user);
+    } catch (error: any) {
+      throw error;
+    }
+  }
+
+  async createUserInvite(user: IUser): Promise<IUser | null> {
+    try {
+      //checking duplicates
+      const existUser: IUser | null = await this.userRepository.findUser(
+        user.email
+      );
+      console.log("existing user", existUser);
+
+      if (existUser) {
+        throw new Error("User already exists");
+      } else return await this.userRepository.createUserInvite(user);
     } catch (error: any) {
       throw error;
     }

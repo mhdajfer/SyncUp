@@ -5,7 +5,20 @@ import { ObjectId } from "mongodb";
 import Otp from "../frameworks/models/otpModel";
 
 export class UserRepository implements IUserRepository {
-  async createNewOtp(email: string): Promise<Boolean> {
+  async updateVerify(email: string): Promise<Boolean> {
+    try {
+      const user = await User.findOneAndUpdate(
+        { email: email },
+        { isVerified: true }
+      );
+
+      if (user) return true;
+      else throw new Error("Error while updating isVerified");
+    } catch (error) {
+      throw error;
+    }
+  }
+  async createNewOtp(email: string): Promise<null | number> {
     try {
       const otp = this.generateRandom4DigitNumber();
       console.log("created new otp  : ", otp);
@@ -14,8 +27,8 @@ export class UserRepository implements IUserRepository {
 
       const data = await newOtpData.save();
 
-      if (data) return true;
-      else return false;
+      if (data) return otp;
+      else return null;
     } catch (error) {
       throw error;
     }
@@ -27,6 +40,10 @@ export class UserRepository implements IUserRepository {
       });
 
       if (!user) return false;
+
+      console.log(
+        ` checking whether ${otp} and ${user.otp} are same.............}`
+      );
 
       if (user.otp == otp) {
         return true;
@@ -112,6 +129,22 @@ export class UserRepository implements IUserRepository {
       await newOtpData.save();
 
       return otp;
+    } catch (error: any) {
+      console.error("Error creating user in repository: ", error);
+      throw error;
+    }
+  }
+
+  async createUserInvite(user: IUser): Promise<IUser> {
+    try {
+      console.log(user);
+
+      console.log("creating new user .....");
+
+      const newUser = new User(user);
+      await newUser.save();
+
+      return newUser.toObject() as IUser;
     } catch (error: any) {
       console.error("Error creating user in repository: ", error);
       throw error;

@@ -1,6 +1,6 @@
 "use client";
 import { getProjectManagers } from "@/api/userService/user";
-import UsersTable from "@/Components/Tables/UsersTable";
+import { UsersTable01 } from "@/Components/Tables/UsersTable01";
 import { User } from "@/interfaces/User";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -23,13 +23,13 @@ export default function Page() {
       <div className="my-4 w-full flex justify-end pe-14">
         <button
           type="button"
-          className="text-gray-900 bg-white border border-gray-300 hover:bg-gray-200 font-medium rounded-lg text-sm px-2 py-1 me-2"
+          className="text-slate-100 bg-blue-800 border border-none hover:bg-blue-900 font-medium rounded-md text-sm px-2 py-1 me-2"
           onClick={() => router.push("pManagers/create")}
         >
           Add Project Manager
         </button>
       </div>
-      <UsersTable usersList={managersList} />
+      <UsersTable01 usersList={managersList} />
     </>
   );
 }

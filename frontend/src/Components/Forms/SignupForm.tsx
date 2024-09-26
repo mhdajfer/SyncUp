@@ -65,32 +65,38 @@ export default function SignupForm({
   });
 
   const onSubmit = async () => {
-    try {
-      const { firstName, lastName, email, phoneNumber, age, password } =
-        getValues();
-      [];
+    const { firstName, lastName, email, phoneNumber, age, password } =
+      getValues();
 
+    try {
       const response = await createUser({
-        firstName,
-        lastName,
-        email,
-        phoneNumber,
-        role: "manager",
-        age,
-        password,
+        userData: {
+          firstName,
+          lastName,
+          email,
+          phoneNumber,
+          role: "manager",
+          age,
+          password,
+        },
       });
 
       setEmail(email);
       if (response.success) {
         toast.success(response.message);
         console.log("signup successful");
-        setOtpPopup(true);
-      } else if (response.message == "not verified") {
+        setTimeout(() => setOtpPopup(true), 2000);
+      } else if (
+        !response.success &&
+        response.message.includes("not verified")
+      ) {
         console.log(`already signed up but: ${response.message}`);
 
-        toast.error(`already signed up but: ${response.message}`);
+        toast.error(`${response.message}`);
         await userInstance.post("/users/otp/new", { email });
         setOtpPopup(true);
+      } else {
+        toast.error(`${response.message}`);
       }
 
       console.log(firstName, lastName, email, phoneNumber, password, age);
@@ -99,7 +105,6 @@ export default function SignupForm({
         console.log(error.errors);
       }
     }
-    toast.success("Signup successful!");
   };
 
   return (
@@ -272,7 +277,7 @@ export default function SignupForm({
 
         <div className="text-center mt-6">
           <Link
-            href="/employee/login"
+            href="/admin/login"
             className="text-sm text-gray-400 hover:text-gray-200"
           >
             Already Registered? Login

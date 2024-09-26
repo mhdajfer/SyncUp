@@ -1,20 +1,65 @@
-import { FormEvent } from "react";
+"use client";
+import { login } from "@/api/userService/user";
+import { User } from "@/interfaces/User";
+import { loginSuccess } from "@/store/slices/authSlice";
+import { AppDispatch } from "@/store/store";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
+import { useDispatch } from "react-redux";
+import { toast } from "sonner";
 
-interface loginProps {
-  email: string;
-  password: string;
-  setEmail: (email: string) => void;
-  setPassword: (password: string) => void;
-  handleSubmit: (e: FormEvent) => Promise<void>;
-}
+import Cookies from "js-cookie";
 
-export default function Login({
-  email,
-  password,
-  setEmail,
-  setPassword,
-  handleSubmit,
-}: loginProps) {
+export default function Login() {
+  const router = useRouter();
+  const dispatch = useDispatch<AppDispatch>();
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    console.log("Logging in with", { email, password });
+
+    try {
+      const data: {
+        success: boolean;
+        user: User;
+        accessToken: string;
+        refreshToken: string;
+        message?: string;
+      } = await login({
+        username: email,
+        password,
+      });
+
+      if (!data.success) {
+        toast.error(data.message);
+        throw new Error(data.message);
+      }
+
+      Cookies.set("accessToken", data.accessToken);
+      localStorage.setItem("refreshToken", data.refreshToken);
+
+      console.log("logged in successfully.......", data.user.role);
+      dispatch(
+        loginSuccess({ accessToken: data.accessToken, user: data.user })
+      );
+      switch (data.user.role) {
+        case "manager":
+          router.push("manager/dashboard");
+          break;
+        case "dev":
+          router.push("dev/dashboard");
+          break;
+        case "pManager":
+          router.push("project_manager/dashboard");
+          break;
+      }
+    } catch (error) {
+      console.log("Error logging in", error);
+    }
+  };
   return (
     <div className="flex items-center justify-center min-h-screen bg-gray-900">
       <div className="bg-gray-800 p-8 rounded-lg shadow-lg w-full max-w-md">
@@ -64,7 +109,7 @@ export default function Login({
           <div className="flex items-center justify-between">
             <div className="text-sm">
               <a
-                href="#"
+                href="forgotPassword"
                 className="font-medium text-indigo-500 hover:text-indigo-400"
               >
                 Forgot your password?
@@ -85,7 +130,7 @@ export default function Login({
         <p className="mt-6 text-center text-sm text-gray-400">
           Dont have an account?{" "}
           <a
-            href="/employee/signup"
+            href="/admin/signup"
             className="font-medium text-indigo-500 hover:text-indigo-400"
           >
             Sign Up

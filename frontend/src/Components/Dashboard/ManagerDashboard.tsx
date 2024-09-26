@@ -47,9 +47,6 @@ export default function ManagerDashboard() {
   ];
   return (
     <>
-      <div>
-        <h1>Dashboard params.......</h1>
-      </div>
       <div className=" bg-yellow-400">
         <DataTable dataList={invoices} />
       </div>

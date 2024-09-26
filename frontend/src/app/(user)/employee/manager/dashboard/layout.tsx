@@ -5,7 +5,7 @@ import { AppDispatch, RootState } from "@/store/store";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { toast, Toaster } from "sonner";
+import { toast } from "sonner";
 import Loading from "@/Components/Loading/Loading";
 
 const Layout = ({ children }: { children: React.ReactNode }) => {
@@ -40,7 +40,6 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
             <ManagerLayout logoutSuccess={handleLogout} />
           </div>
           <div className="ml-64 bg-[#082032] flex flex-col items-center justify-center w-full h-screen py-10 px-4  overflow-y-scroll">
-            <Toaster />
             {children}
           </div>
         </div>

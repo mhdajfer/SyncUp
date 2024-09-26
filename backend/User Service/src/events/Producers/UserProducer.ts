@@ -6,6 +6,8 @@ export class UserProducer {
 
   async sendMessage(eventType: string, user: IUser, otp: Number) {
     try {
+      console.log("sending to kafka");
+
       const payload = {
         topic: "user-events",
         messages: [

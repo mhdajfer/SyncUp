@@ -72,13 +72,16 @@ export default function UserForm({ role }: { role: string }) {
 
     try {
       const response = await createUser({
-        firstName,
-        lastName,
-        age,
-        email,
-        password,
-        phoneNumber,
-        role: role,
+        userData: {
+          firstName,
+          lastName,
+          age,
+          email,
+          password,
+          phoneNumber,
+          role: role,
+        },
+        useCase: "invite",
       });
       if (response.success) {
         toast.success("User created successfully");
@@ -98,7 +101,7 @@ export default function UserForm({ role }: { role: string }) {
   };
 
   return (
-    <Card className="mx-auto max-w-2xl text-sm bg-[#2C394B] text-white py-10">
+    <Card className="mx-auto max-w-2xl text-sm bg-slate-900 border-slate-600 text-white py-10">
       <form onSubmit={handleSubmit(onSubmit)} noValidate>
         <CardContent className="space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -212,7 +215,10 @@ export default function UserForm({ role }: { role: string }) {
           </div>
         </CardContent>
         <CardFooter>
-          <Button type="submit" className="w-full">
+          <Button
+            type="submit"
+            className="w-full border border-gray-600 bg-violet-950"
+          >
             Invite User
           </Button>
         </CardFooter>

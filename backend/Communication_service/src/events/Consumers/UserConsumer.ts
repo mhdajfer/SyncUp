@@ -36,9 +36,11 @@ export class UserConsumer implements IUserConsumer {
   }
 
   async handleConsume(data: { eventType: string; data: IUser; otp: number }) {
+    console.log(data.data.email);
+
     switch (data.eventType) {
       case "create":
-        console.log("its create");
+        console.log("its create", data);
 
         this.consumerUseCases.sendOtp(
           data.data.email,

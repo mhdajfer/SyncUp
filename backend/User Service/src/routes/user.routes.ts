@@ -20,6 +20,8 @@ router.post(
   userController.onCreateUser.bind(userController)
 );
 
+router.post("/invite", userController.onCreateUser.bind(userController));
+
 router.post("/verifyOtp", userController.verifyOtp.bind(userController));
 router.post("/otp/new", userController.createNewOtp.bind(userController));
 router.post("/login", userController.userLogin.bind(userController));

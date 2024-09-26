@@ -64,26 +64,43 @@ export class UserController {
       if (!errors.isEmpty())
         return res.json({ success: false, data: null, message: errors });
 
-      const user: IUser = req.body;
+      const { userData: user, useCase }: { userData: IUser; useCase: string } =
+        req.body;
 
-      const data = await this.userUseCase.createUser(user);
-      if (!data)
-        return res
-          .status(200)
-          .json({ success: false, data, message: "not verified" });
+      console.log(req.body);
 
-      const kafkaConnection = new KafkaConnection();
-      const producer = await kafkaConnection.getProducerInstance();
-      const userProducer = new UserProducer(producer);
+      let data;
+      if (useCase) {
+        data = await this.userUseCase.createUserInvite(user);
+        if (!data)
+          return res.json({ success: false, message: "user not created" });
+      } else {
+        const user: IUser = req.body;
+        data = await this.userUseCase.createUser(user);
+        if (!data)
+          return res.json({
+            success: false,
+            data,
+            message: "user not verified",
+          });
 
-      await userProducer.sendMessage("create", user, data);
+        const kafkaConnection = new KafkaConnection();
+        const producer = await kafkaConnection.getProducerInstance();
+        const userProducer = new UserProducer(producer);
+
+        await userProducer.sendMessage("create", user, data);
+      }
 
       return res
         .status(201)
         .json({ success: true, data, message: "user created successfully" });
     } catch (error: any) {
-      if (error.message === "User already exists") {
-        return res.status(400).json({
+      console.log(error.message);
+
+      if (error.message.includes("User already exists")) {
+        return res.json({
+          success: false,
+          data: null,
           message: "User with the same email or phone number already exists.",
         });
       } else {
@@ -156,9 +173,13 @@ export class UserController {
       return res
         .status(200)
         .json({ user: user, refreshToken, accessToken, success: true });
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error logging developer:", error);
-      return res.status(500).json({ message: "Internal server error" });
+      if (error.message.includes("not exist"))
+        return res.json({ success: false, message: error.message, data: null });
+      else if (error.message.includes("Incorrect password"))
+        return res.json({ success: false, message: error.message, data: null });
+      return res.status(500).json({ message: error.message });
     }
   }
 
@@ -200,13 +221,22 @@ export class UserController {
     try {
       const { email } = req.body;
 
-      const isOtpSend = await this.userUseCase.createNewOtp(email);
+      const { isOtpSend, user, otp } = await this.userUseCase.createNewOtp(
+        email
+      );
 
-      if (isOtpSend)
-        return res
-          .status(200)
-          .json({ success: true, message: "new otp sent.." });
-      else return console.log("new otp is not available");
+      if (!isOtpSend)
+        return res.json({ success: false, message: "error sending new otp" });
+
+      const kafkaConnection = new KafkaConnection();
+      const producer = await kafkaConnection.getProducerInstance();
+      const userProducer = new UserProducer(producer);
+
+      await userProducer.sendMessage("create", user, otp);
+
+      return res
+        .status(201)
+        .json({ success: true, user, message: "user created successfully" });
     } catch (error: any) {
       console.log(`Error while login: ${error}`);
       return res
