@@ -27,7 +27,7 @@ const userSchema = new Schema({
   isVerified:{ type: Boolean, default: false},
   isDeleted:{ type: Boolean, default: false},
   phoneNumber: { type: Number, required: true },
-  role: { type: String, enum: ["manager", "dev", "pManager"], default: "user" },
+  role: { type: String, enum: ["manager", "dev", "pManager","tenant-admin"], default: "user" },
 });
 
 userSchema.pre("save", function (next) {

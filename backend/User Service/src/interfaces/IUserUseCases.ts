@@ -3,16 +3,16 @@ import { IUser } from "./IUser";
 
 export interface IUserUseCases {
   verifyUser(token: string): Promise<string>;
-  createUser(user: IUser): Promise<Number | null>;
+  createUser(user: IUser): Promise<number | null>;
   createUserInvite(user: IUser): Promise<IUser | null>;
   getUsers(): Promise<IUser[]>;
   updateUser(user: IUser): Promise<IUser>;
-  getUserByEmail(email: string): Promise<IUser | null>;
+  getUserByEmail(email: string): Promise<IUser>;
   getUserById(userId: string): Promise<IUser | null>;
-  login(data: {
-    username: string;
-    password: string;
-  }): Promise<{ user: IUser; accessToken: string; refreshToken: string }>;
+  login(
+    username: string,
+    password: string
+  ): Promise<{ user: IUser; accessToken: string; refreshToken: string }>;
   getManagerList(): Promise<IUser[] | null>;
   getDevList(): Promise<IUser[] | null>;
   blockUser(userId: string): Promise<IUser>;

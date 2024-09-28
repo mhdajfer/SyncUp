@@ -9,7 +9,11 @@ export default function Page() {
   return (
     <>
       <div className="">
-        <SignupForm setOtpPopup={setOtpPopup} setEmail={setEmail} />
+        <SignupForm
+          setOtpPopup={setOtpPopup}
+          setEmail={setEmail}
+          role={"tenant-admin"}
+        />
         {otpPopup ? <OtpPopup email={email} /> : null}
       </div>
     </>

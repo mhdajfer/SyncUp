@@ -1,6 +1,6 @@
 import { KafkaConnection } from "../Config/kafka/kafkaConnection";
 import { IUserConsumer } from "../interfaces/IUserConsumer";
-import { UserConsumer } from "./Consumers/userConsumer";
+import { UserConsumer } from "./Consumers/UserConsumer";
 
 export const connectConsumers = async () => {
   const kafkaConnection = new KafkaConnection();
@@ -10,5 +10,5 @@ export const connectConsumers = async () => {
 
   const userConsumer: IUserConsumer = new UserConsumer(consumer);
 
-   userConsumer.consumeMessages();
+  userConsumer.consumeMessages();
 };

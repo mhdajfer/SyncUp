@@ -38,40 +38,7 @@ export default (): Schema => {
           "Company type must not contain special characters or digits",
       },
     },
-    "address.building_no": {
-      trim: true,
-      notEmpty: {
-        errorMessage: "Building number cannot be empty",
-      },
-      isString: {
-        errorMessage: "Building number must be a string",
-      },
-      isLength: {
-        options: { min: 2 },
-        errorMessage: "Building number must contain at least 2 characters",
-      },
-      matches: {
-        options: /^[0-9]+$/,
-        errorMessage: "Building number must contain only digits",
-      },
-    },
-    "address.city": {
-      trim: true,
-      notEmpty: {
-        errorMessage: "City cannot be empty",
-      },
-      isString: {
-        errorMessage: "City must be a string",
-      },
-      isLength: {
-        options: { min: 3 },
-        errorMessage: "City must contain at least 3 letters",
-      },
-      matches: {
-        options: /^[A-Za-z ]+$/,
-        errorMessage: "City must not contain special characters or digits",
-      },
-    },
+
     "address.country": {
       trim: true,
       notEmpty: {

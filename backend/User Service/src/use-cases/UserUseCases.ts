@@ -4,10 +4,10 @@ import { IUserRepository } from "../interfaces/IUserRepository";
 import {
   createRefreshToken,
   createToken,
-  verifyAccessToken,
   verifyRefreshToken,
 } from "../Utils/Jwt";
 import bcrypt from "bcrypt";
+import { CustomError } from "../ErrorHandler/CustonError";
 
 export class UserUseCases implements IUserUseCases {
   private userRepository: IUserRepository;
@@ -32,9 +32,7 @@ export class UserUseCases implements IUserUseCases {
   }
   async verifyOtp(email: string, otp: number): Promise<Boolean> {
     try {
-      const verified = await this.userRepository.verifyOtp(email, otp);
-
-      if (!verified) throw new Error("Error while verifying OTP");
+      await this.userRepository.verifyOtp(email, otp);
 
       const isUserVerified = this.userRepository.updateVerify(email);
 
@@ -71,22 +69,26 @@ export class UserUseCases implements IUserUseCases {
     }
   }
 
-  async login(data: {
-    username: string;
-    password: string;
-  }): Promise<{ user: IUser; accessToken: string; refreshToken: string }> {
+  async login(
+    username: string,
+    password: string
+  ): Promise<{ user: IUser; accessToken: string; refreshToken: string }> {
     try {
-      const user: IUser | null = await this.userRepository.findUser(
-        data.username
-      );
-      if (!user) throw new Error(`User ${data.username} not exist`);
+      const user: IUser | null = await this.userRepository.findUser(username);
+      if (!user) throw new CustomError(`User ${username} not exist`, 400);
+      console.log(user);
+
+      if (!user.isVerified)
+        throw new CustomError(`User ${username} not verified`, 400);
+      if (user.isBlocked)
+        throw new CustomError(`User ${username} blocked`, 400);
 
       const accessToken = createToken(user);
       const refreshToken = createRefreshToken(user);
 
-      const res = await bcrypt.compare(data.password, user.password);
+      const res = await bcrypt.compare(password, user.password);
 
-      if (!res) throw new Error(`Incorrect password`);
+      if (!res) throw new CustomError("Incorrect password", 400);
 
       return { user, accessToken, refreshToken };
     } catch (error: any) {
@@ -116,15 +118,18 @@ export class UserUseCases implements IUserUseCases {
     }
   }
 
-  async getUserByEmail(email: string): Promise<IUser | null> {
+  async getUserByEmail(email: string): Promise<IUser> {
     try {
-      return await this.userRepository.findUser(email);
+      const user = await this.userRepository.findUser(email);
+      if (!user) throw new CustomError("user not found", 409);
+
+      return user;
     } catch (error: any) {
       throw new Error(error);
     }
   }
 
-  async createUser(user: IUser): Promise<Number | null> {
+  async createUser(user: IUser): Promise<number | null> {
     try {
       //checking duplicates
       const existUser: IUser | null = await this.userRepository.findUser(
@@ -132,9 +137,9 @@ export class UserUseCases implements IUserUseCases {
       );
       console.log("existing user", existUser);
 
-      if (existUser && existUser.isVerified) {
-        throw new Error("User already exists");
-      } else if (existUser && !existUser.isVerified) return null;
+      if (existUser && existUser.isVerified)
+        throw new CustomError("User already exists", 409);
+      else if (existUser && !existUser.isVerified) return null;
 
       return await this.userRepository.createUser(user);
     } catch (error: any) {

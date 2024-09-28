@@ -1,13 +1,45 @@
-import { Producer } from "kafkajs";
+import { Producer, Message } from "kafkajs";
 import { IUser } from "../../interfaces/IUser";
 
 export class UserProducer {
   constructor(private producer: Producer) {}
 
-  async sendMessage(eventType: string, user: IUser, otp: Number) {
+  async sendMessage(eventType: string, user: IUser, otp: number) {
     try {
       console.log("sending to kafka");
 
+      const messagePayload: Message[] = [
+        {
+          value: JSON.stringify({
+            eventType,
+            data: user,
+            otp,
+          }),
+        },
+      ];
+
+      const payload = {
+        topic: "user-events",
+        messages: messagePayload,
+      };
+
+      await this.producer.send(payload);
+
+      console.log(
+        `Message sent to topic 'user-events': ${eventType}, Email: ${user.email}`
+      );
+    } catch (error) {
+      console.error(
+        `Error sending message to 'user-events' [${eventType}]:`,
+        error
+      );
+      throw error;
+    }
+  }
+
+  async notifyRegistrationSuccess(user: IUser) {
+    try {
+      const eventType = "user-registered-success";
       const payload = {
         topic: "user-events",
         messages: [
@@ -15,7 +47,6 @@ export class UserProducer {
             value: JSON.stringify({
               eventType,
               data: user,
-              otp: otp,
             }),
           },
         ],
@@ -23,14 +54,10 @@ export class UserProducer {
 
       await this.producer.send(payload);
       console.log(
-        `Message sent to topic 'user-events':  ${eventType}:`,
-        user.email
+        `User registration success message sent for user: ${user.email}`
       );
     } catch (error) {
-      console.error(
-        `Error sending message to 'user-events' ${eventType}:`,
-        error
-      );
+      console.error("Error notifying user registration success:", error);
       throw error;
     }
   }

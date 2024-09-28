@@ -7,7 +7,6 @@ import { Button } from "@/Components/ui/button";
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -29,27 +28,72 @@ import {
   CardContent,
   CardFooter,
 } from "@/Components/ui/card";
+import { toast } from "sonner";
+import { createTenant } from "@/api/userService/user";
+import { ICreateTenant } from "@/interfaces/User";
+import { useRouter } from "next/navigation";
 
 const addressSchema = z.object({
-  street: z.string().min(1, "Street is required"),
-  city: z.string().min(1, "City is required"),
-  state: z.string().min(1, "State is required"),
-  zipCode: z.string().min(1, "Zip code is required"),
-  country: z.string().min(1, "Country is required"),
+  country: z
+    .string()
+    .min(3, "Country must contain at least 3 letters")
+    .regex(
+      /^[A-Za-z ]+$/,
+      "Country must not contain special characters or digits"
+    ),
+  postal_code: z
+    .string()
+    .length(6, "Postal code must contain exactly 6 digits")
+    .regex(/^[0-9]+$/, "Postal code must contain only digits"),
+
+  state: z
+    .string()
+    .min(3, "State must contain at least 3 letters")
+    .regex(
+      /^[A-Za-z ]+$/,
+      "State must not contain special characters or digits"
+    ),
+
+  street: z
+    .string()
+    .min(3, "Street must contain at least 3 letters")
+    .regex(
+      /^[A-Za-z ]+$/,
+      "Street must not contain special characters or digits"
+    ),
 });
 
 const formSchema = z.object({
-  company_name: z.string().min(2, "Company name must be at least 2 characters"),
-  company_type: z.string().min(1, "Company type is required"),
+  company_name: z
+    .string()
+    .min(3, "Company name must contain at least 3 letters")
+    .regex(
+      /^[A-Za-z ]+$/,
+      "Company name must not contain special characters or digits"
+    ),
+
+  company_type: z
+    .string()
+    .min(3, "Company type must contain at least 3 letters")
+    .regex(
+      /^[A-Za-z ]+$/,
+      "Company type must not contain special characters or digits"
+    ),
+
   address: addressSchema,
-  phone_no: z.string().min(10, "Phone number must be at least 10 digits"),
-  domain: z.string().url("Invalid URL").optional().or(z.literal("")),
-  user_id: z.string().min(1, "User ID is required"),
+
+  phone_no: z
+    .string()
+    .length(10, "Phone number must contain exactly 10 digits")
+    .regex(/^[0-9]{10}$/, "Phone number must contain exactly 10 digits"),
+
+  domain: z.string().url("Domain must be a valid URL").optional(),
 });
 
 type FormValues = z.infer<typeof formSchema>;
 
 export default function TenantForm() {
+  const router = useRouter();
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -57,24 +101,42 @@ export default function TenantForm() {
       company_type: "",
       address: {
         street: "",
-        city: "",
         state: "",
-        zipCode: "",
+        postal_code: "",
         country: "",
       },
       phone_no: "",
       domain: "",
-      user_id: "",
     },
   });
 
-  function onSubmit(values: FormValues) {
-    console.log(values);
+  async function onSubmit(values: FormValues) {
+    try {
+      const tenantData: ICreateTenant = {
+        company_name: values.company_name,
+        company_type: values.company_type,
+        address: values.address,
+        phone_no: values.phone_no,
+        domain: values.domain,
+      };
+
+      
+
+      const response = await createTenant(tenantData);
+
+      if (response.success) toast.success(response.message);
+      else toast.error(response.message);
+
+      router.push("/admin/dashboard/tenant");
+    } catch (error) {
+      console.log("Error while creating new Tenant", error);
+      toast.error("Tenant not created:");
+    }
   }
 
   return (
     <div className="space-y-2 py-10 fixed inset-0 flex flex-col items-center justify-center bg-black bg-opacity-50 backdrop-blur-sm overflow-auto">
-      <Card className="w-full max-w-2xl mt-36 mx-auto">
+      <Card className=" max-w-2xl mt-36 mx-auto">
         <CardHeader>
           <CardTitle>Tenant Registration</CardTitle>
           <CardDescription>Register a new tenant in the system</CardDescription>
@@ -82,8 +144,8 @@ export default function TenantForm() {
         <CardContent>
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-              <div className="grid grid-cols-2 gap-6">
-                <div className="space-y-6">
+              <div className="grid grid-cols-2 gap-3">
+                <div className="space-y-4">
                   <FormField
                     control={form.control}
                     name="company_name"
@@ -159,32 +221,12 @@ export default function TenantForm() {
                             {...field}
                           />
                         </FormControl>
-                        <FormDescription>
-                          The companys website domain
-                        </FormDescription>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  <FormField
-                    control={form.control}
-                    name="user_id"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>User ID</FormLabel>
-                        <FormControl>
-                          <Input {...field} />
-                        </FormControl>
-                        <FormDescription>
-                          The ID of the user associated with this tenant
-                        </FormDescription>
                         <FormMessage />
                       </FormItem>
                     )}
                   />
                 </div>
-                <div className="space-y-6">
-                  <h3 className="text-lg font-medium">Address</h3>
+                <div className="space-y-4">
                   <FormField
                     control={form.control}
                     name="address.street"
@@ -198,19 +240,7 @@ export default function TenantForm() {
                       </FormItem>
                     )}
                   />
-                  <FormField
-                    control={form.control}
-                    name="address.city"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>City</FormLabel>
-                        <FormControl>
-                          <Input {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
+
                   <FormField
                     control={form.control}
                     name="address.state"
@@ -226,7 +256,7 @@ export default function TenantForm() {
                   />
                   <FormField
                     control={form.control}
-                    name="address.zipCode"
+                    name="address.postal_code"
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel>Zip Code</FormLabel>

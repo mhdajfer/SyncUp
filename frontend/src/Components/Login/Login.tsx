@@ -9,6 +9,8 @@ import { useDispatch } from "react-redux";
 import { toast } from "sonner";
 
 import Cookies from "js-cookie";
+import Error from "next/error";
+import { Axios, AxiosError } from "axios";
 
 export default function Login() {
   const router = useRouter();
@@ -35,7 +37,6 @@ export default function Login() {
 
       if (!data.success) {
         toast.error(data.message);
-        throw new Error(data.message);
       }
 
       Cookies.set("accessToken", data.accessToken);
@@ -55,8 +56,16 @@ export default function Login() {
         case "pManager":
           router.push("project_manager/dashboard");
           break;
+        case "tenant-admin":
+          router.push("/admin/dashboard");
       }
-    } catch (error) {
+    } catch (error: unknown) {
+      if (error instanceof AxiosError) {
+        if (error.response) {
+          const errorData = error.response.data;
+          toast.error(errorData.error || "Error occured");
+        }
+      }
       console.log("Error logging in", error);
     }
   };

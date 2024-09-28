@@ -27,10 +27,10 @@ export function OtpPopup({ email }: { email: string }) {
         toast.success(response.data.message);
         console.log("Verified");
 
-        router.push("/employee/login");
+        router.push("/admin/dashboard");
       } else {
         toast.error(response.data.message);
-        router.push("/employee/signup");
+        router.push("/admin/signup");
       }
     } catch (error) {
       console.log(error);

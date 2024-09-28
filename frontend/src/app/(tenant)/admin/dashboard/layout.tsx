@@ -5,31 +5,29 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { toast } from "sonner";
-import Loading from "@/Components/Loading/Loading";
 import TenantAdminLayout from "@/Components/Layout/TenantAdminLayout";
+import Loading from "@/Components/Loading/Loading";
 
 const Layout = ({ children }: { children: React.ReactNode }) => {
-  const [loading, setLoading] = useState(false);
-  //   const router = useRouter();
+  const [loading, setLoading] = useState(true);
+  const router = useRouter();
   const dispatch: AppDispatch = useDispatch();
 
-  //   const isAuthenticated = useSelector(
-  //     (state: RootState) => state.auth.isAuthenticated
-  //   );
+  const userRole = useSelector((state: RootState) => state.auth.user?.role);
   function handleLogout() {
     console.log("logout");
     dispatch(logoutSuccess());
   }
 
-  //   useEffect(() => {
-  //     if (!isAuthenticated) {
-  //       console.log("not authenticated");
-  //       router.push("/employee/login");
-  //       setTimeout(() => {
-  //         toast.error("You must log in");
-  //       }, 1000);
-  //     } else setLoading(false);
-  //   }, [isAuthenticated, router, loading]);
+  useEffect(() => {
+    if (userRole != "tenant-admin") {
+      console.log("not authenticated");
+      router.push("/login");
+      setTimeout(() => {
+        toast.error("You must log in as tenant admin");
+      }, 1000);
+    } else setLoading(false);
+  }, [router, loading, userRole]);
   return (
     <>
       {loading ? (

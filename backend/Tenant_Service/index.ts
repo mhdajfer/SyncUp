@@ -1,14 +1,16 @@
 import express from "express";
 import dotenv from "dotenv";
 import cors from "cors";
-import userRoute from "./routes/user.routes";
+import tenantAdminRoutes from "./src/routes/tenantRouter";
 import cookieParser from "cookie-parser";
-import { connectDB } from "./frameworks/mongo/connect";
+import { connectDB } from "./src/frameworks/mongo/connect";
+import { errorHandler } from "./src/ErrorHandler/ErrorHandler";
+import { connectConsumers } from "./src/events/Consumers";
 
 const app = express();
 dotenv.config();
 
-const port = process.env.PORT || 3003;
+const port = process.env.PORT || 3005;
 
 app.use(cors());
 app.use(cookieParser());
@@ -17,7 +19,11 @@ app.use(express.urlencoded({ extended: true }));
 
 connectDB();
 
-app.use("/users", userRoute);
+//connectConsumers();
+
+app.use("/tenants", tenantAdminRoutes);
+
+app.use(errorHandler);
 
 app.listen(port, () => {
   console.log(`User server started on ${port}`);

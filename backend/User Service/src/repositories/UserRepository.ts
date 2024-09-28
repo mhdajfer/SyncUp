@@ -3,6 +3,7 @@ import { IUserRepository } from "../interfaces/IUserRepository";
 import User from "../frameworks/models/userModel";
 import { ObjectId } from "mongodb";
 import Otp from "../frameworks/models/otpModel";
+import { CustomError } from "../ErrorHandler/CustonError";
 
 export class UserRepository implements IUserRepository {
   async updateVerify(email: string): Promise<Boolean> {
@@ -39,7 +40,7 @@ export class UserRepository implements IUserRepository {
         email,
       });
 
-      if (!user) return false;
+      if (!user) throw new CustomError("No user found", 400);
 
       console.log(
         ` checking whether ${otp} and ${user.otp} are same.............}`
@@ -47,7 +48,7 @@ export class UserRepository implements IUserRepository {
 
       if (user.otp == otp) {
         return true;
-      } else return false;
+      } else throw new CustomError("otp not matching", 409);
     } catch (error) {
       throw error;
     }
@@ -70,7 +71,6 @@ export class UserRepository implements IUserRepository {
       throw error;
     }
   }
-  s: any;
   async findDevList(): Promise<IUser[]> {
     try {
       const devList: IUser[] = await User.find({ role: "dev" });
@@ -100,10 +100,7 @@ export class UserRepository implements IUserRepository {
   }
   async getAllUsers(): Promise<IUser[]> {
     try {
-      interface user extends IUser {
-        _id: ObjectId;
-      }
-      const userList: user[] = await User.find();
+      const userList: IUser[] = await User.find();
 
       return userList;
     } catch (error: any) {
@@ -112,10 +109,8 @@ export class UserRepository implements IUserRepository {
       throw new Error(`Error getting all users: ${error.message}`);
     }
   }
-  async createUser(user: IUser): Promise<Number> {
+  async createUser(user: IUser): Promise<number> {
     try {
-      console.log(user);
-
       console.log("creating new user .....");
 
       const newUser = new User(user);

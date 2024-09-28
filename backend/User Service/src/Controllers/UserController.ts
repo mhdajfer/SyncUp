@@ -6,6 +6,7 @@ import jwt from "jsonwebtoken";
 import { createToken } from "../Utils/Jwt";
 import { KafkaConnection } from "../Config/kafka/kafkaConnection";
 import { UserProducer } from "../events/Producers/UserProducer";
+import { CustomError } from "../ErrorHandler/CustonError";
 
 export class UserController {
   private userUseCase: IUserUseCases;
@@ -41,17 +42,20 @@ export class UserController {
 
       const verified = await this.userUseCase.verifyOtp(email, otp);
 
-      if (verified)
-        return res
-          .status(200)
-          .json({ success: true, message: "user verified" });
-      else
-        return res
-          .status(400)
-          .json({ success: false, message: "user not verified" });
+      const user = await this.userUseCase.getUserByEmail(email);
+
+      if (!verified) throw new CustomError("user not verified", 409);
+
+      const kafkaConnection = new KafkaConnection();
+      const producer = await kafkaConnection.getProducerInstance();
+      const userProducer = new UserProducer(producer);
+
+      await userProducer.notifyRegistrationSuccess(user);
+
+      return res.status(200).json({ success: true, message: "user verified" });
     } catch (error) {
-      console.error("Error blocking user:", error);
-      return res.status(500).json({ message: "Internal server error" });
+      console.error("Error verifying user:", error);
+      next(error);
     }
   }
 
@@ -64,36 +68,22 @@ export class UserController {
       if (!errors.isEmpty())
         return res.json({ success: false, data: null, message: errors });
 
-      const { userData: user, useCase }: { userData: IUser; useCase: string } =
-        req.body;
+      const user: IUser = req.body;
 
       console.log(req.body);
 
-      let data;
-      if (useCase) {
-        data = await this.userUseCase.createUserInvite(user);
-        if (!data)
-          return res.json({ success: false, message: "user not created" });
-      } else {
-        const user: IUser = req.body;
-        data = await this.userUseCase.createUser(user);
-        if (!data)
-          return res.json({
-            success: false,
-            data,
-            message: "user not verified",
-          });
+      const data = await this.userUseCase.createUser(user);
+      if (!data) throw new CustomError("user not verified", 409);
 
-        const kafkaConnection = new KafkaConnection();
-        const producer = await kafkaConnection.getProducerInstance();
-        const userProducer = new UserProducer(producer);
+      const kafkaConnection = new KafkaConnection();
+      const producer = await kafkaConnection.getProducerInstance();
+      const userProducer = new UserProducer(producer);
 
-        await userProducer.sendMessage("create", user, data);
-      }
+      await userProducer.sendMessage("create", user, data);
 
       return res
         .status(201)
-        .json({ success: true, data, message: "user created successfully" });
+        .json({ success: true, data, message: `otp send to ${user.email}` });
     } catch (error: any) {
       console.log(error.message);
 
@@ -138,13 +128,16 @@ export class UserController {
     try {
       const userList = await this.userUseCase.getUsers();
 
-      res.status(200).json(userList);
+      res.status(200).json({
+        success: true,
+        data: userList,
+        message: "retrieved users successfully",
+      });
     } catch (error: any) {
       console.log(`Error getting user list : ${error.message}`);
+      next(error);
     }
   }
-  async onUpdateUser(req: Request, res: Response, next: NextFunction) {}
-  async onDeleteUser(req: Request, res: Response, next: NextFunction) {}
   async onGetUser(req: Request, res: Response, next: NextFunction) {
     try {
       const id = req.params.id;
@@ -164,10 +157,10 @@ export class UserController {
       const { username, password } = req.body;
       console.log("got req inside userLogin", username, password);
 
-      const { user, accessToken, refreshToken } = await this.userUseCase.login({
+      const { user, accessToken, refreshToken } = await this.userUseCase.login(
         username,
-        password,
-      });
+        password
+      );
 
       console.log("logged in successfully.....", user);
       return res
@@ -175,11 +168,7 @@ export class UserController {
         .json({ user: user, refreshToken, accessToken, success: true });
     } catch (error: any) {
       console.error("Error logging developer:", error);
-      if (error.message.includes("not exist"))
-        return res.json({ success: false, message: error.message, data: null });
-      else if (error.message.includes("Incorrect password"))
-        return res.json({ success: false, message: error.message, data: null });
-      return res.status(500).json({ message: error.message });
+      next(error);
     }
   }
 

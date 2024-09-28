@@ -50,9 +50,11 @@ const userSchema = z
 export default function SignupForm({
   setOtpPopup,
   setEmail,
+  role,
 }: {
   setOtpPopup: (value: boolean) => void;
   setEmail: (value: string) => void;
+  role: string;
 }) {
   const {
     register,
@@ -75,7 +77,7 @@ export default function SignupForm({
           lastName,
           email,
           phoneNumber,
-          role: "manager",
+          role: role,
           age,
           password,
         },
@@ -178,7 +180,7 @@ export default function SignupForm({
               id="role"
               name="role"
               placeholder="Role"
-              defaultValue={"manager"}
+              defaultValue={role}
               className="mt-1"
               required
             />
@@ -277,7 +279,7 @@ export default function SignupForm({
 
         <div className="text-center mt-6">
           <Link
-            href="/admin/login"
+            href="/login"
             className="text-sm text-gray-400 hover:text-gray-200"
           >
             Already Registered? Login

@@ -4,6 +4,7 @@ import cors from "cors";
 import userRoute from "./routes/user.routes";
 import cookieParser from "cookie-parser";
 import { connectDB } from "./frameworks/mongo/connect";
+import { errorHandler } from "./ErrorHandler/ErrorHandler";
 
 const app = express();
 dotenv.config();
@@ -18,6 +19,7 @@ app.use(express.urlencoded({ extended: true }));
 connectDB();
 
 app.use("/users", userRoute);
+app.use(errorHandler);
 
 app.listen(port, () => {
   console.log(`User server started on ${port}`);
