@@ -1,6 +1,7 @@
-import { IUser } from "../interfaces/IUser";
+import { IUser, IUserInvite } from "../interfaces/IUser";
 
 export interface IUserRepository {
+  inviteUser(invitee: IUserInvite): Promise<IUserInvite>;
   createUser(user: IUser): Promise<number>;
   createUserInvite(user: IUser): Promise<IUser>;
   updateUser(user: IUser): Promise<IUser>;

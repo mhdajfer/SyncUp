@@ -34,15 +34,14 @@ export class TenantController {
 
       const tenant = await this.tenantUseCases.getTenant(tenantAdmin);
 
-      return res
-        .status(200)
-        .json({
-          success: true,
-          data: tenant,
-          message: "retrieved tenant successfully",
-        });
+      return res.status(200).json({
+        success: true,
+        data: tenant,
+        message: "retrieved tenant successfully",
+      });
     } catch (error) {
-      throw error;
+      console.log("controller************");
+      next(error);
     }
   }
 }

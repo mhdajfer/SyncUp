@@ -14,7 +14,7 @@ const userSchema = new Schema({
     required: true,
   },
   isBlocked: { type: Boolean, default: false },
-  age: { type: Number, required: true, min: 0, max: 120 },
+  age: { type: Number, min: 0, max: 120 },
   isVerified: { type: Boolean, default: false },
   isDeleted: { type: Boolean, default: false },
   phoneNumber: { type: Number, required: true },

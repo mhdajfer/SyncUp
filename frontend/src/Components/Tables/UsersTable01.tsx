@@ -35,89 +35,100 @@ export function UsersTable01({ usersList }: { usersList: User[] }) {
     page * rowsPerPage
   );
 
-  const handleBlock = async (userId: string | undefined) => {
+  const handleBlock = async (userId: string) => {
     try {
       if (!userId) return toast.error("Invalid User ID");
 
       const response = await blockUser(userId);
       if (response.success) {
         toast.success(response.message);
+
         setUsers((prevUsers) =>
           prevUsers.map((user) =>
             user._id === userId ? { ...user, isBlocked: !user.isBlocked } : user
           )
         );
+      } else {
+        toast.error("Failed to block/unblock the user.");
       }
     } catch (error) {
-      toast.error("Error occurred");
+      toast.error("Error occurred while blocking/unblocking user.");
     }
   };
 
   return (
-    <div className="min-w-full bg-slate-900 rounded-lg p-4 border border-slate-600">
-      <Table className="text-white rounded-lg text-center ">
-        <TableHeader>
-          <TableRow className="  hover:bg-slate-900 ">
-            <TableHead className="text-center">sl no.</TableHead>
-            <TableHead className="text-center">Name</TableHead>
-            <TableHead className="text-center">Email</TableHead>
-            <TableHead className="text-center">Phone no.</TableHead>
-            <TableHead className="text-center">Actions</TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {paginatedUsers.map((user, index) => (
-            <TableRow
-              key={user._id}
-              className=" border-none hover:bg-slate-800 cursor-text"
+    <div>
+      {users.length > 0 ? (
+        <div className="min-w-full bg-slate-900 rounded-lg p-4 border border-slate-600">
+          <Table className="text-white rounded-lg text-center ">
+            <TableHeader>
+              <TableRow className="  hover:bg-slate-900 ">
+                <TableHead className="text-center">sl no.</TableHead>
+                <TableHead className="text-center">Name</TableHead>
+                <TableHead className="text-center">Email</TableHead>
+                <TableHead className="text-center">Phone no.</TableHead>
+                <TableHead className="text-center">Designation</TableHead>
+                <TableHead className="text-center">Actions</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {paginatedUsers.map((user, index) => (
+                <TableRow
+                  key={index}
+                  className=" border-none hover:bg-slate-800 cursor-text"
+                >
+                  <TableCell className="font-small ">
+                    {(page - 1) * rowsPerPage + index + 1}
+                  </TableCell>
+                  <TableCell>{user.firstName}</TableCell>
+                  <TableCell>{user.email}</TableCell>
+                  <TableCell>{user.phoneNumber}</TableCell>
+                  <TableCell>{user.role}</TableCell>
+                  <TableCell className="">
+                    <div className="flex space-x-2 justify-center">
+                      <Button
+                        className={`min-w-20 ${
+                          user.isBlocked ? "bg-green-700" : "bg-green-800"
+                        } text-white hover:bg-green-600`}
+                        onClick={() => handleBlock(user._id)}
+                      >
+                        {user.isBlocked ? "Unblock" : "Block"}
+                      </Button>
+                      <Button className="bg-red-500 text-white hover:bg-red-900">
+                        Delete
+                      </Button>
+                    </div>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+
+          <div className="flex justify-between mt-4 items-center">
+            <Button
+              onClick={() => handlePageChange(page - 1)}
+              disabled={page === 1}
+              className=" text-white bg-slate-900 hover:bg-slate-800"
             >
-              <TableCell className="font-small ">
-                {(page - 1) * rowsPerPage + index + 1}
-              </TableCell>
-              <TableCell>{user.firstName}</TableCell>
-              <TableCell>{user.email}</TableCell>
-              <TableCell>{user.phoneNumber}</TableCell>
-              <TableCell className="">
-                <div className="flex space-x-2 justify-center">
-                  <Button
-                    className={`min-w-20 ${
-                      user.isBlocked ? "bg-green-700" : "bg-green-800"
-                    } text-white hover:bg-green-600`}
-                    onClick={() => handleBlock(user._id)}
-                  >
-                    {user.isBlocked ? "Unblock" : "Block"}
-                  </Button>
-                  <Button className="bg-red-500 text-white hover:bg-red-900">
-                    Delete
-                  </Button>
-                </div>
-              </TableCell>
-            </TableRow>
-          ))}
-        </TableBody>
-      </Table>
+              <GrFormPreviousLink size={20} />
+            </Button>
 
-      <div className="flex justify-between mt-4 items-center">
-        <Button
-          onClick={() => handlePageChange(page - 1)}
-          disabled={page === 1}
-          className=" text-white bg-slate-900 hover:bg-slate-800"
-        >
-          <GrFormPreviousLink size={20} />
-        </Button>
+            <span className="text-gray-600 text-xs ms-auto me-4">
+              Page {page} of {totalPages}
+            </span>
 
-        <span className="text-gray-600 text-xs ms-auto me-4">
-          Page {page} of {totalPages}
-        </span>
-
-        <Button
-          onClick={() => handlePageChange(page + 1)}
-          disabled={page === totalPages}
-          className=" text-white bg-slate-900 hover:bg-slate-800"
-        >
-          <GrFormNextLink size={20} />
-        </Button>
-      </div>
+            <Button
+              onClick={() => handlePageChange(page + 1)}
+              disabled={page === totalPages}
+              className=" text-white bg-slate-900 hover:bg-slate-800"
+            >
+              <GrFormNextLink size={20} />
+            </Button>
+          </div>
+        </div>
+      ) : (
+        <div>Loaing.........</div>
+      )}
     </div>
   );
 }

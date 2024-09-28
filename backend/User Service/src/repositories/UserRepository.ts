@@ -1,11 +1,25 @@
-import { IUser } from "../interfaces/IUser";
+import { IUser, IUserInvite } from "../interfaces/IUser";
 import { IUserRepository } from "../interfaces/IUserRepository";
 import User from "../frameworks/models/userModel";
 import { ObjectId } from "mongodb";
 import Otp from "../frameworks/models/otpModel";
 import { CustomError } from "../ErrorHandler/CustonError";
+import Invitee from "../frameworks/models/inviteeModel";
 
 export class UserRepository implements IUserRepository {
+  async inviteUser(invitee: IUserInvite): Promise<IUserInvite> {
+    try {
+      const newUser = new Invitee(invitee);
+
+      const data = await newUser.save();
+      if (!data) throw new CustomError("invitee not created", 400);
+
+      return data as IUserInvite;
+    } catch (error) {
+      throw error;
+    }
+  }
+
   async updateVerify(email: string): Promise<Boolean> {
     try {
       const user = await User.findOneAndUpdate(

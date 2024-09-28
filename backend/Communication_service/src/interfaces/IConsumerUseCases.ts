@@ -1,3 +1,5 @@
+import { IUserInvite } from "./IUser";
+
 export interface IConsumerUseCases {
   sendOtp(
     email: string,
@@ -5,4 +7,6 @@ export interface IConsumerUseCases {
     taskDetails: string,
     otp: number
   ): Promise<void>;
+
+  sendInvite(user: IUserInvite, token: string): Promise<void>;
 }

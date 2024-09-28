@@ -80,6 +80,7 @@ export default function SignupForm({
           role: role,
           age,
           password,
+          status: "Invited",
         },
       });
 

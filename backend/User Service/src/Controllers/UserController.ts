@@ -3,7 +3,7 @@ import { IUserUseCases } from "../interfaces/IUserUseCases";
 import { IUser } from "../interfaces/IUser";
 import { validationResult } from "express-validator";
 import jwt from "jsonwebtoken";
-import { createToken } from "../Utils/Jwt";
+import { createToken, verifyAccessToken } from "../Utils/Jwt";
 import { KafkaConnection } from "../Config/kafka/kafkaConnection";
 import { UserProducer } from "../events/Producers/UserProducer";
 import { CustomError } from "../ErrorHandler/CustonError";
@@ -13,6 +13,70 @@ export class UserController {
 
   constructor(userUseCases: IUserUseCases) {
     this.userUseCase = userUseCases;
+  }
+
+  async createUserForInvitee(req: Request, res: Response, next: NextFunction) {
+    try {
+      const { token, password } = req.body;
+
+      const user = verifyAccessToken(token);
+
+      console.log("the user is .....", user, password);
+      const data = {
+        ...user,
+        password: password,
+        phoneNumber: user.phoneNumber,
+      };
+
+      const response = await this.userUseCase.createUserInvite({
+        ...data,
+        isVerified: true,
+      } as IUser);
+
+      const kafkaConnection = new KafkaConnection();
+      const producer = await kafkaConnection.getProducerInstance();
+      const userProducer = new UserProducer(producer);
+
+      await userProducer.notifyRegistrationSuccess(response as IUser);
+
+      console.log("user created", response);
+
+      res.json(201).json({
+        success: true,
+        data: response,
+        message: "user created successfully",
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  async inviteUser(req: Request, res: Response, next: NextFunction) {
+    try {
+      const user = req.body;
+
+      console.log(user);
+
+      const data = await this.userUseCase.inviteUser(user);
+
+      const kafkaConnection = new KafkaConnection();
+      const producer = await kafkaConnection.getProducerInstance();
+      const userProducer = new UserProducer(producer);
+
+      const inviteToken = createToken(user);
+
+      await userProducer.inviteUsers(data, inviteToken);
+
+      return res.status(201).json({
+        success: true,
+        data,
+        message: "added invitee",
+      });
+    } catch (error) {
+      console.log("error", error);
+
+      next(error);
+    }
   }
 
   async blockUser(req: Request, res: Response, next: NextFunction) {
@@ -72,7 +136,7 @@ export class UserController {
 
       console.log(req.body);
 
-      const data = await this.userUseCase.createUser(user);
+      const data = await this.userUseCase.createUser({ ...user, password: "" });
       if (!data) throw new CustomError("user not verified", 409);
 
       const kafkaConnection = new KafkaConnection();

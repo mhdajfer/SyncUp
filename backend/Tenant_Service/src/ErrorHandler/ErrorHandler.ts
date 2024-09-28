@@ -7,6 +7,8 @@ export const errorHandler = (
   res: Response,
   next: NextFunction
 ) => {
+  console.log("got here***************************");
+
   if (err.statusCode) {
     if (err instanceof CustomError) {
       res

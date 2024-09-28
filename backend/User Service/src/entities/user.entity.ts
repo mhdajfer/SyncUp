@@ -23,11 +23,14 @@ const userSchema = new Schema({
     required: true,
   },
   isBlocked: { type: Boolean, default: false },
-  age: { type: Number, required: true, min: 0, max: 120 },
-  isVerified:{ type: Boolean, default: false},
-  isDeleted:{ type: Boolean, default: false},
+  age: { type: Number, min: 0, max: 120 },
+  isVerified: { type: Boolean, default: false },
+  isDeleted: { type: Boolean, default: false },
   phoneNumber: { type: Number, required: true },
-  role: { type: String, enum: ["manager", "dev", "pManager","tenant-admin"], default: "user" },
+  role: {
+    type: String,
+    enum: ["manager", "dev", "pManager", "tenant-admin"],
+  },
 });
 
 userSchema.pre("save", function (next) {

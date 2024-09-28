@@ -1,4 +1,4 @@
-import { IUser } from "../interfaces/IUser";
+import { IUser, IUserInvite } from "../interfaces/IUser";
 import { IUserUseCases } from "../interfaces/IUserUseCases";
 import { IUserRepository } from "../interfaces/IUserRepository";
 import {
@@ -15,6 +15,17 @@ export class UserUseCases implements IUserUseCases {
   constructor(userRepository: IUserRepository) {
     this.userRepository = userRepository;
   }
+
+  async inviteUser(invitee: IUserInvite): Promise<IUserInvite> {
+    try {
+      const user = await this.userRepository.inviteUser(invitee);
+
+      return user;
+    } catch (error) {
+      throw error;
+    }
+  }
+
   async createNewOtp(
     email: string
   ): Promise<{ isOtpSend: Boolean; user: IUser; otp: number }> {

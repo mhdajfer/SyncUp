@@ -1,7 +1,8 @@
 import { ObjectId } from "mongoose";
-import { IUser } from "./IUser";
+import { IUser, IUserInvite } from "./IUser";
 
 export interface IUserUseCases {
+  inviteUser(invitee: IUserInvite): Promise<IUserInvite>;
   verifyUser(token: string): Promise<string>;
   createUser(user: IUser): Promise<number | null>;
   createUserInvite(user: IUser): Promise<IUser | null>;

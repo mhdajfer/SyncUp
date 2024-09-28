@@ -13,6 +13,7 @@ export class TenantAdminUseCases implements ITenantAdminUseCases {
 
       return tenant;
     } catch (error) {
+      console.log("use cases************");
       throw error;
     }
   }
@@ -29,6 +30,4 @@ export class TenantAdminUseCases implements ITenantAdminUseCases {
       throw error;
     }
   }
-
-
 }

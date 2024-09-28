@@ -7,10 +7,8 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useDispatch } from "react-redux";
 import { toast } from "sonner";
-
 import Cookies from "js-cookie";
-import Error from "next/error";
-import { Axios, AxiosError } from "axios";
+import { AxiosError } from "axios";
 
 export default function Login() {
   const router = useRouter();

@@ -16,3 +16,11 @@ export interface IUser {
   exp?: number;
   __v?: number;
 }
+
+export interface IUserInvite {
+  firstName: string;
+  lastName: string;
+  email: string;
+  role: string;
+  phoneNumber: number;
+}

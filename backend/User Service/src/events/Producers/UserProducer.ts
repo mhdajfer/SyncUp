@@ -1,5 +1,5 @@
 import { Producer, Message } from "kafkajs";
-import { IUser } from "../../interfaces/IUser";
+import { IUser, IUserInvite } from "../../interfaces/IUser";
 
 export class UserProducer {
   constructor(private producer: Producer) {}
@@ -58,6 +58,31 @@ export class UserProducer {
       );
     } catch (error) {
       console.error("Error notifying user registration success:", error);
+      throw error;
+    }
+  }
+
+  async inviteUsers(user: IUserInvite, token: string) {
+    try {
+      const eventType = "invite";
+
+      const payload = {
+        topic: "user-events",
+        messages: [
+          {
+            value: JSON.stringify({
+              eventType,
+              invitee: user,
+              token,
+            }),
+          },
+        ],
+      };
+
+      await this.producer.send(payload);
+      console.log(`User Invitation sent to user: ${user.email}`);
+    } catch (error) {
+      console.error("Error inviting user :", error);
       throw error;
     }
   }

@@ -36,7 +36,7 @@ export class TenantConsumer implements ITenantConsumer {
   }
 
   async handleConsume(data: { eventType: string; data: IUser }) {
-    console.log(data.data.email);
+    //console.log(data.data.email);
 
    try {
      switch (data.eventType) {

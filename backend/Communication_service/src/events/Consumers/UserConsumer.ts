@@ -4,7 +4,7 @@ import { ConsumerRepository } from "../../repositories/ConsumerRepository";
 import { IConsumerRepository } from "../../interfaces/IConsumerRepository";
 import { IConsumerUseCases } from "../../interfaces/IConsumerUseCases";
 import { ConsumeUseCaeses } from "../../use-cases/ConsumeUseCaeses";
-import { IUser } from "../../interfaces/IUser";
+import { IUser, IUserInvite } from "../../interfaces/IUser";
 
 export class UserConsumer implements IUserConsumer {
   private consumerRepository: IConsumerRepository;
@@ -35,9 +35,13 @@ export class UserConsumer implements IUserConsumer {
     }
   }
 
-  async handleConsume(data: { eventType: string; data: IUser; otp: number }) {
-    console.log(data.data.email);
-
+  async handleConsume(data: {
+    eventType: string;
+    data: IUser;
+    invitee: IUserInvite;
+    otp: number;
+    token: string;
+  }) {
     switch (data.eventType) {
       case "create":
         console.log("its create", data);
@@ -48,6 +52,10 @@ export class UserConsumer implements IUserConsumer {
           "verification",
           data.otp
         );
+        break;
+      case "invite":
+        console.log("its invite**", data);
+        this.consumerUseCases.sendInvite(data.invitee, data.token);
         break;
     }
   }

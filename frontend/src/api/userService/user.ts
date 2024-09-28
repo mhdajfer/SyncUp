@@ -132,3 +132,35 @@ export const createTenant = async (tenantData: ICreateTenant) => {
     throw error;
   }
 };
+
+export const setPasswordAndCreateUser = async (
+  token: string,
+  password: string
+) => {
+  try {
+    const response = await userInstance.post("/users/setup-password", {
+      token,
+      password,
+    });
+
+    return response.data as Response;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const inviteUser = async (data: {
+  firstName: string;
+  lastName: string;
+  email: string;
+  role: string;
+  phoneNumber: string;
+}) => {
+  try {
+    const response = await userInstance.post("/users/invite", data);
+
+    return response.data as Response;
+  } catch (error) {
+    throw error;
+  }
+};
