@@ -25,6 +25,7 @@ import {
 } from "@/Components/ui/form";
 import { toast } from "sonner";
 import { inviteUser } from "@/api/userService/user";
+import { useRouter } from "next/navigation";
 
 const formSchema = z.object({
   firstName: z.string().min(2, {
@@ -43,6 +44,7 @@ const formSchema = z.object({
 });
 
 export default function InviteForm() {
+  const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isVisible, setIsVisible] = useState(false);
 
@@ -86,6 +88,7 @@ export default function InviteForm() {
         description: "We've received your information.",
       });
       form.reset();
+      router.back();
     }, 2000);
   }
 

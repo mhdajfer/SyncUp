@@ -47,4 +47,20 @@ export class ProjectControllers {
       console.log(`Error while creating project ${error.message}`);
     }
   }
+
+  async getProject(req: Request, res: Response, next: NextFunction) {
+    try {
+      const { projectId } = req.body;
+
+      const project = await this.projectUseCases.getOneProject(projectId);
+      console.log(project);
+      return res.status(200).json({
+        success: true,
+        message: "retreived project details",
+        data: project,
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
 }

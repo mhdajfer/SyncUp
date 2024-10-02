@@ -31,6 +31,9 @@ const userSchema = new Schema({
     type: String,
     enum: ["manager", "dev", "pManager", "tenant-admin"],
   },
+  tenant_id: {
+    type: String,
+  },
 });
 
 userSchema.pre("save", function (next) {

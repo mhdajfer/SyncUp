@@ -28,6 +28,8 @@ export default function userAuth(
         .status(401)
         .json({ success: false, message: "user not found", data: null });
 
+    console.log("auth..........", user);
+
     req.user = user;
     next();
   } catch (error) {

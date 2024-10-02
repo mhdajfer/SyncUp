@@ -26,5 +26,5 @@ app.use("/tenants", tenantAdminRoutes);
 app.use(errorHandler);
 
 app.listen(port, () => {
-  console.log(`User server started on ${port}`);
+  console.log(`Tenant server started on ${port}`);
 });

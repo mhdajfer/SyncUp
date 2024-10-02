@@ -1,6 +1,7 @@
 "use client";
 import { getProjects } from "@/api/projectService/project";
-import ProjectsTable from "@/Components/Tables/ProjectsTable";
+import ProjectCard from "@/Components/Cards/ProjectCard";
+// import ProjectsTable from "@/Components/Tables/ProjectsTable";
 import { Project } from "@/interfaces/Project";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -29,7 +30,12 @@ export default function Page() {
           new Project
         </button>
       </div>
-      <ProjectsTable projectList={projectList} />
+      {/* <ProjectsTable projectList={projectList} /> */}
+      <div className="flex flex-wrap justify-center px-8 ">
+        {projectList.map((project, i) => (
+          <ProjectCard project={project} key={i} />
+        ))}
+      </div>
     </>
   );
 }

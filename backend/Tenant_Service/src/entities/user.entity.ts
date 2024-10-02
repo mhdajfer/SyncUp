@@ -19,6 +19,9 @@ const userSchema = new Schema({
   isDeleted: { type: Boolean, default: false },
   phoneNumber: { type: Number, required: true },
   role: { type: String, enum: ["manager", "dev", "pManager", "tenant-admin"] },
+  tenant_id: {
+    type: String,
+  },
 });
 
 export default userSchema;

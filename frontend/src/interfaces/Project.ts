@@ -10,4 +10,12 @@ export interface Project {
   budget: number;
   goal: string;
   document: File | null;
+  comments?: Comment[];
+}
+
+interface Comment {
+  id: string;
+  author: string;
+  content: string;
+  timestamp: string;
 }

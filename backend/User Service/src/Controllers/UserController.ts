@@ -1,12 +1,13 @@
 import { Request, Response, NextFunction } from "express";
 import { IUserUseCases } from "../interfaces/IUserUseCases";
-import { IUser } from "../interfaces/IUser";
+import { IUser, IUserInvite } from "../interfaces/IUser";
 import { validationResult } from "express-validator";
 import jwt from "jsonwebtoken";
 import { createToken, verifyAccessToken } from "../Utils/Jwt";
 import { KafkaConnection } from "../Config/kafka/kafkaConnection";
 import { UserProducer } from "../events/Producers/UserProducer";
 import { CustomError } from "../ErrorHandler/CustonError";
+import { CustomRequest } from "../interfaces/CustomRequest";
 
 export class UserController {
   private userUseCase: IUserUseCases;
@@ -15,23 +16,34 @@ export class UserController {
     this.userUseCase = userUseCases;
   }
 
-  async createUserForInvitee(req: Request, res: Response, next: NextFunction) {
+  async createUserForInvitee(
+    req: CustomRequest,
+    res: Response,
+    next: NextFunction
+  ) {
     try {
       const { token, password } = req.body;
+
+      const authUser = req.user;
+      if (!authUser) throw new CustomError("tenantAdmin not found", 400);
 
       const user = verifyAccessToken(token);
 
       console.log("the user is .....", user, password);
+
+      const tenantAdmin = await this.userUseCase.getUserByEmail(authUser.email);
+
       const data = {
         ...user,
         password: password,
         phoneNumber: user.phoneNumber,
+        tenant_id: tenantAdmin?.tenant_id,
+        isVerified: true,
       };
 
-      const response = await this.userUseCase.createUserInvite({
-        ...data,
-        isVerified: true,
-      } as IUser);
+      console.log("Before creating the invited user ************", data);
+
+      const response = await this.userUseCase.createUserInvite(data as IUser);
 
       const kafkaConnection = new KafkaConnection();
       const producer = await kafkaConnection.getProducerInstance();
@@ -95,7 +107,7 @@ export class UserController {
       });
     } catch (error) {
       console.error("Error blocking user:", error);
-      return res.status(500).json({ message: "Internal server error" });
+      next(error);
     }
   }
 
@@ -134,9 +146,9 @@ export class UserController {
 
       const user: IUser = req.body;
 
-      console.log(req.body);
+      console.log(user);
 
-      const data = await this.userUseCase.createUser({ ...user, password: "" });
+      const data = await this.userUseCase.createUser(user);
       if (!data) throw new CustomError("user not verified", 409);
 
       const kafkaConnection = new KafkaConnection();
@@ -188,9 +200,15 @@ export class UserController {
     }
   }
 
-  async onGetUserList(req: Request, res: Response, next: NextFunction) {
+  async onGetUserList(req: CustomRequest, res: Response, next: NextFunction) {
     try {
-      const userList = await this.userUseCase.getUsers();
+      const authUser = req.user;
+      if (!authUser) throw new CustomError("admin not found", 400);
+
+      const tenantAdmin = await this.userUseCase.getUserByEmail(authUser.email);
+
+      if (!tenantAdmin?.tenant_id) throw new CustomError("No users", 400);
+      const userList = await this.userUseCase.getUsers(tenantAdmin.tenant_id);
 
       res.status(200).json({
         success: true,

@@ -36,8 +36,6 @@ export class TenantAdminRepository implements ITenantAdminRepository {
 
       return user as unknown as ITenants;
     } catch (error) {
-      
-
       throw error;
     }
   }

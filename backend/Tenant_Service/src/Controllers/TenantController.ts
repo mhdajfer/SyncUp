@@ -14,9 +14,11 @@ export class TenantController {
 
       const tenant = req.user;
 
-      if (!tenant) throw new CustomError("NO tenant details", 409);
+      if (!tenant) throw new CustomError("NO tenant admin details", 409);
 
       const newTenant = await this.tenantUseCases.createTenant(data, tenant);
+
+      console.log(newTenant);
 
       return res
         .status(201)

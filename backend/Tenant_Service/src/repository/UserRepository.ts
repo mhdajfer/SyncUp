@@ -15,4 +15,18 @@ export class UserRepository implements IUserRepository {
       throw error;
     }
   }
+
+  async updateTenantAdmin(tenantId: string, adminEmail: string) {
+    try {
+      const user = await User.findOneAndUpdate(
+        { email: adminEmail },
+        { tenant_id: tenantId },
+        { new: true }
+      );
+
+      return user as IUser;
+    } catch (error) {
+      throw error;
+    }
+  }
 }

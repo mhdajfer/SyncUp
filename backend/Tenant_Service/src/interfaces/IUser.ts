@@ -8,6 +8,7 @@ export interface IUser extends Document {
   password: string;
   isBlocked?: boolean;
   age: number;
+  tenant_id: string;
   phoneNumber: number;
   isVerified?: boolean;
   isDeleted?: boolean;

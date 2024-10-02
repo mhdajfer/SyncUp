@@ -29,7 +29,14 @@ export class ProjectUseCases implements IProjectUseCases {
   editProject(input: IProject): Promise<IProject> {
     throw new Error("Method not implemented.");
   }
-  getOneProject(projectId: string): Promise<IProject> {
-    throw new Error("Method not implemented.");
+  async getOneProject(projectId: string): Promise<IProject> {
+    try {
+      const project = await this.projectRepository.getOneProject(projectId);
+
+      return project;
+      return project;
+    } catch (error) {
+      throw error;
+    }
   }
 }

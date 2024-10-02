@@ -71,7 +71,7 @@ export class UserRepository implements IUserRepository {
     try {
       const user = await User.findById(userId);
       if (!user) {
-        throw new Error("User not found");
+        throw new CustomError("User not found", 400);
       }
 
       const updatedUser = await User.findByIdAndUpdate(
@@ -112,11 +112,17 @@ export class UserRepository implements IUserRepository {
       throw error;
     }
   }
-  async getAllUsers(): Promise<IUser[]> {
+  async getAllUsers(tenantId: string): Promise<(IUser | IUserInvite)[]> {
     try {
-      const userList: IUser[] = await User.find();
+      const userList: IUser[] = await User.find({ tenant_id: tenantId });
 
-      return userList;
+      const invitees: IUserInvite[] = await Invitee.find();
+
+      const Users = [...userList, ...invitees];
+
+      console.log(Users);
+
+      return Users;
     } catch (error: any) {
       console.log(`Error while getting all users`);
 
@@ -126,6 +132,8 @@ export class UserRepository implements IUserRepository {
   async createUser(user: IUser): Promise<number> {
     try {
       console.log("creating new user .....");
+
+      console.log("inside repository...:", user);
 
       const newUser = new User(user);
       await newUser.save();
@@ -153,14 +161,27 @@ export class UserRepository implements IUserRepository {
       const newUser = new User(user);
       await newUser.save();
 
+      await Invitee.deleteOne({ email: user.email });
+
       return newUser.toObject() as IUser;
     } catch (error: any) {
       console.error("Error creating user in repository: ", error);
       throw error;
     }
   }
-  updateUser(user: IUser): Promise<IUser> {
-    throw new Error("Method not implemented.");
+  async updateUser(user: IUser): Promise<IUser> {
+    try {
+      console.log("inside repository", user.tenant_id);
+
+      const response = await User.updateOne(
+        { email: user.email },
+        { tenant_id: user.tenant_id }
+      );
+
+      return response as unknown as IUser;
+    } catch (error) {
+      throw error;
+    }
   }
   async findUser(email: string): Promise<IUser | null> {
     try {

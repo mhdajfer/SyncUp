@@ -46,7 +46,7 @@ export default function Login() {
       );
       switch (data.user.role) {
         case "manager":
-          router.push("manager/dashboard");
+          router.push("employee/manager/dashboard");
           break;
         case "dev":
           router.push("dev/dashboard");

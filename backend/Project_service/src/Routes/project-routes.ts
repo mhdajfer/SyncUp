@@ -16,6 +16,11 @@ router.post(
   checkSchema(projectValidator()),
   projectController.createProject.bind(projectController)
 );
+
+router.post(
+  "/getProject",
+  projectController.getProject.bind(projectController)
+);
 router.get("/", projectController.getProjectList.bind(projectController));
 
 export default router;

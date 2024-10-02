@@ -12,6 +12,8 @@ import { useEffect, useState } from "react";
 import { Button } from "../ui/button";
 import { toast } from "sonner";
 import { blockUser } from "@/api/userService/user";
+import { AxiosError } from "axios";
+import NoData from "../NoData/NoData";
 
 export function UsersTable01({ usersList }: { usersList: User[] }) {
   const [page, setPage] = useState(1);
@@ -35,7 +37,7 @@ export function UsersTable01({ usersList }: { usersList: User[] }) {
     page * rowsPerPage
   );
 
-  const handleBlock = async (userId: string) => {
+  const handleBlock = async (userId: undefined | string) => {
     try {
       if (!userId) return toast.error("Invalid User ID");
 
@@ -51,8 +53,10 @@ export function UsersTable01({ usersList }: { usersList: User[] }) {
       } else {
         toast.error("Failed to block/unblock the user.");
       }
-    } catch (error) {
-      toast.error("Error occurred while blocking/unblocking user.");
+    } catch (error: unknown) {
+      if (error instanceof AxiosError) {
+        toast.error(error.response?.data.error);
+      } else toast.error("Error occurred while blocking/unblocking user.");
     }
   };
 
@@ -82,8 +86,14 @@ export function UsersTable01({ usersList }: { usersList: User[] }) {
                   </TableCell>
                   <TableCell>{user.firstName}</TableCell>
                   <TableCell>{user.email}</TableCell>
-                  <TableCell>{user.phoneNumber}</TableCell>
                   <TableCell>{user.role}</TableCell>
+                  <TableCell
+                    className={`${
+                      user.status ? "text-yellow-600 " : "text-lime-200"
+                    } text-xs font-sans`}
+                  >
+                    {user.status ? user.status : "Active"}
+                  </TableCell>
                   <TableCell className="">
                     <div className="flex space-x-2 justify-center">
                       <Button
@@ -127,7 +137,7 @@ export function UsersTable01({ usersList }: { usersList: User[] }) {
           </div>
         </div>
       ) : (
-        <div>Loaing.........</div>
+        <NoData />
       )}
     </div>
   );

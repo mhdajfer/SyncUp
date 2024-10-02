@@ -1,6 +1,13 @@
-import mongoose from "mongoose";
+import { Schema, Types } from "mongoose";
 
-const projectSchema = new mongoose.Schema({
+const CommentSchema: Schema = new Schema({
+  id: { type: Number, required: true },
+  author: { type: String, required: true },
+  content: { type: String, required: true },
+  timestamp: { type: String, required: true },
+});
+
+const projectSchema = new Schema({
   name: {
     type: String,
     required: true,
@@ -11,7 +18,7 @@ const projectSchema = new mongoose.Schema({
     required: true,
   },
   managerId: {
-    type: mongoose.Types.ObjectId,
+    type: Types.ObjectId,
     required: true,
   },
   start_date: {
@@ -35,7 +42,7 @@ const projectSchema = new mongoose.Schema({
   },
   task_ids: [
     {
-      type: mongoose.Types.ObjectId,
+      type: Types.ObjectId,
     },
   ],
   budget: {
@@ -47,8 +54,9 @@ const projectSchema = new mongoose.Schema({
     required: true,
   },
   document: {
-    type: mongoose.Schema.Types.Mixed,
+    type: Schema.Types.Mixed,
   },
+  comments: { type: [CommentSchema], default: [] },
 });
 
 export default projectSchema;

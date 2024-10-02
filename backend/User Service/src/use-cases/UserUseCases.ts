@@ -173,9 +173,9 @@ export class UserUseCases implements IUserUseCases {
       throw error;
     }
   }
-  async getUsers() {
+  async getUsers(tenantId: string) {
     try {
-      return await this.userRepository.getAllUsers();
+      return await this.userRepository.getAllUsers(tenantId);
     } catch (error: any) {
       throw error;
     }

@@ -7,7 +7,7 @@ export interface IUserRepository {
   updateUser(user: IUser): Promise<IUser>;
   findUser(email: string): Promise<IUser | null>;
   findUserById(userId: string): Promise<IUser | null>;
-  getAllUsers(): Promise<IUser[]>;
+  getAllUsers(tenantId: string): Promise<(IUser | IUserInvite)[]>;
   findManagerList(): Promise<IUser[]>;
   findDevList(): Promise<IUser[]>;
   blockUser(userId: string): Promise<IUser>;

@@ -10,6 +10,7 @@ export interface IUser {
   phoneNumber: number;
   isVerified?: boolean;
   isDeleted?: boolean;
+  tenant_id: string;
   role?: string;
   iat?: number;
   exp?: number;

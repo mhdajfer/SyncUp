@@ -9,6 +9,10 @@ const inviteeSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  status: {
+    type: String,
+    default: "Invited",
+  },
   email: {
     type: String,
     required: true,
