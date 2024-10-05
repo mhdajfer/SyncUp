@@ -81,7 +81,6 @@ export default function UserForm({ role }: { role: string }) {
           phoneNumber,
           role: role,
         },
-        useCase: "invite",
       });
       if (response.success) {
         toast.success("User created successfully");

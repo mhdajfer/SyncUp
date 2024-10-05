@@ -2,11 +2,13 @@ import { NextFunction, Request, Response } from "express";
 import { IProject } from "../Interfaces/IProject";
 import { IProjectUseCases } from "../Interfaces/IProjectUseCases";
 import { validationResult } from "express-validator";
+import { CustomRequest } from "../Interfaces/CustomRequest";
+import { CustomError } from "../ErrorHandler/CustonError";
 
 export class ProjectControllers {
   constructor(private projectUseCases: IProjectUseCases) {}
 
-  async createProject(req: Request, res: Response, next: NextFunction) {
+  async createProject(req: CustomRequest, res: Response, next: NextFunction) {
     try {
       //req validation
       const errors = validationResult(req);
@@ -17,8 +19,14 @@ export class ProjectControllers {
       console.log("formData", req.body);
 
       const projectDetails: IProject = req.body;
+      const authUser = req.user;
 
-      const result = await this.projectUseCases.createProject(projectDetails);
+      if (!authUser?._id) throw new CustomError("Manager not found", 409);
+
+      const result = await this.projectUseCases.createProject({
+        ...projectDetails,
+        created_by: authUser._id,
+      });
 
       if (!result) throw new Error(`Error in Project controller`);
       console.log("created..", result);
@@ -36,15 +44,20 @@ export class ProjectControllers {
     }
   }
 
-  async getProjectList(req: Request, res: Response, next: NextFunction) {
+  async getProjectList(req: CustomRequest, res: Response, next: NextFunction) {
     try {
-      const result = await this.projectUseCases.getProjectList();
+      const authUser = req.user;
+      console.log("auth user ", authUser);
+
+      if (!authUser?._id) throw new CustomError("Manager not found", 409);
+
+      const result = await this.projectUseCases.getProjectList(authUser._id);
 
       if (!result) throw new Error(`Error in Project controller`);
 
       return res.status(201).json({ result });
     } catch (error: any) {
-      console.log(`Error while creating project ${error.message}`);
+      console.log(`Error while retreiving project list ${error.message}`);
     }
   }
 

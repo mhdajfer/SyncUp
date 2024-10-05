@@ -49,10 +49,10 @@ export default function Login() {
           router.push("employee/manager/dashboard");
           break;
         case "dev":
-          router.push("dev/dashboard");
+          router.push("employee/dev/dashboard");
           break;
         case "pManager":
-          router.push("project_manager/dashboard");
+          router.push("employee/project_manager/dashboard");
           break;
         case "tenant-admin":
           router.push("/admin/dashboard");

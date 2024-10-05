@@ -6,9 +6,9 @@ export class ProjectUseCases implements IProjectUseCases {
   constructor(private projectRepository: IProjectRepository) {
     this.projectRepository = projectRepository;
   }
-  async getProjectList(): Promise<IProject[]> {
+  async getProjectList(managerId: string): Promise<IProject[]> {
     try {
-      const data = await this.projectRepository.getAllProjects();
+      const data = await this.projectRepository.getAllProjects(managerId);
 
       return data;
     } catch (error) {

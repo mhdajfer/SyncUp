@@ -57,6 +57,9 @@ const projectSchema = new Schema({
     type: Schema.Types.Mixed,
   },
   comments: { type: [CommentSchema], default: [] },
+  created_by: {
+    type: String,
+  },
 });
 
 export default projectSchema;

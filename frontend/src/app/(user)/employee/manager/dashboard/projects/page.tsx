@@ -1,6 +1,7 @@
 "use client";
 import { getProjects } from "@/api/projectService/project";
 import ProjectCard from "@/Components/Cards/ProjectCard";
+import NoData from "@/Components/NoData/NoData";
 // import ProjectsTable from "@/Components/Tables/ProjectsTable";
 import { Project } from "@/interfaces/Project";
 import { useRouter } from "next/navigation";
@@ -30,12 +31,15 @@ export default function Page() {
           new Project
         </button>
       </div>
-      {/* <ProjectsTable projectList={projectList} /> */}
-      <div className="flex flex-wrap justify-center px-8 ">
-        {projectList.map((project, i) => (
-          <ProjectCard project={project} key={i} />
-        ))}
-      </div>
+      {projectList.length > 0 ? (
+        <div className="flex flex-wrap justify-center px-8 ">
+          {projectList.map((project, i) => (
+            <ProjectCard project={project} key={i} />
+          ))}
+        </div>
+      ) : (
+        <NoData />
+      )}
     </>
   );
 }

@@ -11,6 +11,7 @@ export interface Project {
   goal: string;
   document: File | null;
   comments?: Comment[];
+  created_by: string;
 }
 
 interface Comment {

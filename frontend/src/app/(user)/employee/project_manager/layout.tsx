@@ -1,12 +1,12 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import DevLayout from "@/Components/Layout/DevLayout";
 import { useRouter } from "next/navigation";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "@/store/store";
 import Loading from "@/./Components/Loading/Loading";
 import { logoutSuccess } from "@/store/slices/authSlice";
+import PManagerLayout from "@/Components/Layout/PManagerLayout";
 
 const Layout = ({ children }: { children: React.ReactNode }) => {
   const router = useRouter();
@@ -21,7 +21,7 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
   useEffect(() => {
     if (!isAuthenticated) {
       console.log("not authenticated");
-      router.push("/employee/login");
+      router.push("/login");
     } else setLoading(false);
   }, [isAuthenticated, router, loading]);
 
@@ -35,8 +35,12 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
         <Loading />
       ) : (
         <div className="flex">
-          <DevLayout logoutSuccess={handleLogout} />
-          <div>{children}</div>
+          <div className="w-fit fixed">
+            <PManagerLayout logoutSuccess={handleLogout} />
+          </div>
+          <div className="ml-64 bg-[#082032] min-h-screen flex flex-col items-center justify-center w-full h-full py-10 px-4  overflow-y-scroll">
+            {children}
+          </div>
         </div>
       )}
     </>

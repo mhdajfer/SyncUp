@@ -3,6 +3,9 @@ import cors from "cors";
 import projectRoutes from "./src/Routes/project-routes";
 import { errorHandler } from "./src/ErrorHandler/ErrorHandler";
 import { connectDB } from "./src/Frameworks/mongo/connect";
+import dotenv from "dotenv";
+
+dotenv.config();
 
 const app = express();
 

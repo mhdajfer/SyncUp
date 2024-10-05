@@ -1,7 +1,7 @@
 import mongoose from "mongoose";
 
 export interface IProject {
-  _id?: mongoose.Types.ObjectId;
+  _id?: string;
   name: string;
   description: string;
   managerId: string;
@@ -11,5 +11,6 @@ export interface IProject {
   task_ids: string[];
   budget: number;
   goal: string;
-  document: File | null;
+  document: string | null;
+  created_by: string;
 }

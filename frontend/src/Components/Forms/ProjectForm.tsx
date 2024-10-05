@@ -23,6 +23,7 @@ import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { motion } from "framer-motion";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { AxiosError } from "axios";
 
 export interface UserDetails {
   _id: string;
@@ -102,9 +103,10 @@ export default function ProjectForm() {
       } else {
         toast.error(response.message);
       }
-    } catch (error) {
-      toast.error("An error occurred");
-      console.log(`Error: ${error}`);
+    } catch (error: unknown) {
+      if (error instanceof AxiosError) {
+        toast.error(error.response?.data?.message);
+      } else toast.error("An error occurred");
     }
   };
 
