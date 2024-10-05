@@ -76,8 +76,11 @@ export function ManagerLayout({
             width={40}
             height={40}
           />
-          <div className="ml-3">
-            <p className="text-sm font-medium">Ram</p>
+          <div
+            className="ml-3 cursor-pointer"
+            onClick={() => router.push("/employee/manager/profile")}
+          >
+            <p className="text-sm font-medium hover:underline">Ram</p>
             <p className="text-xs text-gray-400">ram@gmail.com</p>
           </div>
         </div>

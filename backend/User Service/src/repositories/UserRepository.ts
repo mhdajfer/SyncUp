@@ -85,18 +85,24 @@ export class UserRepository implements IUserRepository {
       throw error;
     }
   }
-  async findDevList(): Promise<IUser[]> {
+  async findDevList(tenantId: string): Promise<IUser[]> {
     try {
-      const devList: IUser[] = await User.find({ role: "dev" });
+      const devList: IUser[] = await User.find({
+        role: "dev",
+        tenant_id: tenantId,
+      });
 
       return devList;
     } catch (error) {
       throw error;
     }
   }
-  async findManagerList(): Promise<IUser[]> {
+  async findManagerList(tenantId: string): Promise<IUser[]> {
     try {
-      const managerList: IUser[] = await User.find({ role: "pManager" });
+      const managerList: IUser[] = await User.find({
+        role: "pManager",
+        tenant_id: tenantId,
+      });
 
       return managerList;
     } catch (error) {
@@ -116,7 +122,9 @@ export class UserRepository implements IUserRepository {
     try {
       const userList: IUser[] = await User.find({ tenant_id: tenantId });
 
-      const invitees: IUserInvite[] = await Invitee.find();
+      const invitees: IUserInvite[] = await Invitee.find({
+        tenant_id: tenantId,
+      });
 
       const Users = [...userList, ...invitees];
 

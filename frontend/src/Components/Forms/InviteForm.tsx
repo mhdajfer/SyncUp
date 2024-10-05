@@ -26,6 +26,8 @@ import {
 import { toast } from "sonner";
 import { inviteUser } from "@/api/userService/user";
 import { useRouter } from "next/navigation";
+import { useSelector } from "react-redux";
+import { RootState } from "@/store/store";
 
 const formSchema = z.object({
   firstName: z.string().min(2, {
@@ -48,11 +50,19 @@ export default function InviteForm() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isVisible, setIsVisible] = useState(false);
 
+  const tenantId = useSelector(
+    (state: RootState) => state.auth.user?.tenant_id
+  );
+
   const roleDescriptions = ["manager", "dev", "pManager", "tenant-admin"];
 
   useEffect(() => {
+    if (!tenantId) {
+      toast.error("Create tenant first");
+      router.back();
+    }
     setIsVisible(true);
-  }, []);
+  }, [router, tenantId]);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),

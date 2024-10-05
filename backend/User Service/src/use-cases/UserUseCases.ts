@@ -61,18 +61,18 @@ export class UserUseCases implements IUserUseCases {
       throw error;
     }
   }
-  async getDevList(): Promise<IUser[] | null> {
+  async getDevList(tenantId: string): Promise<IUser[] | null> {
     try {
-      const devList = await this.userRepository.findDevList();
+      const devList = await this.userRepository.findDevList(tenantId);
 
       return devList as IUser[];
     } catch (error) {
       throw error;
     }
   }
-  async getManagerList(): Promise<IUser[] | null> {
+  async getManagerList(tenantId: string): Promise<IUser[] | null> {
     try {
-      const managerList = await this.userRepository.findManagerList();
+      const managerList = await this.userRepository.findManagerList(tenantId);
 
       return managerList as IUser[] | null;
     } catch (error) {
@@ -129,14 +129,13 @@ export class UserUseCases implements IUserUseCases {
     }
   }
 
-  async getUserByEmail(email: string): Promise<IUser> {
+  async getUserByEmail(email: string): Promise<IUser | null> {
     try {
       const user = await this.userRepository.findUser(email);
-      if (!user) throw new CustomError("user not found", 409);
 
       return user;
     } catch (error: any) {
-      throw new Error(error);
+      throw error;
     }
   }
 
@@ -167,7 +166,7 @@ export class UserUseCases implements IUserUseCases {
       console.log("existing user", existUser);
 
       if (existUser) {
-        throw new Error("User already exists");
+        throw new CustomError("User already exists", 409);
       } else return await this.userRepository.createUserInvite(user);
     } catch (error: any) {
       throw error;

@@ -39,7 +39,8 @@ export function OtpPopup({ email }: { email: string }) {
   }
 
   return (
-    <div className="space-y-2 fixed inset-0 flex flex-col items-center justify-center bg-black bg-opacity-50 backdrop-blur-sm">
+    <div className="space-y-2 fixed inset-0 flex flex-col items-center justify-center bg-black bg-opacity-50 backdrop-blur-sm text-white">
+      <h1>One time password has send to : {email}</h1>
       <InputOTP
         maxLength={4}
         value={value}

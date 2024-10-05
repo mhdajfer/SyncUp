@@ -164,3 +164,5 @@ export const inviteUser = async (data: {
     throw error;
   }
 };
+
+// export const getUser = async()

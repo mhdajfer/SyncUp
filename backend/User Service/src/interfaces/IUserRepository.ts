@@ -8,8 +8,8 @@ export interface IUserRepository {
   findUser(email: string): Promise<IUser | null>;
   findUserById(userId: string): Promise<IUser | null>;
   getAllUsers(tenantId: string): Promise<(IUser | IUserInvite)[]>;
-  findManagerList(): Promise<IUser[]>;
-  findDevList(): Promise<IUser[]>;
+  findManagerList(tenantId: string): Promise<IUser[]>;
+  findDevList(tenantId:string): Promise<IUser[]>;
   blockUser(userId: string): Promise<IUser>;
   verifyOtp(email: string, otp: number): Promise<Boolean>;
   createNewOtp(email: string): Promise<null | number>;

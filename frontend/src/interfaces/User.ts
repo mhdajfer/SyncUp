@@ -12,6 +12,7 @@ export interface User {
   role?: string;
   confirmPassword?: string;
   status?: string;
+  tenant_id?: string;
 }
 
 export interface IAddress {

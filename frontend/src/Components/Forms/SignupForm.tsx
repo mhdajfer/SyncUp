@@ -13,6 +13,7 @@ import { useForm } from "react-hook-form";
 import { User } from "@/interfaces/User";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { userInstance } from "@/axios";
+import { AxiosError } from "axios";
 
 const userSchema = z
   .object({
@@ -106,7 +107,9 @@ export default function SignupForm({
     } catch (error) {
       if (error instanceof ZodError) {
         console.log(error.errors);
-      }
+      } else if (error instanceof AxiosError) {
+        toast.warning("User al");
+      } else toast.error("user not created, something went wrong");
     }
   };
 

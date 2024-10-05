@@ -1,6 +1,7 @@
 import { Document, ObjectId } from "mongoose";
 
 export interface IUser {
+  _id?: string;
   firstName: string;
   lastName: string;
   email: string;
@@ -23,4 +24,5 @@ export interface IUserInvite {
   email: string;
   role: string;
   phoneNumber: number;
+  tenant_id?: string;
 }

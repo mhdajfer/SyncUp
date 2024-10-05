@@ -2,8 +2,10 @@
 import { getAllUsers } from "@/api/userService/user";
 import { UsersTable01 } from "@/Components/Tables/UsersTable01";
 import { User } from "@/interfaces/User";
+
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+import { toast } from "sonner";
 
 export default function Page() {
   const router = useRouter();
@@ -11,8 +13,14 @@ export default function Page() {
 
   useEffect(() => {
     async function getData() {
-      const usersList = await getAllUsers();
-      setUserList(usersList.data);
+      try {
+        const usersList = await getAllUsers();
+        setUserList(usersList.data);
+      } catch (error: unknown) {
+        console.log(error);
+
+        toast("No users found");
+      }
     }
     getData();
   }, []);

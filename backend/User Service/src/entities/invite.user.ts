@@ -25,6 +25,9 @@ const inviteeSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  tenant_id: {
+    type: String,
+  },
 });
 
 export default inviteeSchema;

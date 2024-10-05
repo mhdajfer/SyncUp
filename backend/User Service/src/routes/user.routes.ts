@@ -23,7 +23,11 @@ router.post("/verifyOtp", userController.verifyOtp.bind(userController));
 
 router.post("/login", userController.userLogin.bind(userController));
 
-router.post("/invite", userController.inviteUser.bind(userController));
+router.post(
+  "/invite",
+  userAuth,
+  userController.inviteUser.bind(userController)
+);
 router.post(
   "/setup-password",
   userAuth,

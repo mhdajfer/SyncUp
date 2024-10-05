@@ -37,7 +37,7 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
           <div className="w-fit  fixed">
             <TenantAdminLayout logoutSuccess={handleLogout} />
           </div>
-          <div className="ml-64 bg-[#082032] flex flex-col items-center justify-center w-full h-screen py-10 px-4  overflow-y-scroll">
+          <div className="ml-64 bg-[#082032] min-h-screen flex flex-col items-center justify-center w-full h-full py-10 px-4  overflow-y-scroll">
             {children}
           </div>
         </div>

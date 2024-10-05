@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from "express";
 import { IUserUseCases } from "../interfaces/IUserUseCases";
-import { IUser, IUserInvite } from "../interfaces/IUser";
+import { IUser } from "../interfaces/IUser";
 import { validationResult } from "express-validator";
 import jwt from "jsonwebtoken";
 import { createToken, verifyAccessToken } from "../Utils/Jwt";
@@ -63,19 +63,29 @@ export class UserController {
     }
   }
 
-  async inviteUser(req: Request, res: Response, next: NextFunction) {
+  async inviteUser(req: CustomRequest, res: Response, next: NextFunction) {
     try {
       const user = req.body;
 
-      console.log(user);
+      const authUser = req.user;
+      if (!authUser) throw new CustomError("tenantAdmin not found", 400);
 
-      const data = await this.userUseCase.inviteUser(user);
+      const tenantAdmin = await this.userUseCase.getUserByEmail(authUser.email);
+
+      const userData = {
+        ...user,
+        tenant_id: tenantAdmin?.tenant_id,
+      };
+
+      console.log(userData);
+
+      const data = await this.userUseCase.inviteUser(userData);
 
       const kafkaConnection = new KafkaConnection();
       const producer = await kafkaConnection.getProducerInstance();
       const userProducer = new UserProducer(producer);
 
-      const inviteToken = createToken(user);
+      const inviteToken = createToken(userData);
 
       await userProducer.inviteUsers(data, inviteToken);
 
@@ -120,6 +130,8 @@ export class UserController {
 
       const user = await this.userUseCase.getUserByEmail(email);
 
+      if (!user) throw new CustomError("user not found", 409);
+
       if (!verified) throw new CustomError("user not verified", 409);
 
       const kafkaConnection = new KafkaConnection();
@@ -146,7 +158,9 @@ export class UserController {
 
       const user: IUser = req.body;
 
-      console.log(user);
+      const existingUser = await this.userUseCase.getUserByEmail(user.email);
+
+      if (existingUser) throw new CustomError("user already exists", 409);
 
       const data = await this.userUseCase.createUser(user);
       if (!data) throw new CustomError("user not verified", 409);
@@ -163,22 +177,32 @@ export class UserController {
     } catch (error: any) {
       console.log(error.message);
 
-      if (error.message.includes("User already exists")) {
+      if (error.message.includes("user already exists")) {
         return res.json({
           success: false,
           data: null,
           message: "User with the same email or phone number already exists.",
         });
-      } else {
-        console.error("Error creating user:", error);
-        return res.status(500).json({ message: "Internal server error" });
-      }
+      } else next(error);
     }
   }
 
-  async onGetUserManagerList(req: Request, res: Response, next: NextFunction) {
+  async onGetUserManagerList(
+    req: CustomRequest,
+    res: Response,
+    next: NextFunction
+  ) {
     try {
-      const managerList = await this.userUseCase.getManagerList();
+      const authUser = req.user;
+      if (!authUser) throw new CustomError("admin not found", 400);
+
+      const tenantAdmin = await this.userUseCase.getUserByEmail(authUser.email);
+
+      if (!tenantAdmin?.tenant_id) throw new CustomError("No users", 400);
+
+      const managerList = await this.userUseCase.getManagerList(
+        tenantAdmin.tenant_id
+      );
 
       console.log("list of managers", managerList);
 
@@ -189,9 +213,20 @@ export class UserController {
     }
   }
 
-  async onGetAllDevelopers(req: Request, res: Response, next: NextFunction) {
+  async onGetAllDevelopers(
+    req: CustomRequest,
+    res: Response,
+    next: NextFunction
+  ) {
     try {
-      const devList = await this.userUseCase.getDevList();
+      const authUser = req.user;
+      if (!authUser) throw new CustomError("admin not found", 400);
+
+      const tenantAdmin = await this.userUseCase.getUserByEmail(authUser.email);
+
+      if (!tenantAdmin?.tenant_id) throw new CustomError("No users", 400);
+
+      const devList = await this.userUseCase.getDevList(tenantAdmin.tenant_id);
 
       return res.status(200).json({ success: true, data: devList });
     } catch (error) {
