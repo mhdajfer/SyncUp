@@ -181,10 +181,7 @@ export class UserRepository implements IUserRepository {
     try {
       console.log("inside repository", user.tenant_id);
 
-      const response = await User.updateOne(
-        { email: user.email },
-        { tenant_id: user.tenant_id }
-      );
+      const response = await User.updateOne({ email: user.email }, { ...user });
 
       return response as unknown as IUser;
     } catch (error) {

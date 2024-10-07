@@ -40,10 +40,7 @@ export class UserConsumer implements IUserConsumer {
     try {
       switch (data.eventType) {
         case "user-updated":
-          console.log(
-            "*****user verified in user service & creating user in tenant service**********",
-            data
-          );
+          console.log("*****user updating in user service**********", data);
 
           console.log("original data*************", data);
 
