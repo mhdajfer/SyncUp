@@ -200,6 +200,20 @@ export class UserRepository implements IUserRepository {
     }
   }
 
+  async editProfile(user: IUser): Promise<IUser> {
+    try {
+      const userData = await User.updateOne(
+        { _id: user._id },
+        { ...user },
+        { new: true }
+      );
+
+      return userData as unknown as IUser;
+    } catch (error) {
+      throw error;
+    }
+  }
+
   generateRandom4DigitNumber() {
     return Math.floor(1000 + Math.random() * 9000);
   }

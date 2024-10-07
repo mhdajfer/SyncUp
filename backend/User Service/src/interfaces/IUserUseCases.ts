@@ -6,6 +6,7 @@ export interface IUserUseCases {
   createUser(user: IUser): Promise<number | null>;
   createUserInvite(user: IUser): Promise<IUser | null>;
   getUsers(tenantId: string): Promise<(IUser | IUserInvite)[]>;
+  editProfile(user: IUser): Promise<IUser>;
   updateUser(user: IUser): Promise<IUser>;
   getUserByEmail(email: string): Promise<IUser | null>;
   getUserById(userId: string): Promise<IUser | null>;

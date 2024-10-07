@@ -179,6 +179,18 @@ export class UserUseCases implements IUserUseCases {
       throw error;
     }
   }
+
+  async editProfile(user: IUser): Promise<IUser> {
+    try {
+      const data = await this.userRepository.editProfile(user);
+
+      if (!data) throw new CustomError("profile not modified", 409);
+
+      return user;
+    } catch (error) {
+      throw error;
+    }
+  }
   async updateUser(user: IUser) {
     try {
       return await this.userRepository.updateUser(user);

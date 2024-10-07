@@ -13,10 +13,19 @@ import { Input } from "@/Components/ui/input";
 import { Button } from "@/Components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/Components/ui/avatar";
 import { User } from "@/interfaces/User";
+import { AxiosError } from "axios";
+import { toast } from "sonner";
+import { editProfile } from "@/api/userService/user";
 
-export default function ShowProfile({ initialUser }: { initialUser: User }) {
-  const [user, setUser] = useState<User>(initialUser);
+export default function ShowProfile({
+  initialUser,
+}: {
+  initialUser: User;
+}) {
+  const [user, setUser] = useState<User >(initialUser);
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -26,8 +35,21 @@ export default function ShowProfile({ initialUser }: { initialUser: User }) {
     }));
   };
 
-  const handleUpdate = () => {
+  const handleUpdate = async () => {
     console.log("Updated user details:", user);
+
+    try {
+      const response = await editProfile(user);
+
+      if (response.success) {
+        toast.success("profile updated.");
+        setUser(response.data);
+      } else toast.error(response.message);
+    } catch (error: unknown) {
+      if (error instanceof AxiosError) {
+        toast.error(error.response?.data.message);
+      } else console.log(error);
+    }
   };
 
   const handleProfilePictureClick = () => {

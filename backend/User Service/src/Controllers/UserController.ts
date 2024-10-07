@@ -235,6 +235,26 @@ export class UserController {
     }
   }
 
+  async editProfile(req: Request, res: Response, next: NextFunction) {
+    try {
+      const id = req.params.id;
+
+      const user: IUser = req.body;
+      console.log("data : ", id, user);
+
+      const userData = await this.userUseCase.editProfile(user);
+      console.log(userData);
+
+      return res.status(200).json({
+        success: true,
+        data: userData,
+        message: "profile updated successfully",
+      });
+    } catch (error) {
+      throw error;
+    }
+  }
+
   async onGetUserList(req: CustomRequest, res: Response, next: NextFunction) {
     try {
       const authUser = req.user;
@@ -262,9 +282,9 @@ export class UserController {
       const user = await this.userUseCase.getUserById(id);
 
       if (!user) return res.status(404).json({ message: "User not found" });
-      res.status(200).json({ user });
-
-      //res.status(201).json(data);
+      res
+        .status(200)
+        .json({ success: true, data: user, message: "retrieved user details" });
     } catch (error: any) {
       console.log(`Error while retrieving user : ${error.message}`);
     }

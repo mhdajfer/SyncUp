@@ -53,5 +53,6 @@ router.get(
   userController.onGetAllDevelopers.bind(userController)
 );
 router.get("/:id", userAuth, userController.onGetUser.bind(userController));
+router.put("/:id", userAuth, userController.editProfile.bind(userController));
 
 export default router;

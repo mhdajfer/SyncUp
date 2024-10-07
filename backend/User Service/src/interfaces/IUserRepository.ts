@@ -4,6 +4,7 @@ export interface IUserRepository {
   inviteUser(invitee: IUserInvite): Promise<IUserInvite>;
   createUser(user: IUser): Promise<number>;
   createUserInvite(user: IUser): Promise<IUser>;
+  editProfile(user: IUser): Promise<IUser>;
   updateUser(user: IUser): Promise<IUser>;
   findUser(email: string): Promise<IUser | null>;
   findUserById(userId: string): Promise<IUser | null>;

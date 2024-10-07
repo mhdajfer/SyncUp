@@ -165,4 +165,22 @@ export const inviteUser = async (data: {
   }
 };
 
-// export const getUser = async()
+export const editProfile = async (user: User) => {
+  try {
+    const response = await userInstance.put(`users/${user._id}`, user);
+
+    return response.data as { data: User; message: string; success: boolean };
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const getUser = async (userId: string) => {
+  try {
+    const response = await userInstance.get(`users/${userId}`);
+
+    return response.data as { data: User; message: string; success: boolean };
+  } catch (error) {
+    throw error;
+  }
+};
