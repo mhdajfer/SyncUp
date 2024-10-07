@@ -245,6 +245,16 @@ export class UserController {
       const userData = await this.userUseCase.editProfile(user);
       console.log(userData);
 
+      const kafkaConnection = new KafkaConnection();
+      const producer = await kafkaConnection.getProducerInstance();
+      const userProducer = new UserProducer(producer);
+
+      userProducer.sendDefaultMessage(
+        "user-updated",
+        "user-events",
+        JSON.stringify(userData)
+      );
+
       return res.status(200).json({
         success: true,
         data: userData,

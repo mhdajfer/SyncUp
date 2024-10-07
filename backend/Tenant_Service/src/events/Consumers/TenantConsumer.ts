@@ -35,7 +35,7 @@ export class TenantConsumer implements ITenantConsumer {
     }
   }
 
-  async handleConsume(data: { eventType: string; data: IUser }) {
+  async handleConsume(data: { eventType: string; data: IUser | string }) {
     try {
       switch (data.eventType) {
         case "user-registered-success":
@@ -44,7 +44,15 @@ export class TenantConsumer implements ITenantConsumer {
             data
           );
 
-          await this.consumerUseCases.createUser(data.data);
+          await this.consumerUseCases.createUser(data.data as IUser);
+          break;
+        case "user-updated":
+          const userData = JSON.parse(data.data as string);
+          console.log("*****user updating in user service**********", data);
+
+          console.log("original data*************", data);
+
+          await this.consumerUseCases.updateUser(userData);
           break;
       }
     } catch (error) {

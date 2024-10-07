@@ -86,4 +86,30 @@ export class UserProducer {
       throw error;
     }
   }
+  async sendDefaultMessage(eventType: string, topic: string, data: string) {
+    try {
+      console.log("sending to kafka");
+
+      const payload = {
+        topic: topic,
+        messages: [
+          {
+            value: JSON.stringify({
+              eventType,
+              data: data,
+            }),
+          },
+        ],
+      };
+
+      await this.producer.send(payload);
+      console.log(`Message sent to topic 'user-events':  ${eventType}:`);
+    } catch (error) {
+      console.log(
+        `Error sending message to 'user-events' ${eventType}:`,
+        error
+      );
+      throw error;
+    }
+  }
 }

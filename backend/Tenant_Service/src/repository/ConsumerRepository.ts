@@ -19,4 +19,16 @@ export class ConsumerRepository implements IConsumerRepository {
       throw error;
     }
   }
+
+  async updateUser(user: IUser): Promise<IUser> {
+    try {
+      console.log("inside repository", user.tenant_id);
+
+      const response = await User.updateOne({ email: user.email }, { ...user });
+
+      return response as unknown as IUser;
+    } catch (error) {
+      throw error;
+    }
+  }
 }

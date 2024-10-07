@@ -13,4 +13,12 @@ export class ConsumerUseCases implements IConsumerUseCases {
       throw error;
     }
   }
+
+  async updateUser(user: IUser) {
+    try {
+      return await this.consumerRepository.updateUser(user);
+    } catch (error: any) {
+      throw new Error(error);
+    }
+  }
 }
