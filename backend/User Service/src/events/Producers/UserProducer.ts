@@ -62,7 +62,7 @@ export class UserProducer {
     }
   }
 
-  async inviteUsers(user: IUserInvite, token: string) {
+  async inviteUsers(user: IUserInvite | IUser, token: string) {
     try {
       const eventType = "invite";
 
@@ -80,7 +80,7 @@ export class UserProducer {
       };
 
       await this.producer.send(payload);
-      console.log(`User Invitation sent to user: ${user.email}`);
+      console.log(`Email has sent to user: ${user.email}`);
     } catch (error) {
       console.error("Error inviting user :", error);
       throw error;

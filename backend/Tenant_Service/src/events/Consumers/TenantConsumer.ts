@@ -52,7 +52,7 @@ export class TenantConsumer implements ITenantConsumer {
 
           console.log("original data*************", data);
 
-          await this.consumerUseCases.updateUser(userData);
+          await this.consumerUseCases.updateUser(userData as IUser);
           break;
       }
     } catch (error) {

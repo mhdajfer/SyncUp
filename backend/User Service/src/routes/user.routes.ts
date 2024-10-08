@@ -30,7 +30,6 @@ router.post(
 );
 router.post(
   "/setup-password",
-  userAuth,
   userController.createUserForInvitee.bind(userController)
 );
 
@@ -54,5 +53,10 @@ router.get(
 );
 router.get("/:id", userAuth, userController.onGetUser.bind(userController));
 router.put("/:id", userAuth, userController.editProfile.bind(userController));
+
+router.post(
+  "/forgot-password",
+  userController.verifyAndSendOtp.bind(userController)
+);
 
 export default router;

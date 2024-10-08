@@ -2,12 +2,13 @@ import { Request, Response, NextFunction } from "express";
 import { IUserUseCases } from "../interfaces/IUserUseCases";
 import { IUser } from "../interfaces/IUser";
 import { validationResult } from "express-validator";
-import jwt from "jsonwebtoken";
+import jwt, { JsonWebTokenError } from "jsonwebtoken";
 import { createToken, verifyAccessToken } from "../Utils/Jwt";
 import { KafkaConnection } from "../Config/kafka/kafkaConnection";
 import { UserProducer } from "../events/Producers/UserProducer";
 import { CustomError } from "../ErrorHandler/CustonError";
 import { CustomRequest } from "../interfaces/CustomRequest";
+import hashPassword from "../Utils/bcrypt";
 
 export class UserController {
   private userUseCase: IUserUseCases;
@@ -24,42 +25,97 @@ export class UserController {
     try {
       const { token, password } = req.body;
 
-      const authUser = req.user;
-      if (!authUser) throw new CustomError("tenantAdmin not found", 400);
-
       const user = verifyAccessToken(token);
 
       console.log("the user is .....", user, password);
 
-      const tenantAdmin = await this.userUseCase.getUserByEmail(authUser.email);
+      const userData = await this.userUseCase.getUserByEmail(user.email);
 
-      const data = {
-        ...user,
-        password: password,
-        phoneNumber: user.phoneNumber,
-        tenant_id: tenantAdmin?.tenant_id,
-        isVerified: true,
-      };
+      console.log(userData);
+
+      //  if (!userData) throw new CustomError("user details not found", 400);
+      const hashedPassword = await hashPassword(password);
+
+      let data;
+      if (!userData?.password)
+        data = {
+          ...user,
+          password: password,
+          isVerified: true,
+        };
+      else
+        data = {
+          ...userData,
+          password: userData?.password ? hashedPassword : password,
+          isVerified: true,
+        };
 
       console.log("Before creating the invited user ************", data);
 
-      const response = await this.userUseCase.createUserInvite(data as IUser);
+      let response: IUser | null;
+
+      if (!userData?.password)
+        response = await this.userUseCase.createUserInvite(data as IUser);
+      else response = await this.userUseCase.editProfile(data as IUser);
 
       const kafkaConnection = new KafkaConnection();
       const producer = await kafkaConnection.getProducerInstance();
       const userProducer = new UserProducer(producer);
 
-      await userProducer.notifyRegistrationSuccess(response as IUser);
+      if (!userData?.password)
+        await userProducer.notifyRegistrationSuccess(response as IUser);
+      else
+        await userProducer.sendDefaultMessage(
+          "user-updated",
+          "user-events",
+          JSON.stringify(response)
+        );
 
       console.log("user created", response);
 
       res.json(201).json({
         success: true,
         data: response,
-        message: "user created successfully",
+        message: "welcome back",
       });
     } catch (error) {
       next(error);
+    }
+  }
+
+  //forgot password otp sending
+  async verifyAndSendOtp(
+    req: CustomRequest,
+    res: Response,
+    next: NextFunction
+  ) {
+    try {
+      const { email } = req.body;
+
+      console.log(email);
+
+      const user = await this.userUseCase.getUserByEmail(email);
+
+      if (!user)
+        return res
+          .status(400)
+          .json({ success: false, message: "User not exist", data: null });
+
+      const kafkaConnection = new KafkaConnection();
+      const producer = await kafkaConnection.getProducerInstance();
+      const userProducer = new UserProducer(producer);
+
+      const inviteToken = createToken(user);
+
+      await userProducer.inviteUsers(user, inviteToken);
+
+      return res.status(201).json({
+        success: true,
+        data: user,
+        message: "check you mail",
+      });
+    } catch (error) {
+      throw error;
     }
   }
 
