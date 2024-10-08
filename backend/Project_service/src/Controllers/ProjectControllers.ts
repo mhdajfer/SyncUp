@@ -76,4 +76,22 @@ export class ProjectControllers {
       next(error);
     }
   }
+
+  async editProject(req: Request, res: Response, next: NextFunction) {
+    try {
+      const data: IProject = req.body;
+
+      console.log("got the req to edit project", data);
+
+      const response = await this.projectUseCases.editProject(data);
+
+      return res.status(200).json({
+        success: true,
+        message: "project modified successfully",
+        data: response,
+      });
+    } catch (error) {
+      throw error;
+    }
+  }
 }

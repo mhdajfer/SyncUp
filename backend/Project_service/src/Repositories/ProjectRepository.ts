@@ -70,4 +70,22 @@ export class ProjectRepository implements IProjectRepository {
       throw error;
     }
   }
+
+  async editProject(data: IProject): Promise<IProject> {
+    try {
+      const editedData = await Project.findOneAndUpdate(
+        { _id: data._id },
+        { ...data },
+        { new: true }
+      );
+
+      if (!editedData) {
+        throw new CustomError("project not modified", 400);
+      }
+
+      return editedData as unknown as IProject;
+    } catch (error) {
+      throw error;
+    }
+  }
 }

@@ -55,4 +55,16 @@ export class ProjectUseCases implements IProjectUseCases {
       throw error;
     }
   }
+
+  async editProject(data: IProject):Promise<IProject>{
+    try {
+
+      const projectData = await this.projectRepository.editProject(data);
+
+      return projectData;
+      
+    } catch (error) {
+      throw error;
+    }
+  }
 }

@@ -30,4 +30,10 @@ router.get(
   projectController.getProjectList.bind(projectController)
 );
 
+router.put(
+  "/",
+  userAuth,
+  projectController.editProject.bind(projectController)
+);
+
 export default router;

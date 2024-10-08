@@ -11,7 +11,7 @@ import { Textarea } from "@/Components/ui/textarea";
 import { CalendarIcon, DollarSignIcon, UserIcon, X } from "lucide-react";
 import { useParams, useRouter } from "next/navigation";
 import { toast } from "sonner";
-import { getOneProject } from "@/api/projectService/project";
+import { editProject, getOneProject } from "@/api/projectService/project";
 import { Project } from "@/interfaces/Project";
 import {
   Select,
@@ -23,6 +23,7 @@ import {
 import { User } from "@/interfaces/User";
 import { getProjectManagers } from "@/api/userService/user";
 import { DatePickerDemo } from "../Date/DatePicker";
+import { AxiosError } from "axios";
 
 export default function NewSingleProject() {
   const router = useRouter();
@@ -130,12 +131,24 @@ export default function NewSingleProject() {
     });
   };
 
-  const handleSaveChanges = () => {
-    
-    toast.success("Project details updated!");
-    console.log(editedProject);
+  const handleSaveChanges = async () => {
+    try {
+      const response = await editProject(editedProject);
 
-    setIsEditing(false); 
+      if (response.success) {
+        toast.success(response.message);
+        setProject(response.data);
+        console.log(editedProject);
+      } else toast.error(response.message);
+    } catch (error: unknown) {
+      if (error instanceof AxiosError) {
+        toast.error(error.response?.data.message);
+        console.log("something went wrong", error);
+      } else toast.error("project not updated");
+      console.log(error);
+    }
+
+    setIsEditing(false);
   };
 
   return (

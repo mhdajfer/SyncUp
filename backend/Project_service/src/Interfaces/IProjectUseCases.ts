@@ -7,4 +7,5 @@ export interface IProjectUseCases {
   getOneProject(projectId: string): Promise<IProject>;
   updateUser(user: IUser): Promise<IUser>;
   createUser(user: IUser): Promise<IUser>;
+  editProject(data: IProject): Promise<IProject>;
 }

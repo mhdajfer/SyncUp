@@ -37,7 +37,23 @@ export const getOneProject = async (
   projectId: string
 ): Promise<{ success: boolean; message: string; data: Project }> => {
   try {
-    const response = await userInstance.post("/projects/getProject", {projectId});
+    const response = await userInstance.post("/projects/getProject", {
+      projectId,
+    });
+
+    return response.data as {
+      success: boolean;
+      message: string;
+      data: Project;
+    };
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const editProject = async (data: Project) => {
+  try {
+    const response = await userInstance.put("/projects", data);
 
     return response.data as {
       success: boolean;
