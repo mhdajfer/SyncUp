@@ -140,7 +140,7 @@ export const setPasswordAndCreateUser = async (
   try {
     const response = await userInstance.post("/users/setup-password", {
       token,
-      password,
+      password
     });
 
     return response.data as Response;
@@ -180,6 +180,18 @@ export const getUser = async (userId: string) => {
     const response = await userInstance.get(`users/${userId}`);
 
     return response.data as { data: User; message: string; success: boolean };
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const verifyAndSendOtp = async (email: string) => {
+  try {
+    const response = await userInstance.post("users/forgot-password", {
+      email,
+    });
+
+    return response.data as { success: boolean; message: string; data: User };
   } catch (error) {
     throw error;
   }
