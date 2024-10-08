@@ -131,11 +131,11 @@ export default function NewSingleProject() {
   };
 
   const handleSaveChanges = () => {
-    // Save changes logic goes here
+    
     toast.success("Project details updated!");
     console.log(editedProject);
 
-    setIsEditing(false); // Exit edit mode after saving
+    setIsEditing(false); 
   };
 
   return (

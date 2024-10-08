@@ -1,8 +1,9 @@
 import { IProjectRepository } from "../Interfaces/IProjectRepository";
 import Project from "../Frameworks/models/Project";
 import { IProject } from "../Interfaces/IProject";
-import { resourceLimits } from "worker_threads";
+import User from "../Frameworks/models/userModel";
 import { CustomError } from "../ErrorHandler/CustonError";
+import { IUser } from "../Interfaces/IUser";
 
 export class ProjectRepository implements IProjectRepository {
   async createProject(input: IProject): Promise<IProject> {
@@ -36,6 +37,36 @@ export class ProjectRepository implements IProjectRepository {
 
       return project as unknown as IProject;
     } catch (error) {
+      throw error;
+    }
+  }
+
+  async updateUser(user: IUser): Promise<IUser> {
+    try {
+      console.log("inside repository", user.tenant_id);
+
+      const response = await User.updateOne({ email: user.email }, { ...user });
+
+      return response as unknown as IUser;
+    } catch (error) {
+      console.log("reached repository");
+
+      throw error;
+    }
+  }
+
+  async createUser(data: IUser): Promise<IUser> {
+    try {
+      const newData = new User(data);
+
+      const newUser = await newData.save();
+
+      if (!newUser)
+        throw new CustomError("user not created in tenant service", 409);
+
+      return newUser.toObject() as IUser;
+    } catch (error: any) {
+      console.log("Error in Consumer Repository: " + error.message);
       throw error;
     }
   }
