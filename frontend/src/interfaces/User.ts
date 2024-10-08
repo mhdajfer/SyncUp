@@ -13,6 +13,7 @@ export interface User {
   confirmPassword?: string;
   status?: string;
   tenant_id?: string;
+  avatar?: string;
 }
 
 export interface IAddress {

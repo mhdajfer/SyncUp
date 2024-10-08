@@ -17,15 +17,9 @@ import { AxiosError } from "axios";
 import { toast } from "sonner";
 import { editProfile } from "@/api/userService/user";
 
-export default function ShowProfile({
-  initialUser,
-}: {
-  initialUser: User;
-}) {
-  const [user, setUser] = useState<User >(initialUser);
+export default function ShowProfile({ initialUser }: { initialUser: User }) {
+  const [user, setUser] = useState<User>(initialUser);
   const fileInputRef = useRef<HTMLInputElement>(null);
-
-
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -47,7 +41,7 @@ export default function ShowProfile({
       } else toast.error(response.message);
     } catch (error: unknown) {
       if (error instanceof AxiosError) {
-        toast.error(error.response?.data.message);
+        toast.error(error.response?.data.message || "something went wrong");
       } else console.log(error);
     }
   };
@@ -83,10 +77,10 @@ export default function ShowProfile({
             className="w-24 h-24 cursor-pointer"
             onClick={handleProfilePictureClick}
           >
-            <AvatarImage src={"asdfasfasfdasf"} alt="Profile picture" />
-            <AvatarFallback>
-              {user.firstName[0]}
-              {user.lastName[0]}
+            <AvatarImage src={user.avatar} alt="Profile picture" />
+            <AvatarFallback className="bg-green-400">
+              {user.firstName[0].toUpperCase()}
+              {user.lastName[0].toUpperCase()}
             </AvatarFallback>
           </Avatar>
           <input
