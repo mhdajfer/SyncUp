@@ -39,4 +39,18 @@ export class TenantAdminRepository implements ITenantAdminRepository {
       throw error;
     }
   }
+
+  async editTenant(data: ITenants): Promise<ITenants> {
+    try {
+      const tenantData = await Tenant.findOneAndUpdate(
+        { _id: data._id },
+        { ...data },
+        { new: true }
+      );
+
+      return tenantData as unknown as ITenants;
+    } catch (error) {
+      throw error;
+    }
+  }
 }

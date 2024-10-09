@@ -26,4 +26,6 @@ router.post(
 
 router.get("/", userAuth, tenantController.getTenant.bind(tenantController));
 
+router.put("/", userAuth, tenantController.editTenant.bind(tenantController));
+
 export default router;

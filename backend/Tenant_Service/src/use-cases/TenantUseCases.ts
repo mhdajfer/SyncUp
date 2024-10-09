@@ -5,6 +5,7 @@ import { ITenantAdminUseCases } from "../interfaces/ITenantAdminUseCases";
 import bcrypt from "bcrypt";
 import { IUser } from "../interfaces/IUser";
 import { IUserUseCases } from "../interfaces/IUserUseCases";
+import { CustomError } from "../ErrorHandler/CustonError";
 
 export class TenantAdminUseCases implements ITenantAdminUseCases {
   constructor(
@@ -35,6 +36,18 @@ export class TenantAdminUseCases implements ITenantAdminUseCases {
       );
 
       return response;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async editTenant(data: ITenants): Promise<ITenants> {
+    try {
+      const tenantData = await this.tenantAdminRepository.editTenant(data);
+
+      if (!tenantData) throw new CustomError("tenant not updated", 409);
+
+      return tenantData;
     } catch (error) {
       throw error;
     }

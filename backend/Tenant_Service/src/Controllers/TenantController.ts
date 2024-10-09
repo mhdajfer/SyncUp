@@ -3,7 +3,7 @@ import { CustomRequest } from "../interfaces/CustomRequest";
 import { ICreateTenant } from "../interfaces/ITenant";
 import { ITenantAdminUseCases } from "../interfaces/ITenantAdminUseCases";
 
-import { NextFunction, Response } from "express";
+import { NextFunction, Request, Response } from "express";
 
 export class TenantController {
   constructor(private tenantUseCases: ITenantAdminUseCases) {}
@@ -44,6 +44,22 @@ export class TenantController {
     } catch (error) {
       console.log("controller************");
       next(error);
+    }
+  }
+
+  async editTenant(req: Request, res: Response, next: NextFunction) {
+    try {
+      const { tenantData } = req.body;
+
+      console.log(tenantData);
+
+      const data = await this.tenantUseCases.editTenant(tenantData);
+
+      return res
+        .status(200)
+        .json({ success: true, data, message: "tenant updated successfully" });
+    } catch (error) {
+      throw error;
     }
   }
 }
