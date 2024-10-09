@@ -14,6 +14,7 @@ import {
   User,
   Edit2,
   Save,
+  X,
 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
@@ -113,6 +114,9 @@ export default function TenantCard() {
       [name]: value,
     }));
   };
+  const handleClose = () => {
+    setIsEditing(false);
+  };
 
   const handleAddressChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -127,7 +131,15 @@ export default function TenantCard() {
 
   return (
     // <div className="">
-    <Card className=" w-full rounded-xl overflow-hidden pb-28 bg-gray-900 text-white border border-gray-800">
+    <Card className="relative w-full rounded-xl overflow-hidden pb-28 bg-gray-900 text-white border border-gray-800">
+      {isEditing ? (
+        <X
+          className=" h-4 w-4 absolute top-1 right-1 text-gray-200 hover:text-white cursor-pointer hover:font-xl"
+          onClick={handleClose}
+        />
+      ) : (
+        ""
+      )}
       <CardHeader className="bg-gray-700 p-6">
         <CardTitle className="w-full flex justify-between items-center text-2xl font-bold">
           <span>{isEditing ? "Edit Tenant Details" : tenant.company_name}</span>
