@@ -7,6 +7,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "@/store/store";
 import Loading from "@/./Components/Loading/Loading";
 import { logoutSuccess } from "@/store/slices/authSlice";
+import { toast } from "sonner";
 
 const Layout = ({ children }: { children: React.ReactNode }) => {
   const router = useRouter();
@@ -17,6 +18,7 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
   const isAuthenticated = useSelector(
     (state: RootState) => state.auth.isAuthenticated
   );
+  const user = useSelector((state: RootState) => state.auth.user);
 
   useEffect(() => {
     if (!isAuthenticated) {
@@ -24,6 +26,8 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
       router.push("/login");
     } else setLoading(false);
   }, [isAuthenticated, router, loading]);
+
+  if (!user) return toast.error("user not found");
 
   function handleLogout() {
     console.log("logout");
@@ -36,7 +40,7 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
       ) : (
         <div className="flex">
           <div className="w-fit fixed">
-            <DevLayout logoutSuccess={handleLogout} />
+            <DevLayout logoutSuccess={handleLogout} user={user} />
           </div>
           <div className="ml-64 bg-[#082032] min-h-screen flex flex-col items-center justify-center w-full h-full py-10 px-4  overflow-y-scroll">
             {children}

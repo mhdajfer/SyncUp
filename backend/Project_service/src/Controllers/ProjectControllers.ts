@@ -53,6 +53,33 @@ export class ProjectControllers {
 
       const result = await this.projectUseCases.getProjectList(authUser._id);
 
+      console.log("result is :**********", result, authUser._id);
+
+      if (!result) throw new Error(`Error in Project controller`);
+
+      return res.status(201).json({ result });
+    } catch (error: any) {
+      console.log(`Error while retreiving project list ${error.message}`);
+    }
+  }
+
+  async getAssignedProjects(
+    req: CustomRequest,
+    res: Response,
+    next: NextFunction
+  ) {
+    try {
+      const authUser = req.user;
+      console.log("auth user ", authUser);
+
+      if (!authUser?._id) throw new CustomError("Manager not found", 409);
+
+      const result = await this.projectUseCases.getAssignedProjects(
+        authUser._id
+      );
+
+      console.log("result is :**********", result, authUser._id);
+
       if (!result) throw new Error(`Error in Project controller`);
 
       return res.status(201).json({ result });

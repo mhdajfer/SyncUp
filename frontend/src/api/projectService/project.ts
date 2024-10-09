@@ -2,15 +2,13 @@ import { userInstance } from "@/axios";
 import { CreateProjectResponse } from "@/Components/Forms/ProjectForm";
 import { Project } from "@/interfaces/Project";
 
-// interface Response {
-//   success: boolean;
-//   data: Project[] | Project;
-//   message: string;
-// }
-
-export const getProjects = async (): Promise<{ result: Project[] }> => {
+export const getProjects = async (
+  isForPManager = false
+): Promise<{ result: Project[] }> => {
   try {
-    const response = await userInstance.get("/projects");
+    const response = await userInstance.get(
+      isForPManager ? "/projects/forPM" : "/projects"
+    );
 
     return response.data as unknown as { result: Project[] };
   } catch (error) {

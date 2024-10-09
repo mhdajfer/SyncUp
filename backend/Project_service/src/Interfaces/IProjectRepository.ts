@@ -8,4 +8,5 @@ export interface IProjectRepository {
   updateUser(user: IUser): Promise<IUser>;
   createUser(user: IUser): Promise<IUser>;
   editProject(data: IProject): Promise<IProject>;
+  getAssignedProjects(projectId: string): Promise<IProject[]>;
 }

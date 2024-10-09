@@ -16,6 +16,7 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
   const isAuthenticated = useSelector(
     (state: RootState) => state.auth.isAuthenticated
   );
+  const user = useSelector((state: RootState) => state.auth.user);
   function handleLogout() {
     console.log("logout");
     dispatch(logoutSuccess());
@@ -30,6 +31,9 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
       }, 1000);
     } else setLoading(false);
   }, [isAuthenticated, router, loading]);
+
+  if (!user) return toast.error("user not found");
+
   return (
     <>
       {loading ? (
@@ -37,7 +41,7 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
       ) : (
         <div className="flex ">
           <div className="w-fit  fixed">
-            <ManagerLayout logoutSuccess={handleLogout} />
+            <ManagerLayout logoutSuccess={handleLogout} user={user} />
           </div>
           <div className="ml-64 bg-[#082032] min-h-screen flex flex-col items-center justify-center w-full h-full py-10 px-4  overflow-y-scroll">
             {children}

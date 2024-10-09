@@ -16,6 +16,16 @@ export class ProjectUseCases implements IProjectUseCases {
       throw error;
     }
   }
+
+  async getAssignedProjects(managerId: string): Promise<IProject[]> {
+    try {
+      const data = await this.projectRepository.getAssignedProjects(managerId);
+
+      return data;
+    } catch (error) {
+      throw error;
+    }
+  }
   async createProject(input: IProject): Promise<IProject> {
     try {
       const data = await this.projectRepository.createProject(input);
@@ -42,7 +52,7 @@ export class ProjectUseCases implements IProjectUseCases {
     try {
       return await this.projectRepository.updateUser(user);
     } catch (error: any) {
-      throw error
+      throw error;
     }
   }
 
@@ -56,13 +66,11 @@ export class ProjectUseCases implements IProjectUseCases {
     }
   }
 
-  async editProject(data: IProject):Promise<IProject>{
+  async editProject(data: IProject): Promise<IProject> {
     try {
-
       const projectData = await this.projectRepository.editProject(data);
 
       return projectData;
-      
     } catch (error) {
       throw error;
     }

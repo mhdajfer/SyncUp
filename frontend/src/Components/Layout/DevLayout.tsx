@@ -5,15 +5,18 @@ import {
   FiMessageSquare,
   FiCalendar,
 } from "react-icons/fi";
-import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { FC } from "react";
 import { CiLogout } from "react-icons/ci";
+import { User } from "@/interfaces/User";
+import { Avatar, AvatarFallback, AvatarImage } from "@radix-ui/react-avatar";
 
 export default function DevLayout({
   logoutSuccess,
+  user,
 }: {
   logoutSuccess: () => void;
+  user: User;
 }) {
   const router = useRouter();
   return (
@@ -25,18 +28,23 @@ export default function DevLayout({
       <nav className="mt-10">
         <SideBarItem
           icon={<FiUsers />}
+          label="Dashboard"
+          onClick={() => router.push("dashboard")}
+        />
+        <SideBarItem
+          icon={<FiUsers />}
           label="Developers"
-          onClick={() => router.push("/developers")}
+          onClick={() => router.push("developers")}
         />
         <SideBarItem
           icon={<FiUserCheck />}
           label="Tasks"
-          onClick={() => router.push("/tasks")}
+          onClick={() => router.push("tasks")}
         />
         <SideBarItem
           icon={<FiFolder />}
           label="Projects"
-          onClick={() => router.push("/projects")}
+          onClick={() => router.push("projects")}
         />
         <SideBarItem
           icon={<FiMessageSquare />}
@@ -52,16 +60,21 @@ export default function DevLayout({
 
       <div className="absolute place-content-between bottom-0 flex items-center p-4 border-t border-gray-700 w-full">
         <div className="flex">
-          <Image
-            className="rounded-full"
-            src="https://images.ctfassets.net/h6goo9gw1hh6/2sNZtFAWOdP1lmQ33VwRN3/24e953b920a9cd0ff2e1d587742a2472/1-intro-photo-final.jpg?w=1200&h=992&fl=progressive&q=70&fm=jpg" // Add the profile image
-            alt="Profile"
-            width={40}
-            height={40}
-          />
-          <div className="ml-3">
-            <p className="text-sm font-medium">Ram</p>
-            <p className="text-xs text-gray-400">ram@gmail.com</p>
+          <Avatar className=" cursor-pointer ">
+            <AvatarImage src={user.avatar} alt="Profile picture" />
+            <AvatarFallback className=" bg-green-400 rounded-full p-2">
+              {user.firstName[0].toUpperCase()}
+              {user.lastName[0].toUpperCase()}
+            </AvatarFallback>
+          </Avatar>
+          <div
+            className="ml-3 cursor-pointer"
+            onClick={() => router.push("/employee/dev/profile")}
+          >
+            <p className="text-sm font-medium hover:underline">
+              {user.firstName}
+            </p>
+            <p className="text-xs text-gray-400">{user.email}</p>
           </div>
         </div>
         <div

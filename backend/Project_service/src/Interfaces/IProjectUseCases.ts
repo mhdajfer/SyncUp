@@ -8,4 +8,5 @@ export interface IProjectUseCases {
   updateUser(user: IUser): Promise<IUser>;
   createUser(user: IUser): Promise<IUser>;
   editProject(data: IProject): Promise<IProject>;
+  getAssignedProjects(managerId: string): Promise<IProject[]>;
 }

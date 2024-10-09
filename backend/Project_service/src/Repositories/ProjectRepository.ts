@@ -29,6 +29,17 @@ export class ProjectRepository implements IProjectRepository {
     }
   }
 
+  async getAssignedProjects(managerId: string): Promise<IProject[]> {
+    try {
+      const projectList = await Project.find({ managerId: managerId });
+
+      return projectList as unknown as IProject[];
+    } catch (error) {
+      console.error("Error fetching projects:", error);
+      return [];
+    }
+  }
+
   async getOneProject(projectId: string): Promise<IProject> {
     try {
       const project = await Project.findOne({ _id: projectId });

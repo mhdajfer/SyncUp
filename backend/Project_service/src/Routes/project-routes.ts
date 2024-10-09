@@ -30,6 +30,12 @@ router.get(
   projectController.getProjectList.bind(projectController)
 );
 
+router.get(
+  "/forPM",
+  userAuth,
+  projectController.getAssignedProjects.bind(projectController)
+);
+
 router.put(
   "/",
   userAuth,

@@ -13,21 +13,23 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
   const router = useRouter();
   const dispatch: AppDispatch = useDispatch();
 
-  const userRole = useSelector((state: RootState) => state.auth.user?.role);
+  const user = useSelector((state: RootState) => state.auth.user);
+
   function handleLogout() {
     console.log("logout");
     dispatch(logoutSuccess());
   }
 
   useEffect(() => {
-    if (userRole != "tenant-admin") {
+    if (user?.role != "tenant-admin") {
       console.log("not authenticated");
       router.push("/login");
       setTimeout(() => {
         toast.error("You must log in as tenant admin");
       }, 1000);
     } else setLoading(false);
-  }, [router, loading, userRole]);
+  }, [router, loading, user]);
+  if (!user) return toast.error("user not found");
   return (
     <>
       {loading ? (
@@ -35,7 +37,7 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
       ) : (
         <div className="flex ">
           <div className="w-fit  fixed">
-            <TenantAdminLayout logoutSuccess={handleLogout} />
+            <TenantAdminLayout logoutSuccess={handleLogout} user={user} />
           </div>
           <div className="ml-64 bg-[#082032] min-h-screen flex flex-col items-center justify-center w-full h-full py-10 px-4  overflow-y-scroll">
             {children}

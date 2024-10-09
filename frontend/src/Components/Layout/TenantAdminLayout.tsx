@@ -3,13 +3,16 @@
 import { FC } from "react";
 import { useRouter } from "next/navigation";
 import { FiUsers, FiFolder, FiUser } from "react-icons/fi";
-import Image from "next/image";
 import { CiLogout } from "react-icons/ci";
+import { User } from "@/interfaces/User";
+import { Avatar, AvatarFallback, AvatarImage } from "@radix-ui/react-avatar";
 
 export function TenantAdminLayout({
   logoutSuccess,
+  user,
 }: {
   logoutSuccess: () => void;
+  user: User;
 }) {
   const router = useRouter();
 
@@ -53,19 +56,23 @@ export function TenantAdminLayout({
 
       <div className="absolute place-content-between bottom-0 flex items-center p-4 border-t border-gray-700 w-full">
         <div className="flex">
-          <Image
-            className="rounded-full"
-            src="https://images.ctfassets.net/h6goo9gw1hh6/2sNZtFAWOdP1lmQ33VwRN3/24e953b920a9cd0ff2e1d587742a2472/1-intro-photo-final.jpg?w=1200&h=992&fl=progressive&q=70&fm=jpg" // Add the profile image
-            alt="Profile"
-            width={40}
-            height={40}
-          />
+          <div>
+            <Avatar className=" cursor-pointer ">
+              <AvatarImage src={user.avatar} alt="Profile picture" />
+              <AvatarFallback className=" bg-green-400 rounded-full p-2">
+                {user.firstName[0].toUpperCase()}
+                {user.lastName[0].toUpperCase()}
+              </AvatarFallback>
+            </Avatar>
+          </div>
           <div
             className="ml-3 cursor-pointer"
             onClick={() => router.push("/admin/profile")}
           >
-            <p className="text-sm font-medium hover:underline">Ram</p>
-            <p className="text-xs text-gray-400">ram@gmail.com</p>
+            <p className="text-sm font-medium hover:underline">
+              {user.firstName}
+            </p>
+            <p className="text-xs text-gray-400">{user.email}</p>
           </div>
         </div>
         <div
