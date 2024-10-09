@@ -36,7 +36,7 @@ export class UserUseCases implements IUserUseCases {
       const user = await this.userRepository.findUser(email);
 
       if (user) return { isOtpSend: true, user, otp };
-      else throw new Error(`error while creating new otp`);
+      else throw new Error(`error while retrieving user`);
     } catch (error) {
       throw error;
     }

@@ -291,7 +291,7 @@ export class UserController {
     }
   }
 
-  async editProfile(req: Request, res: Response, next: NextFunction) {
+  async editProfile(req: Request, res: Response, next: NextFunction) { 
     try {
       const id = req.params.id;
 

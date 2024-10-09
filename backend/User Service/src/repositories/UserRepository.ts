@@ -52,7 +52,7 @@ export class UserRepository implements IUserRepository {
     try {
       const user: { email: string; otp: number } | null = await Otp.findOne({
         email,
-      });
+      }).sort({ createdAt: -1 });
 
       if (!user) throw new CustomError("No user found", 400);
 
