@@ -42,7 +42,7 @@ export const getDevelopers = async () => {
   try {
     const response = await userInstance.get("/users/developers");
 
-    return response.data as { success: boolean; data: User[] };
+    return response.data as { success: boolean; data: User[]; message: string };
   } catch (error) {
     throw error;
   }
@@ -140,7 +140,7 @@ export const setPasswordAndCreateUser = async (
   try {
     const response = await userInstance.post("/users/setup-password", {
       token,
-      password
+      password,
     });
 
     return response.data as Response;

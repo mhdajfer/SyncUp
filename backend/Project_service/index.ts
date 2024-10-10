@@ -18,7 +18,7 @@ app.use(express.urlencoded({ extended: true }));
 
 connectDB();
 
-connectConsumers();
+// connectConsumers();
 
 app.use("/projects", projectRoutes);
 app.use(errorHandler);

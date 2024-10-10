@@ -1,4 +1,4 @@
-import { IProject } from "./IProject";
+import { IProject, Task } from "./IProject";
 import { IUser } from "./IUser";
 
 export interface IProjectUseCases {
@@ -9,4 +9,6 @@ export interface IProjectUseCases {
   createUser(user: IUser): Promise<IUser>;
   editProject(data: IProject): Promise<IProject>;
   getAssignedProjects(managerId: string): Promise<IProject[]>;
+  addTasks(data: Task[]): Promise<Task>;
+  getTasks(projectId: string): Promise<Task[]>;
 }

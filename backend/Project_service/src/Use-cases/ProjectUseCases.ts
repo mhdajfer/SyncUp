@@ -1,4 +1,5 @@
-import { IProject } from "../Interfaces/IProject";
+import { CustomError } from "../ErrorHandler/CustonError";
+import { IProject, Task } from "../Interfaces/IProject";
 import { IProjectRepository } from "../Interfaces/IProjectRepository";
 import { IProjectUseCases } from "../Interfaces/IProjectUseCases";
 import { IUser } from "../Interfaces/IUser";
@@ -71,6 +72,30 @@ export class ProjectUseCases implements IProjectUseCases {
       const projectData = await this.projectRepository.editProject(data);
 
       return projectData;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async addTasks(data: Task[]): Promise<Task> {
+    try {
+      const project = await this.projectRepository.addTasks(data);
+
+      if (!project) throw new CustomError("project not found", 409);
+
+      return project;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async getTasks(projectId: string): Promise<Task[]> {
+    try {
+      const tasks = await this.projectRepository.getTasks(projectId);
+
+      if (!tasks) throw new CustomError("tasks not found", 409);
+
+      return tasks;
     } catch (error) {
       throw error;
     }

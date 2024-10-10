@@ -36,10 +36,22 @@ router.get(
   projectController.getAssignedProjects.bind(projectController)
 );
 
+router.post(
+  "/tasks/new",
+  userAuth,
+  projectController.addTasks.bind(projectController)
+);
+
 router.put(
   "/",
   userAuth,
   projectController.editProject.bind(projectController)
+);
+
+router.post(
+  "/tasks",
+  userAuth,
+  projectController.getTasks.bind(projectController)
 );
 
 export default router;

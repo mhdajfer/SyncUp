@@ -40,11 +40,6 @@ const projectSchema = new Schema({
     enum: ["pending", "in progress", "completed"],
     default: "pending",
   },
-  task_ids: [
-    {
-      type: Types.ObjectId,
-    },
-  ],
   budget: {
     type: Number,
     min: 0,

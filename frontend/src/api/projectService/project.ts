@@ -1,6 +1,6 @@
 import { userInstance } from "@/axios";
 import { CreateProjectResponse } from "@/Components/Forms/ProjectForm";
-import { Project } from "@/interfaces/Project";
+import { Project, Task } from "@/interfaces/Project";
 
 export const getProjects = async (
   isForPManager = false
@@ -58,6 +58,31 @@ export const editProject = async (data: Project) => {
       message: string;
       data: Project;
     };
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const addTasks = async (tasks: Task[], projectId: string) => {
+  try {
+    const response = await userInstance.post("/projects/tasks/new", {
+      tasks,
+      projectId,
+    });
+
+    return response.data as { success: boolean; message: string; data: Task[] };
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const getProjectTasks = async (projectId: string) => {
+  try {
+    console.log("sending req for tasks", projectId);
+
+    const response = await userInstance.post("/projects/tasks", { projectId });
+
+    return response.data as { success: boolean; message: string; data: Task[] };
   } catch (error) {
     throw error;
   }

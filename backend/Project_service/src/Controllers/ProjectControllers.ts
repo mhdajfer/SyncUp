@@ -121,4 +121,54 @@ export class ProjectControllers {
       throw error;
     }
   }
+
+  async addTasks(req: CustomRequest, res: Response, next: NextFunction) {
+    try {
+      const { tasks, projectId } = req.body;
+
+      const tasksWithProjectId = tasks.map((task: any) => ({
+        ...task,
+        status: task.status || undefined,
+        priority: task.priority || undefined,
+        projectId,
+      }));
+
+      console.log(req.body);
+
+      if (!tasks || !projectId)
+        return res.status(400).json({
+          success: false,
+          message: "task details not found",
+          data: null,
+        });
+
+      const project = await this.projectUseCases.addTasks(tasksWithProjectId);
+
+      return res.status(200).json({
+        success: true,
+        message: "task details added successfully",
+        data: project,
+      });
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async getTasks(req: Request, res: Response, next: NextFunction) {
+    try {
+      const { projectId } = req.body;
+
+      console.log(projectId);
+
+      const tasks = await this.projectUseCases.getTasks(projectId);
+
+      return res.status(200).json({
+        success: true,
+        data: tasks,
+        message: "Tasks successfully retrieved",
+      });
+    } catch (error) {
+      throw error;
+    }
+  }
 }
