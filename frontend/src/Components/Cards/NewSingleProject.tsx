@@ -176,9 +176,9 @@ export default function NewSingleProject() {
   const handleCancelTask = (index: number) => {
     console.log(index);
 
-    const updatedTasks = tasks.filter((_, taskIndex) => taskIndex !== index);
+    const updatedTasks = newTasks.filter((_, taskIndex) => taskIndex !== index);
 
-    setTasks(updatedTasks);
+    setNewTasks(updatedTasks);
   };
 
   const handleClose = () => {
@@ -191,7 +191,19 @@ export default function NewSingleProject() {
   };
 
   const handleAddTask = () => {
-    setTasks([...tasks, { taskName: "", dueDate: "", assignee: "" }]);
+    setNewTasks([
+      ...newTasks,
+      {
+        title: "",
+        status: "",
+        projectId: "",
+        due_date: "",
+        assignee: "",
+        priority: "",
+        remarks: "",
+        desc: "",
+      },
+    ]);
   };
 
   const handleTaskChange = (index: number, field: string, value: string) => {
@@ -414,45 +426,49 @@ export default function NewSingleProject() {
                       {isEditing ? "Save Changes" : "Edit Project"}
                     </Button>
 
-                    <div className=" ">
-                      <h2 className="text-md font-bold text-gray-100 mb-6">
-                        Task List
-                      </h2>
-                      <div className=" grid grid-cols-2 gap-5">
-                        {tasks?.map((task, index) => (
-                          <div
-                            key={index}
-                            className="bg-gray-900 p-4 rounded-md shadow w-full h-full"
-                          >
-                            <h3 className="text-lg font-semibold text-gray-100 mb-2 hover:underline cursor-pointer hover:text-gray-200">
-                              {task.title}
-                            </h3>
-                            <div className="flex flex-wrap gap-4">
-                              <div className="flex items-center text-gray-300">
-                                <CalendarDays className="w-4 h-4 mr-2" />
-                                <span>
-                                  {format(
-                                    new Date(task.due_date),
-                                    "MMMM dd, yyyy"
-                                  )}
-                                </span>
-                              </div>
-                              <div className="flex items-center text-gray-300">
-                                <User className="w-4 h-4 mr-2" />
-                                {typeof task.assignee === "string" ? (
-                                  <span>{task.assignee}</span>
-                                ) : (
+                    {tasks.length > 0 ? (
+                      <div className=" ">
+                        <h2 className="text-md font-bold text-gray-100 mb-6">
+                          Task List
+                        </h2>
+                        <div className=" grid grid-cols-2 gap-5">
+                          {tasks?.map((task, index) => (
+                            <div
+                              key={index}
+                              className="bg-gray-900 p-4 rounded-md shadow w-full h-full"
+                            >
+                              <h3 className="text-lg font-semibold text-gray-100 mb-2 hover:underline cursor-pointer hover:text-gray-200">
+                                {task.title}
+                              </h3>
+                              <div className="flex flex-wrap gap-4">
+                                <div className="flex items-center text-gray-300">
+                                  <CalendarDays className="w-4 h-4 mr-2" />
                                   <span>
-                                    {task.assignee.firstName}{" "}
-                                    {task.assignee.lastName}
+                                    {format(
+                                      new Date(task.due_date),
+                                      "MMMM dd, yyyy"
+                                    )}
                                   </span>
-                                )}
+                                </div>
+                                <div className="flex items-center text-gray-300">
+                                  <User className="w-4 h-4 mr-2" />
+                                  {typeof task.assignee === "string" ? (
+                                    <span>{task.assignee}</span>
+                                  ) : (
+                                    <span>
+                                      {task.assignee.firstName}{" "}
+                                      {task.assignee.lastName}
+                                    </span>
+                                  )}
+                                </div>
                               </div>
                             </div>
-                          </div>
-                        ))}
+                          ))}
+                        </div>
                       </div>
-                    </div>
+                    ) : (
+                      ""
+                    )}
 
                     <div>
                       <h3 className="text-lg font-semibold mb-2">Tasks</h3>
