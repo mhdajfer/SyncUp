@@ -42,4 +42,21 @@ router.put(
   projectController.editProject.bind(projectController)
 );
 
+<<<<<<< Updated upstream
+=======
+router.post(
+  "/tasks",
+  userAuth,
+  projectController.getTasks.bind(projectController)
+);
+
+router.post(
+  "/tasks/one",
+  userAuth,
+  projectController.getOneTask.bind(projectController)
+);
+
+router.put("/tasks/edit", projectController.editTask.bind(projectController));
+
+>>>>>>> Stashed changes
 export default router;

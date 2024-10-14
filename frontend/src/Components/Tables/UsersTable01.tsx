@@ -15,9 +15,15 @@ import { blockUser } from "@/api/userService/user";
 import { AxiosError } from "axios";
 import NoData from "../NoData/NoData";
 
-export function UsersTable01({ usersList }: { usersList: User[] }) {
+export function UsersTable01({
+  usersList,
+  onSort,
+}: {
+  usersList: User[];
+  onSort: (field: string) => void;
+}) {
   const [page, setPage] = useState(1);
-  const rowsPerPage = 3;
+  const rowsPerPage = 4;
   const [users, setUsers] = useState<User[]>([]);
 
   useEffect(() => {
@@ -63,13 +69,23 @@ export function UsersTable01({ usersList }: { usersList: User[] }) {
   return (
     <div>
       {users.length > 0 ? (
-        <div className="min-w-full bg-slate-900 rounded-lg p-4 border border-slate-600">
+        <div className="min-w-full bg-slate-900 rounded-lg p-4 ">
           <Table className="text-white rounded-lg text-center ">
             <TableHeader>
               <TableRow className="  hover:bg-slate-900 ">
                 <TableHead className="text-center">sl no.</TableHead>
-                <TableHead className="text-center">Name</TableHead>
-                <TableHead className="text-center">Email</TableHead>
+                <TableHead
+                  className="text-center cursor-pointer"
+                  onClick={() => onSort("firstName")}
+                >
+                  Name
+                </TableHead>
+                <TableHead
+                  className="text-center cursor-pointer"
+                  onClick={() => onSort("firstName")}
+                >
+                  Email
+                </TableHead>
                 <TableHead className="text-center">Phone no.</TableHead>
                 <TableHead className="text-center">Designation</TableHead>
                 <TableHead className="text-center">Actions</TableHead>

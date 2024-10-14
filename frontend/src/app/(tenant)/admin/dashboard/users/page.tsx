@@ -1,6 +1,6 @@
 "use client";
 import { getAllUsers } from "@/api/userService/user";
-import { UsersTable01 } from "@/Components/Tables/UsersTable01";
+import UserTableWithSearch from "@/Components/Tables/UserTableWrapper";
 import { User } from "@/interfaces/User";
 
 import { useRouter } from "next/navigation";
@@ -26,7 +26,7 @@ export default function Page() {
   }, []);
   return (
     <>
-      <div className="">
+      <div className="w-full">
         <div className="my-4 w-full flex justify-end pe-8">
           <button
             type="button"
@@ -37,7 +37,7 @@ export default function Page() {
           </button>
         </div>
 
-        <UsersTable01 usersList={userList} />
+        <UserTableWithSearch users={userList} />
       </div>
     </>
   );

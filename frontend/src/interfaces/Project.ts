@@ -14,6 +14,21 @@ export interface Project {
   created_by: string;
 }
 
+<<<<<<< Updated upstream
+=======
+export interface Task {
+  _id?: string;
+  title: string;
+  projectId: string;
+  status: string;
+  desc?: string;
+  assignee: string | User;
+  priority?: string;
+  due_date: string;
+  remarks?: string;
+}
+
+>>>>>>> Stashed changes
 interface Comment {
   id: string;
   author: string;

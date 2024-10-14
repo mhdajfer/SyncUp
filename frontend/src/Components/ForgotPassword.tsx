@@ -14,13 +14,7 @@ interface ForgotPasswordFormData {
   email: string;
 }
 
-export default function ForgotPassword({
-  setEmail,
-  setOtpPopup,
-}: {
-  setEmail: (email: string) => void;
-  setOtpPopup: (value: boolean) => void;
-}) {
+export default function ForgotPassword() {
   const {
     register,
     handleSubmit,
@@ -33,8 +27,6 @@ export default function ForgotPassword({
 
       if (response.success) {
         toast.success(response.message);
-        setEmail("");
-        // setOtpPopup(true);
       } else {
         toast.error(response.message);
       }

@@ -30,6 +30,9 @@ export function TenantAdminLayout({
     }
   }
 
+  console.log(user);
+  
+
   return (
     <div className="h-screen w-64 bg-gray-900 text-gray-200 relative">
       <div className="flex items-center justify-center h-20 border-b border-gray-700">

@@ -20,9 +20,13 @@ import {
   SelectTrigger,
   SelectValue,
 } from "../ui/select";
+<<<<<<< Updated upstream
 import { User } from "@/interfaces/User";
 import { getProjectManagers } from "@/api/userService/user";
 import { DatePickerDemo } from "../Date/DatePicker";
+=======
+import { getDevelopers, getProjectManagers } from "@/api/userService/user";
+>>>>>>> Stashed changes
 import { AxiosError } from "axios";
 
 export default function NewSingleProject() {
@@ -67,10 +71,7 @@ export default function NewSingleProject() {
     getProject();
   }, [projectId]);
 
-  const parseDateString = (dateString: string) => {
-    const parsedDate = new Date(dateString);
-    return isNaN(parsedDate.getTime()) ? null : parsedDate;
-  };
+
 
   const fetchManagers = async () => {
     const response = await getProjectManagers();
@@ -336,9 +337,66 @@ export default function NewSingleProject() {
                       {isEditing ? "Save Changes" : "Edit Project"}
                     </Button>
 
+<<<<<<< Updated upstream
                     <div>
                       <h3 className="text-lg font-semibold mb-2">Tasks</h3>
                       {tasks.map((task, index) => (
+=======
+                    {tasks.length > 0 ? (
+                      <div className=" ">
+                        <h2 className="text-md font-bold text-gray-100 mb-6">
+                          Task List
+                        </h2>
+                        <div className=" grid grid-cols-2 gap-5">
+                          {tasks?.map((task, index) => (
+                            <div
+                              key={index}
+                              className="bg-gray-900 p-4 rounded-md shadow w-full h-full"
+                            >
+                              <h3
+                                className="text-lg font-semibold text-gray-100 mb-2 hover:underline cursor-pointer hover:text-gray-200"
+                                onClick={() =>
+                                  router.push(`${projectId} /${task._id}`)
+                                }
+                              >
+                                {task.title}
+                              </h3>
+                              <div className="flex flex-wrap gap-4">
+                                <div className="flex items-center text-gray-300">
+                                  <CalendarDays className="w-4 h-4 mr-2" />
+                                  <span>
+                                    {format(
+                                      new Date(task.due_date),
+                                      "MMMM dd, yyyy"
+                                    )}
+                                  </span>
+                                </div>
+                                <div className="flex items-center text-gray-300">
+                                  <User className="w-4 h-4 mr-2" />
+                                  {typeof task.assignee === "string" ? (
+                                    <span>{task.assignee}</span>
+                                  ) : (
+                                    <span>
+                                      {task.assignee.firstName}{" "}
+                                      {task.assignee.lastName}
+                                    </span>
+                                  )}
+                                </div>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    ) : (
+                      ""
+                    )}
+
+                    <div>
+                      <h3 className="text-lg font-semibold mb-2">
+                        Create Tasks
+                      </h3>
+                      {newTasks.map((task, index) => (
+>>>>>>> Stashed changes
                         <div
                           key={index}
                           className="grid grid-cols-3 gap-4 mb-4"
@@ -357,9 +415,6 @@ export default function NewSingleProject() {
                             }
                           />
 
-                          {/* <DatePickerDemo
-                            date={parseDateString(task.dueDate) || Date}
-                          /> */}
                           <input
                             type="date"
                             className="bg-gray-700 text-gray-100 border-gray-600 focus:border-blue-500"

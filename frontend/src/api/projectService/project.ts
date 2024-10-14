@@ -62,3 +62,51 @@ export const editProject = async (data: Project) => {
     throw error;
   }
 };
+<<<<<<< Updated upstream
+=======
+
+export const addTasks = async (tasks: Task[], projectId: string) => {
+  try {
+    const response = await userInstance.post("/projects/tasks/new", {
+      tasks,
+      projectId,
+    });
+
+    return response.data as { success: boolean; message: string; data: Task[] };
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const getProjectTasks = async (projectId: string) => {
+  try {
+    console.log("sending req for tasks", projectId);
+
+    const response = await userInstance.post("/projects/tasks", { projectId });
+
+    return response.data as { success: boolean; message: string; data: Task[] };
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const getTask = async (taskId: string) => {
+  try {
+    const response = await userInstance.post("/projects/tasks/one", { taskId });
+
+    return response.data as { success: boolean; message: string; data: Task };
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const editTask = async (data: Task) => {
+  try {
+    const response = await userInstance.put("/projects/tasks/edit", data);
+
+    return response.data as { success: boolean; message: string; data: Task };
+  } catch (error) {
+    throw error;
+  }
+};
+>>>>>>> Stashed changes

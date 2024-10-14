@@ -37,7 +37,7 @@ export default function ShowProfile({ initialUser }: { initialUser: User }) {
 
       if (response.success) {
         toast.success("profile updated.");
-        setUser(response.data);
+        setUser(user);
       } else toast.error(response.message);
     } catch (error: unknown) {
       if (error instanceof AxiosError) {

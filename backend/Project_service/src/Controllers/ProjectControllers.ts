@@ -121,4 +121,96 @@ export class ProjectControllers {
       throw error;
     }
   }
+<<<<<<< Updated upstream
+=======
+
+  async addTasks(req: CustomRequest, res: Response, next: NextFunction) {
+    try {
+      const { tasks, projectId } = req.body;
+
+      const tasksWithProjectId = tasks.map((task: any) => ({
+        ...task,
+        status: task.status || undefined,
+        priority: task.priority || undefined,
+        projectId,
+      }));
+
+      console.log(req.body);
+
+      if (!tasks || !projectId)
+        return res.status(400).json({
+          success: false,
+          message: "task details not found",
+          data: null,
+        });
+
+      const project = await this.projectUseCases.addTasks(tasksWithProjectId);
+
+      return res.status(200).json({
+        success: true,
+        message: "task details added successfully",
+        data: project,
+      });
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async getTasks(req: Request, res: Response, next: NextFunction) {
+    try {
+      const { projectId } = req.body;
+
+      console.log(projectId);
+
+      const tasks = await this.projectUseCases.getTasks(projectId);
+
+      return res.status(200).json({
+        success: true,
+        data: tasks,
+        message: "Tasks successfully retrieved",
+      });
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async getOneTask(req: Request, res: Response, next: NextFunction) {
+    try {
+      const { taskId } = req.body;
+      console.log("got the req inside getTask", taskId);
+
+      const taskDetails = await this.projectUseCases.getOneTask(taskId);
+
+      console.log(taskDetails);
+
+      return res.status(200).json({
+        success: true,
+        message: "task details successfully retrieved",
+        data: taskDetails,
+      });
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async editTask(req: Request, res: Response, next: NextFunction) {
+    try {
+      const data = req.body;
+
+      console.log("got req in editTask", data);
+
+      const updatedTask = await this.projectUseCases.editTask(data);
+
+      console.log(updatedTask);
+
+      return res.status(200).json({
+        success: true,
+        data: updatedTask,
+        message: "Task updated successfully",
+      });
+    } catch (error) {
+      throw error;
+    }
+  }
+>>>>>>> Stashed changes
 }

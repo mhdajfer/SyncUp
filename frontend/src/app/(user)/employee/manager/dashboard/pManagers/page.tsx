@@ -1,6 +1,6 @@
 "use client";
 import { getProjectManagers } from "@/api/userService/user";
-import { UsersTable01 } from "@/Components/Tables/UsersTable01";
+import UserTableWithSearch from "@/Components/Tables/UserTableWrapper";
 import { User } from "@/interfaces/User";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
@@ -24,7 +24,7 @@ export default function Page() {
 
   return (
     <>
-      <UsersTable01 usersList={managersList} />
+      <UserTableWithSearch users={managersList} />
     </>
   );
 }

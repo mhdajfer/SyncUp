@@ -99,4 +99,59 @@ export class ProjectRepository implements IProjectRepository {
       throw error;
     }
   }
+<<<<<<< Updated upstream
+=======
+
+  async addTasks(data: Task[]): Promise<Task> {
+    try {
+      // const taskData = new taskModel(...data);
+      const taskData = taskModel.insertMany(data);
+      console.log("task data", data);
+
+      // taskData.save();
+
+      return taskData as unknown as Task;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async getTasks(projectId: string): Promise<Task[]> {
+    try {
+      const tasks = await taskModel
+        .find({ projectId: projectId })
+        .populate("assignee");
+
+      console.log("before sending the tasks to the user****", tasks);
+
+      return tasks as unknown as Task[];
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async getOneTask(taskId: string): Promise<Task> {
+    try {
+      const taskDetails = await taskModel.findOne({ _id: taskId });
+
+      return taskDetails as unknown as Task;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async editTask(data: Task): Promise<Task> {
+    try {
+      const updatedTask = await taskModel.findOneAndUpdate(
+        { _id: data._id },
+        { ...data },
+        { new: true }
+      );
+
+      return updatedTask as unknown as Task;
+    } catch (error) {
+      throw error;
+    }
+  }
+>>>>>>> Stashed changes
 }

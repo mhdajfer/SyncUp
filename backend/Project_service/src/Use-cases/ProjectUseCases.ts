@@ -75,4 +75,55 @@ export class ProjectUseCases implements IProjectUseCases {
       throw error;
     }
   }
+<<<<<<< Updated upstream
+=======
+
+  async addTasks(data: Task[]): Promise<Task> {
+    try {
+      const project = await this.projectRepository.addTasks(data);
+
+      if (!project) throw new CustomError("project not found", 409);
+
+      return project;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async getTasks(projectId: string): Promise<Task[]> {
+    try {
+      const tasks = await this.projectRepository.getTasks(projectId);
+
+      if (!tasks) throw new CustomError("tasks not found", 409);
+
+      return tasks;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async getOneTask(taskId: string): Promise<Task> {
+    try {
+      const taskDetails = await this.projectRepository.getOneTask(taskId);
+
+      if (!taskDetails) throw new CustomError("taskDetails not found", 409);
+
+      return taskDetails;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async editTask(data: Task): Promise<Task>{
+    try {
+      const updatedTask = await this.projectRepository.editTask(data);
+
+      if(!updatedTask) throw new CustomError('Task not found', 409);
+
+      return updatedTask;
+    } catch (error) {
+      throw error;
+    }
+  }
+>>>>>>> Stashed changes
 }

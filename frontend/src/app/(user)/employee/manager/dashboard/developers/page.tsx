@@ -1,6 +1,6 @@
 "use client";
 import { getDevelopers } from "@/api/userService/user";
-import { UsersTable01 } from "@/Components/Tables/UsersTable01";
+import UserTableWithSearch from "@/Components/Tables/UserTableWrapper";
 import { User } from "@/interfaces/User";
 import { useEffect, useState } from "react";
 
@@ -18,8 +18,7 @@ export default function Page() {
 
   return (
     <>
-      
-      <UsersTable01 usersList={devList} />
+      <UserTableWithSearch users={devList} />
     </>
   );
 }

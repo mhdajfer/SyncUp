@@ -25,7 +25,7 @@ export default function Page() {
       <div className="my-4 w-full flex justify-end pe-14">
         <button
           type="button"
-          className="text-gray-900 bg-white border border-gray-300 hover:bg-gray-200 font-medium rounded-lg text-sm px-2 py-1 me-2"
+          className="text-white bg-violet-900 border border-gray-500 hover:bg-violet-800 font-medium rounded-lg text-sm px-2 py-1 me-2"
           onClick={() => router.push("projects/create")}
         >
           new Project

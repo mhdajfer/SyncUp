@@ -14,3 +14,18 @@ export interface IProject {
   document: string | null;
   created_by: string;
 }
+<<<<<<< Updated upstream
+=======
+
+export interface Task {
+  _id?: string;
+  title: string;
+  desc?: string;
+  assignee: string;
+  projectId: string;
+  status?: string;
+  priority?: string;
+  due_date: Date;
+  remarks?: string;
+}
+>>>>>>> Stashed changes
