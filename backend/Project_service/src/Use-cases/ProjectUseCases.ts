@@ -1,4 +1,5 @@
-import { IProject } from "../Interfaces/IProject";
+import { CustomError } from "../ErrorHandler/CustonError";
+import { IProject, Task } from "../Interfaces/IProject";
 import { IProjectRepository } from "../Interfaces/IProjectRepository";
 import { IProjectUseCases } from "../Interfaces/IProjectUseCases";
 import { IUser } from "../Interfaces/IUser";
@@ -75,8 +76,7 @@ export class ProjectUseCases implements IProjectUseCases {
       throw error;
     }
   }
-<<<<<<< Updated upstream
-=======
+
 
   async addTasks(data: Task[]): Promise<Task> {
     try {
@@ -125,5 +125,4 @@ export class ProjectUseCases implements IProjectUseCases {
       throw error;
     }
   }
->>>>>>> Stashed changes
 }

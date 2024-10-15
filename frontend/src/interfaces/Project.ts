@@ -1,3 +1,5 @@
+import { User } from "./User";
+
 export interface Project {
   _id?: string;
   name: string;
@@ -6,7 +8,6 @@ export interface Project {
   start_date: string;
   due_date: string;
   status: string;
-  task_ids: string[];
   budget: number;
   goal: string;
   document: File | null;
@@ -14,10 +15,7 @@ export interface Project {
   created_by: string;
 }
 
-<<<<<<< Updated upstream
-=======
 export interface Task {
-  _id?: string;
   title: string;
   projectId: string;
   status: string;
@@ -25,10 +23,9 @@ export interface Task {
   assignee: string | User;
   priority?: string;
   due_date: string;
-  remarks?: string;
+  remartks?: string;
 }
 
->>>>>>> Stashed changes
 interface Comment {
   id: string;
   author: string;

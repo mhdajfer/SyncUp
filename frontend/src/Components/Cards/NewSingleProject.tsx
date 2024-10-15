@@ -8,11 +8,23 @@ import { Badge } from "@/Components/ui/badge";
 import { Button } from "@/Components/ui/button";
 import { Input } from "@/Components/ui/input";
 import { Textarea } from "@/Components/ui/textarea";
-import { CalendarIcon, DollarSignIcon, UserIcon, X } from "lucide-react";
+import {
+  CalendarDays,
+  CalendarIcon,
+  DollarSignIcon,
+  User,
+  UserIcon,
+  X,
+} from "lucide-react";
 import { useParams, useRouter } from "next/navigation";
 import { toast } from "sonner";
-import { editProject, getOneProject } from "@/api/projectService/project";
-import { Project } from "@/interfaces/Project";
+import {
+  addTasks,
+  editProject,
+  getOneProject,
+  getProjectTasks,
+} from "@/api/projectService/project";
+import { Project, Task } from "@/interfaces/Project";
 import {
   Select,
   SelectContent,
@@ -20,25 +32,33 @@ import {
   SelectTrigger,
   SelectValue,
 } from "../ui/select";
-<<<<<<< Updated upstream
-import { User } from "@/interfaces/User";
-import { getProjectManagers } from "@/api/userService/user";
-import { DatePickerDemo } from "../Date/DatePicker";
-=======
 import { getDevelopers, getProjectManagers } from "@/api/userService/user";
->>>>>>> Stashed changes
+
 import { AxiosError } from "axios";
+import { User as IUser } from "@/interfaces/User";
+import { format } from "date-fns";
 
 export default function NewSingleProject() {
   const router = useRouter();
   const { projectId }: { projectId: string } = useParams();
   const [project, setProject] = useState<Project | null>(null);
   //   const [newComment, setNewComment] = useState("");
-  const [managers, setManagers] = useState<User[]>([]);
+  const [managers, setManagers] = useState<IUser[]>([]);
   const [isOpen, setIsOpen] = useState(false);
-  const [tasks, setTasks] = useState([
-    { taskName: "", dueDate: "", assignee: "" },
+  const [newTasks, setNewTasks] = useState([
+    {
+      title: "",
+      status: "",
+      projectId: "",
+      due_date: "",
+      assignee: "",
+      priority: "",
+      remarks: "",
+      desc: "",
+    },
   ]);
+
+  const [tasks, setTasks] = useState<Task[]>([]);
 
   const [isEditing, setIsEditing] = useState(false);
   const [editedProject, setEditedProject] = useState<Project>({
@@ -48,7 +68,6 @@ export default function NewSingleProject() {
     start_date: "",
     due_date: "",
     status: "",
-    task_ids: [],
     budget: 0,
     goal: "",
     document: null,
@@ -56,22 +75,45 @@ export default function NewSingleProject() {
     created_by: "",
   });
 
+  const [developers, setDevelopers] = useState<IUser[]>([]);
+
   useEffect(() => {
     setIsOpen(true);
-    async function getProject() {
+    async function getProjectandDeveloper() {
       const project = await getOneProject(projectId);
+
+      const response = await getDevelopers();
+
+      if (response.success) {
+        setDevelopers(response.data);
+      } else toast.error(response.message);
 
       if (!project.success || !project.data) {
         return toast.error("Project not found");
       }
+      console.log(project.data);
+
       setProject(project.data);
       setEditedProject(project.data);
     }
 
-    getProject();
+    async function getTasks() {
+      try {
+        const response = await getProjectTasks(projectId);
+
+        if (response.success) {
+          setTasks(response.data);
+        } else {
+          toast.error("failed to get tasks");
+        }
+      } catch (error) {
+        toast.error("tasks not found ");
+        console.log(error);
+      }
+    }
+    getProjectandDeveloper();
+    getTasks();
   }, [projectId]);
-
-
 
   const fetchManagers = async () => {
     const response = await getProjectManagers();
@@ -80,6 +122,28 @@ export default function NewSingleProject() {
     }
     setManagers(response.data);
     console.log(response.data);
+  };
+
+  const handleCreateTasks = async () => {
+    try {
+      if (!project?._id) return toast.error("Project not found");
+      console.log(newTasks);
+
+      const response = await addTasks(newTasks, project?._id);
+
+      if (response.success) {
+        toast.success(response.message);
+        setIsEditing(false);
+      } else toast.error(response.message);
+    } catch (error: unknown) {
+      if (error instanceof AxiosError) {
+        toast.error(error.response?.data.message);
+        console.log(error);
+      } else {
+        toast.error("tasks not added");
+        console.log(error);
+      }
+    }
   };
 
   const formatDate = (dateString: string) => {
@@ -104,6 +168,14 @@ export default function NewSingleProject() {
     }
   };
 
+  const handleCancelTask = (index: number) => {
+    console.log(index);
+
+    const updatedTasks = newTasks.filter((_, taskIndex) => taskIndex !== index);
+
+    setNewTasks(updatedTasks);
+  };
+
   const handleClose = () => {
     router.back();
   };
@@ -114,13 +186,25 @@ export default function NewSingleProject() {
   };
 
   const handleAddTask = () => {
-    setTasks([...tasks, { taskName: "", dueDate: "", assignee: "" }]);
+    setNewTasks([
+      ...newTasks,
+      {
+        title: "",
+        status: "",
+        projectId: "",
+        due_date: "",
+        assignee: "",
+        priority: "",
+        remarks: "",
+        desc: "",
+      },
+    ]);
   };
 
   const handleTaskChange = (index: number, field: string, value: string) => {
-    const updatedTasks = [...tasks];
+    const updatedTasks = [...newTasks];
     updatedTasks[index] = { ...updatedTasks[index], [field]: value };
-    setTasks(updatedTasks);
+    setNewTasks(updatedTasks);
   };
 
   const handleInputChange = (
@@ -337,11 +421,6 @@ export default function NewSingleProject() {
                       {isEditing ? "Save Changes" : "Edit Project"}
                     </Button>
 
-<<<<<<< Updated upstream
-                    <div>
-                      <h3 className="text-lg font-semibold mb-2">Tasks</h3>
-                      {tasks.map((task, index) => (
-=======
                     {tasks.length > 0 ? (
                       <div className=" ">
                         <h2 className="text-md font-bold text-gray-100 mb-6">
@@ -353,12 +432,7 @@ export default function NewSingleProject() {
                               key={index}
                               className="bg-gray-900 p-4 rounded-md shadow w-full h-full"
                             >
-                              <h3
-                                className="text-lg font-semibold text-gray-100 mb-2 hover:underline cursor-pointer hover:text-gray-200"
-                                onClick={() =>
-                                  router.push(`${projectId} /${task._id}`)
-                                }
-                              >
+                              <h3 className="text-lg font-semibold text-gray-100 mb-2 hover:underline cursor-pointer hover:text-gray-200">
                                 {task.title}
                               </h3>
                               <div className="flex flex-wrap gap-4">
@@ -392,58 +466,74 @@ export default function NewSingleProject() {
                     )}
 
                     <div>
-                      <h3 className="text-lg font-semibold mb-2">
-                        Create Tasks
-                      </h3>
+                      <h3 className="text-lg font-semibold mb-2">Tasks</h3>
                       {newTasks.map((task, index) => (
->>>>>>> Stashed changes
                         <div
                           key={index}
-                          className="grid grid-cols-3 gap-4 mb-4"
+                          className="grid grid-cols-4 gap-4 mb-4"
                         >
                           <input
                             type="text"
                             placeholder="Task Name"
                             className="bg-gray-700 text-gray-100 border-gray-600 focus:border-blue-500"
-                            value={task.taskName}
+                            value={task.title}
                             onChange={(e) =>
-                              handleTaskChange(
-                                index,
-                                "taskName",
-                                e.target.value
-                              )
+                              handleTaskChange(index, "title", e.target.value)
                             }
                           />
 
                           <input
                             type="date"
                             className="bg-gray-700 text-gray-100 border-gray-600 focus:border-blue-500"
-                            value={task.dueDate}
-                            onChange={(e) =>
-                              handleTaskChange(index, "dueDate", e.target.value)
-                            }
-                          />
-                          <input
-                            type="text"
-                            placeholder="Assignee"
-                            className="bg-gray-700 text-gray-100 border-gray-600 focus:border-blue-500"
-                            value={task.assignee}
+                            value={task.due_date}
                             onChange={(e) =>
                               handleTaskChange(
                                 index,
-                                "assignee",
+                                "due_date",
                                 e.target.value
                               )
                             }
                           />
+                          <Select
+                            onValueChange={(value) =>
+                              handleTaskChange(index, "assignee", value)
+                            }
+                          >
+                            <SelectTrigger className="w-full bg-gray-700 text-white">
+                              <SelectValue placeholder="Select a developer" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              {developers.map((developer) => (
+                                <SelectItem
+                                  key={developer?._id}
+                                  value={developer?._id || ""}
+                                >
+                                  {developer.firstName}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+
+                          <X
+                            className="h-4 w-4  text-gray-200 hover:text-white cursor-pointer hover:font-xl"
+                            onClick={() => handleCancelTask(index)}
+                          />
                         </div>
                       ))}
-                      <Button
-                        onClick={handleAddTask}
-                        className="mt-2 bg-blue-600 hover:bg-blue-700 text-white"
-                      >
-                        Add Task
-                      </Button>
+                      <div className="flex space-x-5">
+                        <Button
+                          onClick={handleAddTask}
+                          className="mt-2 bg-blue-800 hover:bg-blue-700 text-white"
+                        >
+                          Add Task
+                        </Button>
+                        <Button
+                          onClick={handleCreateTasks}
+                          className="mt-2 bg-violet-900 hover:bg-violet-700 text-white"
+                        >
+                          Create Tasks
+                        </Button>
+                      </div>
                     </div>
                   </CardContent>
                 </Card>

@@ -5,7 +5,7 @@ const TaskSchema: Schema = new Schema({
     type: String,
     required: true,
   },
-  desc: {
+  description: {
     type: String,
   },
   assignee: {

@@ -1,9 +1,10 @@
 import { IProjectRepository } from "../Interfaces/IProjectRepository";
 import Project from "../Frameworks/models/Project";
-import { IProject } from "../Interfaces/IProject";
+import { IProject, Task } from "../Interfaces/IProject";
 import User from "../Frameworks/models/userModel";
 import { CustomError } from "../ErrorHandler/CustonError";
 import { IUser } from "../Interfaces/IUser";
+import taskModel from "../Frameworks/models/Task";
 
 export class ProjectRepository implements IProjectRepository {
   async createProject(input: IProject): Promise<IProject> {
@@ -99,8 +100,7 @@ export class ProjectRepository implements IProjectRepository {
       throw error;
     }
   }
-<<<<<<< Updated upstream
-=======
+
 
   async addTasks(data: Task[]): Promise<Task> {
     try {
@@ -153,5 +153,4 @@ export class ProjectRepository implements IProjectRepository {
       throw error;
     }
   }
->>>>>>> Stashed changes
 }

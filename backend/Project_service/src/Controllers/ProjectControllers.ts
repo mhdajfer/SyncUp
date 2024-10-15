@@ -121,8 +121,6 @@ export class ProjectControllers {
       throw error;
     }
   }
-<<<<<<< Updated upstream
-=======
 
   async addTasks(req: CustomRequest, res: Response, next: NextFunction) {
     try {
@@ -212,5 +210,4 @@ export class ProjectControllers {
       throw error;
     }
   }
->>>>>>> Stashed changes
 }

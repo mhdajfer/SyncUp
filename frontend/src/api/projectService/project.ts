@@ -1,6 +1,6 @@
 import { userInstance } from "@/axios";
 import { CreateProjectResponse } from "@/Components/Forms/ProjectForm";
-import { Project } from "@/interfaces/Project";
+import { Project, Task } from "@/interfaces/Project";
 
 export const getProjects = async (
   isForPManager = false
@@ -62,8 +62,7 @@ export const editProject = async (data: Project) => {
     throw error;
   }
 };
-<<<<<<< Updated upstream
-=======
+
 
 export const addTasks = async (tasks: Task[], projectId: string) => {
   try {
@@ -109,4 +108,3 @@ export const editTask = async (data: Task) => {
     throw error;
   }
 };
->>>>>>> Stashed changes
