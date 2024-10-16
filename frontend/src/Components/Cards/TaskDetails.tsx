@@ -8,6 +8,7 @@ import { AxiosError } from "axios";
 import { toast } from "sonner";
 import { editTask, getTask } from "@/api/projectService/project";
 import { Task } from "@/interfaces/Project";
+import Tiptap from "../RichText/TipTap";
 
 export default function TaskDetails() {
   const { taskId }: { taskId: string } = useParams();
@@ -157,14 +158,20 @@ export default function TaskDetails() {
               >
                 Description
               </label>
-              <textarea
-                id="desc"
-                name="desc"
-                value={editedTask.desc}
-                onChange={handleChange}
-                rows={3}
-                className="mt-1 block w-full px-3 py-2 bg-gray-800 border border-gray-700 rounded-md text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
-              ></textarea>
+              <div
+                className="mb-3"
+                onClick={(e) => e.stopPropagation()}
+                onKeyDown={(e) => e.stopPropagation()}
+              >
+                {editedTask.desc && (
+                  <Tiptap
+                    content={editedTask.desc}
+                    setContent={(content) =>
+                      setEditedTask((prev) => ({ ...prev, desc: content }))
+                    }
+                  />
+                )}
+              </div>
             </div>
             <div>
               <label
@@ -303,10 +310,15 @@ export default function TaskDetails() {
               )}
             </div>
 
-            <div>
-              <p className="text-gray-400 mb-2">Description</p>
-              <p>{task.desc}</p>
-            </div>
+            {task.desc && (
+              <div>
+                <p className="text-gray-400 mb-2">Description</p>
+                <div
+                  className="mt-1 block w-full px-3 py-2 bg-gray-800 border border-gray-700 rounded-md text-white focus:outline-none"
+                  dangerouslySetInnerHTML={{ __html: task.desc }}
+                ></div>
+              </div>
+            )}
 
             <div>
               <p className="text-gray-400 mb-2">Remarks</p>

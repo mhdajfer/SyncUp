@@ -101,12 +101,11 @@ export class ProjectRepository implements IProjectRepository {
     }
   }
 
-
   async addTasks(data: Task[]): Promise<Task> {
     try {
       // const taskData = new taskModel(...data);
-      const taskData = taskModel.insertMany(data);
-      console.log("task data", data);
+      const taskData = await taskModel.insertMany(data);
+      console.log("task data", taskData);
 
       // taskData.save();
 

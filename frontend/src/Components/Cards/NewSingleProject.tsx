@@ -37,6 +37,7 @@ import { getDevelopers, getProjectManagers } from "@/api/userService/user";
 import { AxiosError } from "axios";
 import { User as IUser } from "@/interfaces/User";
 import { format } from "date-fns";
+import Tiptap from "../RichText/TipTap";
 
 export default function NewSingleProject() {
   const router = useRouter();
@@ -432,7 +433,12 @@ export default function NewSingleProject() {
                               key={index}
                               className="bg-gray-900 p-4 rounded-md shadow w-full h-full"
                             >
-                              <h3 className="text-lg font-semibold text-gray-100 mb-2 hover:underline cursor-pointer hover:text-gray-200">
+                              <h3
+                                className="text-lg font-semibold text-gray-100 mb-2 hover:underline cursor-pointer hover:text-gray-200"
+                                onClick={() =>
+                                  router.push(`${projectId}/${task._id}`)
+                                }
+                              >
                                 {task.title}
                               </h3>
                               <div className="flex flex-wrap gap-4">
@@ -465,26 +471,38 @@ export default function NewSingleProject() {
                       ""
                     )}
 
-                    <div>
+                    <div className="">
                       <h3 className="text-lg font-semibold mb-2">Tasks</h3>
+
                       {newTasks.map((task, index) => (
                         <div
                           key={index}
-                          className="grid grid-cols-4 gap-4 mb-4"
+                          className="border border-gray-600 p-4 rounded-lg bg-gray-900 mb-4 relative pe-20"
                         >
                           <input
                             type="text"
                             placeholder="Task Name"
-                            className="bg-gray-700 text-gray-100 border-gray-600 focus:border-blue-500"
+                            className="w-full bg-gray-700 text-gray-100 border-gray-600 
+                 focus:border-blue-500 p-2 mb-3 rounded"
                             value={task.title}
                             onChange={(e) =>
                               handleTaskChange(index, "title", e.target.value)
                             }
                           />
 
+                          <div className="mb-3">
+                            <Tiptap
+                              content={task.desc}
+                              setContent={(content) =>
+                                handleTaskChange(index, "desc", content)
+                              }
+                            />
+                          </div>
+
                           <input
                             type="date"
-                            className="bg-gray-700 text-gray-100 border-gray-600 focus:border-blue-500"
+                            className="w-full bg-gray-700 text-gray-100 border-gray-600 
+                 focus:border-blue-500 p-2 mb-3 rounded"
                             value={task.due_date}
                             onChange={(e) =>
                               handleTaskChange(
@@ -494,14 +512,16 @@ export default function NewSingleProject() {
                               )
                             }
                           />
+
                           <Select
                             onValueChange={(value) =>
                               handleTaskChange(index, "assignee", value)
                             }
                           >
-                            <SelectTrigger className="w-full bg-gray-700 text-white">
+                            <SelectTrigger className="w-full bg-gray-700 text-white mb-3 rounded">
                               <SelectValue placeholder="Select a developer" />
                             </SelectTrigger>
+
                             <SelectContent>
                               {developers.map((developer) => (
                                 <SelectItem
@@ -514,12 +534,15 @@ export default function NewSingleProject() {
                             </SelectContent>
                           </Select>
 
+                          {/* Cancel Button */}
                           <X
-                            className="h-4 w-4  text-gray-200 hover:text-white cursor-pointer hover:font-xl"
+                            className="h-4 w-4 text-gray-200 hover:text-white cursor-pointer 
+                 absolute right-5 top-[50%] transform -translate-y-1/2"
                             onClick={() => handleCancelTask(index)}
                           />
                         </div>
                       ))}
+
                       <div className="flex space-x-5">
                         <Button
                           onClick={handleAddTask}
