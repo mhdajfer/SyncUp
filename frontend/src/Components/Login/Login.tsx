@@ -9,13 +9,14 @@ import { useDispatch } from "react-redux";
 import { toast } from "sonner";
 import Cookies from "js-cookie";
 import { AxiosError } from "axios";
+import { FaRegEyeSlash, FaRegEye  } from "react-icons/fa";
 
 export default function Login() {
   const router = useRouter();
   const dispatch = useDispatch<AppDispatch>();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-
+  const [showPassword, setShowPassword] = useState(false);
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -67,6 +68,7 @@ export default function Login() {
       console.log("Error logging in", error);
     }
   };
+
   return (
     <div className="flex items-center justify-center min-h-screen bg-gray-900">
       <div className="bg-gray-800 p-8 rounded-lg shadow-lg w-full max-w-md">
@@ -101,16 +103,29 @@ export default function Login() {
             >
               Password
             </label>
-            <input
-              id="password"
-              name="password"
-              type="password"
-              required
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className="mt-1 block w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-md text-gray-200 placeholder-gray-500 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-              placeholder="••••••••"
-            />
+            <div className="relative">
+              <input
+                id="password"
+                name="password"
+                type={showPassword ? "text" : "password"}
+                required
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                className="mt-1 block w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-md text-gray-200 placeholder-gray-500 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                placeholder="••••••••"
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)} 
+                className="absolute inset-y-0 right-0 flex items-center pr-3"
+              >
+                {showPassword ? (
+                  <FaRegEye className="h-5 w-5 text-gray-400" /> 
+                ) : (
+                  <FaRegEyeSlash className="h-5 w-5 text-gray-400" /> 
+                )}
+              </button>
+            </div>
           </div>
 
           <div className="flex items-center justify-between">
