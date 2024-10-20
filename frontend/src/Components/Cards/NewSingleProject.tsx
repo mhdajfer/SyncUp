@@ -125,23 +125,54 @@ export default function NewSingleProject() {
     console.log(response.data);
   };
 
+  const validateTasks = (tasks: Task[]) => {
+    return tasks.every((task) => {
+      return (
+        task.title.trim() !== "" &&
+        task.desc &&
+        task.desc.trim() !== "" &&
+        task.assignee !== "" &&
+        task.due_date.trim() !== ""
+      );
+    });
+  };
+
   const handleCreateTasks = async () => {
     try {
-      if (!project?._id) return toast.error("Project not found");
       console.log(newTasks);
 
-      const response = await addTasks(newTasks, project?._id);
+      if (!validateTasks(newTasks) || !project?._id)
+        return toast.error("Invalid details provided");
+
+      const response = await addTasks(newTasks, project._id);
 
       if (response.success) {
         toast.success(response.message);
         setIsEditing(false);
-      } else toast.error(response.message);
+
+        setTasks((prevTasks) => [...prevTasks, ...newTasks]);
+        newTasks[0].desc = "";
+        setNewTasks([
+          {
+            title: "",
+            status: "",
+            projectId: "",
+            due_date: "",
+            assignee: "",
+            priority: "",
+            remarks: "",
+            desc: "",
+          },
+        ]);
+      } else {
+        toast.error(response.message);
+      }
     } catch (error: unknown) {
       if (error instanceof AxiosError) {
         toast.error(error.response?.data.message);
         console.log(error);
       } else {
-        toast.error("tasks not added");
+        toast.error("Tasks not added");
         console.log(error);
       }
     }
@@ -534,7 +565,6 @@ export default function NewSingleProject() {
                             </SelectContent>
                           </Select>
 
-                          {/* Cancel Button */}
                           <X
                             className="h-4 w-4 text-gray-200 hover:text-white cursor-pointer 
                  absolute right-5 top-[50%] transform -translate-y-1/2"
