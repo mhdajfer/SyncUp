@@ -468,6 +468,16 @@ export class UserController {
           return res.status(400).json({ message: "No user found" });
         }
 
+        const currentUser = await this.userUseCase.getUserByEmail(
+          req.user.email
+        );
+        if (!currentUser)
+          return res
+            .status(404)
+            .json({ message: "user not found", data: null, success: false });
+
+        const oldAvatarUrl = currentUser.avatar;
+
         const params = {
           Bucket: "syncupcloud",
           Key: `Image-${this.generateRandomNumber()}.jpg`,
@@ -482,13 +492,16 @@ export class UserController {
           req.user?._id
         );
 
-        res
-          .status(200)
-          .json({
-            success: true,
-            message: "Avatar updated successfully",
-            data: updatedUser,
-          });
+        if (oldAvatarUrl) {
+          const oldKey = oldAvatarUrl.split("/").pop() as string;
+          await this.deleteImageFromS3(oldKey);
+        }
+
+        res.status(200).json({
+          success: true,
+          message: "Avatar updated successfully",
+          data: updatedUser,
+        });
       });
     } catch (error) {
       console.log("error while uploading image");
@@ -498,5 +511,24 @@ export class UserController {
 
   generateRandomNumber(min: number = 10000, max: number = 99999): number {
     return Math.floor(Math.random() * (max - min + 1)) + min;
+  }
+
+  private async deleteImageFromS3(key: string) {
+    const s3 = new AWS.S3({
+      accessKeyId: process.env.AWS_ACCESS_KEY,
+      secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+    });
+
+    try {
+      await s3
+        .deleteObject({
+          Bucket: "syncupcloud",
+          Key: key,
+        })
+        .promise();
+      console.log(`Deleted image: ${key}`);
+    } catch (error) {
+      console.error(`Failed to delete old image: ${key}`, error);
+    }
   }
 }
