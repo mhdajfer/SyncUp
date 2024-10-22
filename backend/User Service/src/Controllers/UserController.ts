@@ -9,6 +9,8 @@ import { UserProducer } from "../events/Producers/UserProducer";
 import { CustomError } from "../ErrorHandler/CustonError";
 import { CustomRequest } from "../interfaces/CustomRequest";
 import hashPassword from "../Utils/bcrypt";
+import multer from "multer";
+import AWS, { S3 } from "aws-sdk";
 
 export class UserController {
   private userUseCase: IUserUseCases;
@@ -435,5 +437,66 @@ export class UserController {
         .status(400)
         .json({ message: "Error while Login", error: error.message });
     }
+  }
+
+  async uploadImage(req: CustomRequest, res: Response, next: NextFunction) {
+    try {
+      console.log("herererer");
+      const storage = multer.memoryStorage();
+      const upload = multer({ storage: storage }).single("image");
+      const s3 = new AWS.S3({
+        accessKeyId: process.env.AWS_ACCESS_KEY,
+        secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+      });
+
+      upload(req, res, async (err) => {
+        if (err instanceof multer.MulterError) {
+          console.error("Multer error:", err);
+          return res
+            .status(400)
+            .json({ message: "File upload failed", error: err });
+        } else if (err) {
+          console.error("Unknown error:", err);
+          return res
+            .status(500)
+            .json({ message: "Internal Server Error", error: err });
+        }
+
+        if (!req.file) {
+          return res.status(400).json({ message: "No file uploaded" });
+        } else if (!req.user?._id) {
+          return res.status(400).json({ message: "No user found" });
+        }
+
+        const params = {
+          Bucket: "syncupcloud",
+          Key: `Image-${this.generateRandomNumber()}.jpg`,
+          Body: req.file.buffer,
+          ContentType: "image/jpeg",
+        };
+
+        const uploadedImage = await s3.upload(params).promise();
+
+        const updatedUser = await this.userUseCase.updateAvatar(
+          uploadedImage.Location,
+          req.user?._id
+        );
+
+        res
+          .status(200)
+          .json({
+            success: true,
+            message: "Avatar updated successfully",
+            data: updatedUser,
+          });
+      });
+    } catch (error) {
+      console.log("error while uploading image");
+      throw error;
+    }
+  }
+
+  generateRandomNumber(min: number = 10000, max: number = 99999): number {
+    return Math.floor(Math.random() * (max - min + 1)) + min;
   }
 }

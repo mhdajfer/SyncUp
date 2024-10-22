@@ -198,4 +198,18 @@ export class UserUseCases implements IUserUseCases {
       throw new Error(error);
     }
   }
+
+  async updateAvatar(imageUrl: string, userId: string):Promise<IUser>{
+
+    try {
+      
+      const user = await this.userRepository.updateAvatar(imageUrl, userId);
+
+      return user;
+    } catch (error) {
+      console.log('error while updating avatar');
+      throw error;
+      
+    }
+  }
 }

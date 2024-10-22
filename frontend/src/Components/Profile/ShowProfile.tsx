@@ -15,11 +15,12 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/Components/ui/avatar";
 import { User } from "@/interfaces/User";
 import { AxiosError } from "axios";
 import { toast } from "sonner";
-import { editProfile } from "@/api/userService/user";
+import { editProfile, uploadImage } from "@/api/userService/user";
 
 export default function ShowProfile({ initialUser }: { initialUser: User }) {
   const [user, setUser] = useState<User>(initialUser);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const [imageUploaded, setImageUploaded] = useState<File | null>();
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -50,8 +51,23 @@ export default function ShowProfile({ initialUser }: { initialUser: User }) {
     fileInputRef.current?.click();
   };
 
+  const handleSaveImage = async () => {
+    if (!imageUploaded) return toast.warning("image not uploaded");
+
+    const response = await uploadImage(imageUploaded);
+
+    if (response.success) {
+      toast.success(response.message);
+      setUser((prevUser) => ({
+        ...prevUser,
+        avatar: response.data.avatar as string,
+      }));
+    } else return toast.error("Image upload failed");
+  };
+
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
+    setImageUploaded(file);
     if (file) {
       const reader = new FileReader();
       reader.onloadend = () => {
@@ -72,9 +88,9 @@ export default function ShowProfile({ initialUser }: { initialUser: User }) {
         </CardTitle>
       </CardHeader>
       <CardContent className="grid gap-8">
-        <div className="flex justify-center">
+        <div className="relative flex flex-col justify-center items-center">
           <Avatar
-            className="w-24 h-24 cursor-pointer"
+            className="w-24 h-24 cursor-pointer relative group"
             onClick={handleProfilePictureClick}
           >
             <AvatarImage src={user.avatar} alt="Profile picture" />
@@ -82,16 +98,32 @@ export default function ShowProfile({ initialUser }: { initialUser: User }) {
               {user.firstName[0].toUpperCase()}
               {user.lastName[0].toUpperCase()}
             </AvatarFallback>
+
+            <div className="absolute inset-0 bg-black bg-opacity-40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+              <span className="text-white text-sm font-medium">Change</span>
+            </div>
           </Avatar>
+
           <input
             type="file"
             ref={fileInputRef}
-            onChange={handleFileChange}
+            onChange={(e) => {
+              handleFileChange(e);
+            }}
             accept="image/*"
             className="hidden"
             aria-label="Change profile picture"
           />
+          {imageUploaded && (
+            <button
+              onClick={handleSaveImage}
+              className="px-1 py-1 mt-3 text-xs  text-white rounded  bg-violet-950 hover:bg-violet-900 transition-colors duration-300"
+            >
+              Save Image
+            </button>
+          )}
         </div>
+
         <div className="grid grid-cols-2 gap-8">
           <div>
             <Label htmlFor="firstName">First Name</Label>

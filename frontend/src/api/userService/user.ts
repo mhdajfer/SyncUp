@@ -196,3 +196,19 @@ export const verifyAndSendOtp = async (email: string) => {
     throw error;
   }
 };
+
+export const uploadImage = async (file: File) => {
+  try {
+    const formData = new FormData();
+
+    formData.append("image", file);
+
+    console.log(formData);
+
+    const response = await userInstance.patch("users/upload/image", formData);
+
+    return response.data as Response & { data: User };
+  } catch (error) {
+    throw error;
+  }
+};

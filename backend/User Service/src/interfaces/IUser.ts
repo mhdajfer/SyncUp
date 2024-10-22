@@ -7,6 +7,7 @@ export interface IUser {
   email: string;
   password: string;
   isBlocked?: boolean;
+  avatar?: string;
   age: number;
   phoneNumber: number;
   isVerified?: boolean;
