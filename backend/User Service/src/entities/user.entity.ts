@@ -34,6 +34,9 @@ const userSchema = new Schema({
   tenant_id: {
     type: String,
   },
+  avatar: {
+    type: String,
+  },
 });
 
 userSchema.pre("save", function (next) {

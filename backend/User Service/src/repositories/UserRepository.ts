@@ -211,6 +211,20 @@ export class UserRepository implements IUserRepository {
     }
   }
 
+  async updateAvatar(imageUrl: string, userId: string): Promise<IUser> {
+    try {
+      const user = await User.findOneAndUpdate(
+        { _id: userId },
+        { avatar: imageUrl },
+        { new: true }
+      );
+
+      return user as unknown as IUser;
+    } catch (error) {
+      throw error;
+    }
+  }
+
   generateRandom4DigitNumber() {
     return Math.floor(1000 + Math.random() * 9000);
   }

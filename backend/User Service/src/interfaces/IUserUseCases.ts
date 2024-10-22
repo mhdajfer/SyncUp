@@ -21,4 +21,5 @@ export interface IUserUseCases {
   createNewOtp(
     email: string
   ): Promise<{ isOtpSend: Boolean; user: IUser; otp: number }>;
+  updateAvatar(imageUrl: string, userId: string): Promise<IUser>;
 }

@@ -58,5 +58,10 @@ router.post(
   "/forgot-password",
   userController.verifyAndSendOtp.bind(userController)
 );
+router.patch(
+  "/upload/image",
+  userAuth,
+  userController.uploadImage.bind(userController)
+);
 
 export default router;
