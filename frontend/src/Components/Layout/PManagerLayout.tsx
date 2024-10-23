@@ -57,7 +57,11 @@ export default function PManagerLayout({
         <div className="flex">
           <div>
             <Avatar className=" cursor-pointer ">
-              <AvatarImage src={user.avatar} alt="Profile picture" />
+              <AvatarImage
+                src={user.avatar}
+                alt="Profile picture"
+                className="w-12 h-12 bg-cover  rounded-full"
+              />
               <AvatarFallback className=" bg-green-400 rounded-full p-2">
                 {user.firstName[0].toUpperCase()}
                 {user.lastName[0].toUpperCase()}

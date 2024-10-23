@@ -61,7 +61,11 @@ export default function DevLayout({
       <div className="absolute place-content-between bottom-0 flex items-center p-4 border-t border-gray-700 w-full">
         <div className="flex">
           <Avatar className=" cursor-pointer ">
-            <AvatarImage src={user.avatar} alt="Profile picture" />
+            <AvatarImage
+              src={user.avatar}
+              alt="Profile picture"
+              className="w-12 h-12 bg-cover  rounded-full"
+            />
             <AvatarFallback className=" bg-green-400 rounded-full p-2">
               {user.firstName[0].toUpperCase()}
               {user.lastName[0].toUpperCase()}
