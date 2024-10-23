@@ -8,9 +8,7 @@ export default function TaskCards({ task }: { task: Task }) {
   return (
     <>
       {task && (
-        <div
-          className="bg-gray-900 p-4 rounded-md shadow w-full h-full"
-        >
+        <div className="bg-gray-900 p-4 rounded-md shadow w-full h-full">
           <h3
             className="text-lg font-semibold text-gray-100 mb-2 hover:underline cursor-pointer hover:text-gray-200"
             onClick={() => router.push(`${task._id}`)}

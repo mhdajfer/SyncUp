@@ -22,61 +22,69 @@ import { CSS } from "@dnd-kit/utilities";
 import { Card, CardContent, CardHeader, CardTitle } from "@/Components/ui/card";
 import { Badge } from "@/Components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/Components/ui/avatar";
-import { CalendarIcon } from "lucide-react";
+import { CalendarDays, CalendarIcon, User } from "lucide-react";
 import { Task } from "@/interfaces/Project";
-import TaskCards from "../Cards/TaskCards";
+// import TaskCards from "../Cards/TaskCards";
+import { useRouter } from "next/navigation";
+import { format } from "date-fns";
 
-const TaskCard: React.FC<{ task: Task }> = ({ task }) => {
-  return (
-    <Card className="mb-4 cursor-grab active:cursor-grabbing">
-      <CardHeader>
-        <CardTitle className="text-sm font-medium">{task.title}</CardTitle>
-      </CardHeader>
-      <CardContent>
-        <div className="flex items-center justify-between mb-2">
-          <Badge
-            variant={
-              task.priority === "high"
-                ? "destructive"
-                : task.priority === "medium"
-                ? "default"
-                : "secondary"
-            }
-          >
-            {task.priority}
-          </Badge>
-          <div className="flex items-center">
-            <CalendarIcon className="w-4 h-4 mr-1" />
-            <span className="text-xs">{task.due_date}</span>
-          </div>
-        </div>
-        <div className="flex items-center">
-          <Avatar className="w-6 h-6 mr-2">
-            <AvatarImage
-              src={
-                typeof task.assignee === "object"
-                  ? task.assignee.avatar
-                  : undefined
-              }
-            />
-            <AvatarFallback>
-              {typeof task.assignee === "object"
-                ? task.assignee.firstName.charAt(0)
-                : task.assignee.charAt(0)}
-            </AvatarFallback>
-          </Avatar>
-          <span className="text-xs">
-            {typeof task.assignee === "object"
-              ? task.assignee.firstName
-              : task.assignee}
-          </span>
-        </div>
-      </CardContent>
-    </Card>
-  );
-};
+// const TaskCard: React.FC<{ task: Task }> = ({ task }) => {
+//   return (
+//     <Card className="mb-4 cursor-grab active:cursor-grabbing">
+//       <CardHeader>
+//         <CardTitle
+//           className="text-sm font-medium"
+//           onClick={() => console.log("asdfasd")}
+//         >
+//           {task.title}
+//         </CardTitle>
+//       </CardHeader>
+//       <CardContent>
+//         <div className="flex items-center justify-between mb-2">
+//           <Badge
+//             variant={
+//               task.priority === "high"
+//                 ? "destructive"
+//                 : task.priority === "medium"
+//                 ? "default"
+//                 : "secondary"
+//             }
+//           >
+//             {task.priority}
+//           </Badge>
+//           <div className="flex items-center">
+//             <CalendarIcon className="w-4 h-4 mr-1" />
+//             <span className="text-xs">{task.due_date}</span>
+//           </div>
+//         </div>
+//         <div className="flex items-center">
+//           <Avatar className="w-6 h-6 mr-2">
+//             <AvatarImage
+//               src={
+//                 typeof task.assignee === "object"
+//                   ? task.assignee.avatar
+//                   : undefined
+//               }
+//             />
+//             <AvatarFallback>
+//               {typeof task.assignee === "object"
+//                 ? task.assignee.firstName.charAt(0)
+//                 : task.assignee.charAt(0)}
+//             </AvatarFallback>
+//           </Avatar>
+//           <span className="text-xs">
+//             {typeof task.assignee === "object"
+//               ? task.assignee.firstName
+//               : task.assignee}
+//           </span>
+//         </div>
+//       </CardContent>
+//     </Card>
+//   );
+// };
+export function TaskCards({ task }: { task: Task }) {
+  const router = useRouter();
 
-const SortableTaskCard: React.FC<{ task: Task }> = ({ task }) => {
   const { attributes, listeners, setNodeRef, transform, transition } =
     useSortable({ id: task._id ? task._id : task.title });
 
@@ -84,18 +92,52 @@ const SortableTaskCard: React.FC<{ task: Task }> = ({ task }) => {
     transform: CSS.Transform.toString(transform),
     transition,
   };
-
   return (
-    <div
-      ref={setNodeRef}
-      style={style}
-      {...attributes}
-      {...listeners}
-      className=" my-6"
-    >
-      {/* <TaskCard task={task} /> */}
-      <TaskCards task={task} />
-    </div>
+    <>
+      {task && (
+        <div className="bg-gray-900 p-4 rounded-md shadow w-full h-full">
+          <h3
+            className="text-lg font-semibold text-gray-100 mb-2 hover:underline cursor-pointer hover:text-gray-200"
+            onClick={() => router.push(`tasks/${task._id}`)}
+          >
+            {task.title}
+          </h3>
+          <div
+            className="flex flex-wrap gap-4"
+            ref={setNodeRef}
+            style={style}
+            {...attributes}
+            {...listeners}
+          >
+            <div className="flex items-center text-gray-300">
+              <CalendarDays className="w-4 h-4 mr-2" />
+              <span>{format(new Date(task.due_date), "MMMM dd, yyyy")}</span>
+            </div>
+            <div className="flex items-center text-gray-300">
+              <User className="w-4 h-4 mr-2" />
+              {typeof task.assignee === "string" ? (
+                <span>{task.assignee}</span>
+              ) : (
+                <span>
+                  {task.assignee.firstName} {task.assignee.lastName}
+                </span>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
+    </>
+  );
+}
+
+const SortableTaskCard: React.FC<{ task: Task }> = ({ task }) => {
+  return (
+    <>
+      <div className=" my-6">
+        {/* <TaskCard task={task} /> */}
+        <TaskCards task={task} />
+      </div>
+    </>
   );
 };
 
@@ -223,7 +265,7 @@ export default function TaskDashboard({ newTasks }: { newTasks: Task[] }) {
             status="completed"
           />
         </div>
-        <DragOverlay>{<TaskCard task={dummyTask} />}</DragOverlay>
+        <DragOverlay>{<TaskCards task={dummyTask} />}</DragOverlay>
       </DndContext>
     </div>
   );
