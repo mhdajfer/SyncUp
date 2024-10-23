@@ -152,4 +152,14 @@ export class ProjectRepository implements IProjectRepository {
       throw error;
     }
   }
+
+  async getDevTasks(assignee: string): Promise<Task[]> {
+    try {
+      const tasks = await taskModel.find({ assignee: assignee });
+
+      return tasks as unknown as Task[];
+    } catch (error) {
+      throw error;
+    }
+  }
 }

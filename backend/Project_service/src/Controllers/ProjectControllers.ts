@@ -210,4 +210,27 @@ export class ProjectControllers {
       throw error;
     }
   }
+
+  async getDevTasks(req: CustomRequest, res: Response, next: NextFunction) {
+    try {
+      const user = req.user;
+      if (!user?._id)
+        return res
+          .status(404)
+          .json({ success: false, message: "User not found" });
+
+      const tasks = await this.projectUseCases.getDevTasks(user._id);
+
+      return res
+        .status(200)
+        .json({
+          success: true,
+          message: " tasks returned successfully",
+          data: tasks,
+        });
+    } catch (error) {
+      console.log("error while retrieving tasks for the developer");
+      throw error;
+    }
+  }
 }

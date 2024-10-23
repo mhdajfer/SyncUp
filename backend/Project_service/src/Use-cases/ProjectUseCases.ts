@@ -77,7 +77,6 @@ export class ProjectUseCases implements IProjectUseCases {
     }
   }
 
-
   async addTasks(data: Task[]): Promise<Task> {
     try {
       const project = await this.projectRepository.addTasks(data);
@@ -114,13 +113,23 @@ export class ProjectUseCases implements IProjectUseCases {
     }
   }
 
-  async editTask(data: Task): Promise<Task>{
+  async editTask(data: Task): Promise<Task> {
     try {
       const updatedTask = await this.projectRepository.editTask(data);
 
-      if(!updatedTask) throw new CustomError('Task not found', 409);
+      if (!updatedTask) throw new CustomError("Task not found", 409);
 
       return updatedTask;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async getDevTasks(assignee: string): Promise<Task[]> {
+    try {
+      const tasks = await this.projectRepository.getDevTasks(assignee);
+
+      return tasks;
     } catch (error) {
       throw error;
     }

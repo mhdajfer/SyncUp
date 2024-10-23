@@ -63,7 +63,6 @@ export const editProject = async (data: Project) => {
   }
 };
 
-
 export const addTasks = async (tasks: Task[], projectId: string) => {
   try {
     const response = await userInstance.post("/projects/tasks/new", {
@@ -104,6 +103,16 @@ export const editTask = async (data: Task) => {
     const response = await userInstance.put("/projects/tasks/edit", data);
 
     return response.data as { success: boolean; message: string; data: Task };
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const getDevTasks = async () => {
+  try {
+    const response = await userInstance.get("/projects/tasks/dev");
+
+    return response.data as { message: string; data: Task[]; success: boolean };
   } catch (error) {
     throw error;
   }

@@ -14,5 +14,5 @@ export interface IProjectUseCases {
   getTasks(projectId: string): Promise<Task[]>;
   getOneTask(taskId: string): Promise<Task>;
   editTask(data: Task): Promise<Task>;
-
+  getDevTasks(assignee : string): Promise<Task[]>;
 }

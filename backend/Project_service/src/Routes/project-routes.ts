@@ -48,7 +48,6 @@ router.put(
   projectController.editProject.bind(projectController)
 );
 
-
 router.post(
   "/tasks",
   userAuth,
@@ -62,5 +61,11 @@ router.post(
 );
 
 router.put("/tasks/edit", projectController.editTask.bind(projectController));
+
+router.get(
+  "/tasks/dev",
+  userAuth,
+  projectController.getDevTasks.bind(projectController)
+);
 
 export default router;
