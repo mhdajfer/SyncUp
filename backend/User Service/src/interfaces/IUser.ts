@@ -9,10 +9,10 @@ export interface IUser {
   isBlocked?: boolean;
   avatar?: string;
   age: number;
-  phoneNumber: number;
+  phoneNumber?: number;
   isVerified?: boolean;
   isDeleted?: boolean;
-  tenant_id: string;
+  tenant_id?: string;
   role?: string;
   iat?: number;
   exp?: number;
@@ -26,4 +26,10 @@ export interface IUserInvite {
   role: string;
   phoneNumber: number;
   tenant_id?: string;
+}
+
+export interface googleUser {
+  name: string;
+  image: string;
+  email: string;
 }

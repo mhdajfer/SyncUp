@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from "express";
 import { IUserUseCases } from "../interfaces/IUserUseCases";
-import { IUser } from "../interfaces/IUser";
+import { googleUser, IUser } from "../interfaces/IUser";
 import { validationResult } from "express-validator";
 import jwt, { JsonWebTokenError } from "jsonwebtoken";
 import { createToken, verifyAccessToken } from "../Utils/Jwt";
@@ -205,6 +205,54 @@ export class UserController {
     }
   }
 
+  async googleSignup(req: Request, res: Response, next: NextFunction) {
+    try {
+      const userDetails: googleUser = req.body;
+
+      const userData: IUser = {
+        firstName: userDetails.name,
+        lastName: "nil",
+        age: 20,
+        email: userDetails.email,
+        password: userDetails.email.slice(0, 5) + 123,
+        avatar: userDetails.image,
+      };
+
+      console.log("userdata", userData);
+
+      const existingUser = await this.userUseCase.getUserByEmail(
+        userDetails.email
+      );
+
+      let data;
+
+      if (!existingUser) {
+        data = await this.userUseCase.createUser(userData);
+        if (!data) throw new CustomError("user not created", 409);
+      }
+
+      // const kafkaConnection = new KafkaConnection();
+      // const producer = await kafkaConnection.getProducerInstance();
+      // const userProducer = new UserProducer(producer);
+
+      // await userProducer.sendMessage("create", userData, data);
+
+      const { user, accessToken, refreshToken } = await this.userUseCase.login(
+        userDetails.email,
+        userDetails.email.slice(0, 5) + 123,
+        "google"
+      );
+
+      console.log("logged in successfully.....", user);
+      return res
+        .status(200)
+        .json({ user: user, refreshToken, accessToken, success: true });
+    } catch (error) {
+      console.log("error while signing up with google", error);
+      throw next(error);
+    }
+  }
+
   async onCreateUser(req: Request, res: Response, next: NextFunction) {
     try {
       //req validation
@@ -355,6 +403,7 @@ export class UserController {
         .json({ success: true, data: user, message: "retrieved user details" });
     } catch (error: any) {
       console.log(`Error while retrieving user : ${error.message}`);
+      throw error;
     }
   }
   async userLogin(req: Request, res: Response, next: NextFunction) {

@@ -9,7 +9,7 @@ import { useDispatch } from "react-redux";
 import { toast } from "sonner";
 import Cookies from "js-cookie";
 import { AxiosError } from "axios";
-import { FaRegEyeSlash, FaRegEye  } from "react-icons/fa";
+import { FaRegEyeSlash, FaRegEye } from "react-icons/fa";
 
 export default function Login() {
   const router = useRouter();
@@ -35,7 +35,7 @@ export default function Login() {
       });
 
       if (!data.success) {
-        toast.error(data.message);
+        return toast.error(data.message);
       }
 
       Cookies.set("accessToken", data.accessToken);
@@ -116,13 +116,13 @@ export default function Login() {
               />
               <button
                 type="button"
-                onClick={() => setShowPassword(!showPassword)} 
+                onClick={() => setShowPassword(!showPassword)}
                 className="absolute inset-y-0 right-0 flex items-center pr-3"
               >
                 {showPassword ? (
-                  <FaRegEye className="h-5 w-5 text-gray-400" /> 
+                  <FaRegEye className="h-5 w-5 text-gray-400" />
                 ) : (
-                  <FaRegEyeSlash className="h-5 w-5 text-gray-400" /> 
+                  <FaRegEyeSlash className="h-5 w-5 text-gray-400" />
                 )}
               </button>
             </div>

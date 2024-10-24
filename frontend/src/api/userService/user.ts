@@ -212,3 +212,30 @@ export const uploadImage = async (file: File) => {
     throw error;
   }
 };
+
+export const googleSignup = async ({
+  name,
+  image,
+  email,
+}: {
+  email: string;
+  image: string;
+  name: string;
+}) => {
+  try {
+    const response = await userInstance.post("users/google-auth", {
+      name,
+      image,
+      email,
+    });
+
+    return response.data as {
+      user: User;
+      refreshToken: string;
+      accessToken: string;
+      success: boolean;
+    };
+  } catch (error) {
+    throw error;
+  }
+};

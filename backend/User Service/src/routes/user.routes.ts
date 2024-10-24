@@ -64,4 +64,6 @@ router.patch(
   userController.uploadImage.bind(userController)
 );
 
+router.post("/google-auth", userController.googleSignup.bind(userController));
+
 export default router;

@@ -8,7 +8,7 @@ export interface User {
   password: string;
   isBlocked?: boolean;
   age: number;
-  phoneNumber: number;
+  phoneNumber?: number;
   role?: string;
   confirmPassword?: string;
   status?: string;

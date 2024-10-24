@@ -14,6 +14,7 @@ import { User } from "@/interfaces/User";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { userInstance } from "@/axios";
 import { AxiosError } from "axios";
+import { SignIn } from "@/lib/auth.action";
 
 const userSchema = z
   .object({
@@ -273,7 +274,7 @@ export default function SignupForm({
         </div>
 
         <div className="flex justify-center space-x-4 mt-4">
-          <Button variant="ghost">
+          <Button variant="ghost" onClick={() => SignIn()}>
             <FcGoogle />
           </Button>
           <Button variant="ghost">

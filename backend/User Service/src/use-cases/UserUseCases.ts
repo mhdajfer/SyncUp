@@ -82,7 +82,8 @@ export class UserUseCases implements IUserUseCases {
 
   async login(
     username: string,
-    password: string
+    password: string,
+    useCase = "normal"
   ): Promise<{ user: IUser; accessToken: string; refreshToken: string }> {
     try {
       const user: IUser | null = await this.userRepository.findUser(username);
@@ -97,9 +98,11 @@ export class UserUseCases implements IUserUseCases {
       const accessToken = createToken(user);
       const refreshToken = createRefreshToken(user);
 
-      const res = await bcrypt.compare(password, user.password);
+      if (useCase == "normal") {
+        const res = await bcrypt.compare(password, user.password);
 
-      if (!res) throw new CustomError("Incorrect password", 400);
+        if (!res) throw new CustomError("Incorrect password", 400);
+      }
 
       return { user, accessToken, refreshToken };
     } catch (error: any) {
@@ -199,17 +202,14 @@ export class UserUseCases implements IUserUseCases {
     }
   }
 
-  async updateAvatar(imageUrl: string, userId: string):Promise<IUser>{
-
+  async updateAvatar(imageUrl: string, userId: string): Promise<IUser> {
     try {
-      
       const user = await this.userRepository.updateAvatar(imageUrl, userId);
 
       return user;
     } catch (error) {
-      console.log('error while updating avatar');
+      console.log("error while updating avatar");
       throw error;
-      
     }
   }
 }

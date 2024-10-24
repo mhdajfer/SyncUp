@@ -4,6 +4,7 @@ import "./globals.css";
 import { StoreProvider } from "../Components/StoreProvider/StoreProvider";
 import { NextUIProvider } from "@nextui-org/system";
 import { Toaster } from "sonner";
+import { SessionProvider } from "next-auth/react";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -38,7 +39,11 @@ export default function RootLayout({
           duration={1000}
         />
         <NextUIProvider>
-          <StoreProvider>{children}</StoreProvider>
+          <StoreProvider>
+            <SessionProvider refetchInterval={0} refetchOnWindowFocus={false}>
+              {children}
+            </SessionProvider>{" "}
+          </StoreProvider>
         </NextUIProvider>
       </body>
     </html>

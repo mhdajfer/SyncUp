@@ -12,7 +12,8 @@ export interface IUserUseCases {
   getUserById(userId: string): Promise<IUser | null>;
   login(
     username: string,
-    password: string
+    password: string,
+    useCase?: string
   ): Promise<{ user: IUser; accessToken: string; refreshToken: string }>;
   getManagerList(tenantId: string): Promise<IUser[] | null>;
   getDevList(tenantId: string): Promise<IUser[] | null>;
