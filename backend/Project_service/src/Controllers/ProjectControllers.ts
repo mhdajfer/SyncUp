@@ -4,6 +4,7 @@ import { IProjectUseCases } from "../Interfaces/IProjectUseCases";
 import { validationResult } from "express-validator";
 import { CustomRequest } from "../Interfaces/CustomRequest";
 import { CustomError } from "../ErrorHandler/CustonError";
+import { StatusCode } from "../Interfaces/StatusCode";
 
 export class ProjectControllers {
   constructor(private projectUseCases: IProjectUseCases) {}
@@ -32,15 +33,13 @@ export class ProjectControllers {
       console.log("created..", result);
 
       return res
-        .status(201)
+        .status(StatusCode.CREATED)
         .json({ success: true, result, message: "project created" });
     } catch (error: any) {
       console.log(`Error while creating project ${error.message}`);
       console.log("error", error.message);
 
-      return res
-        .status(400)
-        .json({ success: false, data: null, message: error.message });
+      next(error);
     }
   }
 
@@ -57,9 +56,10 @@ export class ProjectControllers {
 
       if (!result) throw new Error(`Error in Project controller`);
 
-      return res.status(201).json({ result });
+      return res.status(StatusCode.CREATED).json({ result });
     } catch (error: any) {
       console.log(`Error while retreiving project list ${error.message}`);
+      next(error);
     }
   }
 
@@ -82,9 +82,10 @@ export class ProjectControllers {
 
       if (!result) throw new Error(`Error in Project controller`);
 
-      return res.status(201).json({ result });
+      return res.status(StatusCode.CREATED).json({ result });
     } catch (error: any) {
       console.log(`Error while retreiving project list ${error.message}`);
+      next(error);
     }
   }
 
@@ -94,7 +95,7 @@ export class ProjectControllers {
 
       const project = await this.projectUseCases.getOneProject(projectId);
       console.log(project);
-      return res.status(200).json({
+      return res.status(StatusCode.OK).json({
         success: true,
         message: "retreived project details",
         data: project,
@@ -112,13 +113,13 @@ export class ProjectControllers {
 
       const response = await this.projectUseCases.editProject(data);
 
-      return res.status(200).json({
+      return res.status(StatusCode.OK).json({
         success: true,
         message: "project modified successfully",
         data: response,
       });
     } catch (error) {
-      throw error;
+      next(error);
     }
   }
 
@@ -136,7 +137,7 @@ export class ProjectControllers {
       console.log(req.body);
 
       if (!tasks || !projectId)
-        return res.status(400).json({
+        return res.status(StatusCode.BAD_REQUEST).json({
           success: false,
           message: "task details not found",
           data: null,
@@ -144,13 +145,13 @@ export class ProjectControllers {
 
       const project = await this.projectUseCases.addTasks(tasksWithProjectId);
 
-      return res.status(200).json({
+      return res.status(StatusCode.OK).json({
         success: true,
         message: "task details added successfully",
         data: project,
       });
     } catch (error) {
-      throw error;
+      next(error);
     }
   }
 
@@ -162,13 +163,13 @@ export class ProjectControllers {
 
       const tasks = await this.projectUseCases.getTasks(projectId);
 
-      return res.status(200).json({
+      return res.status(StatusCode.OK).json({
         success: true,
         data: tasks,
         message: "Tasks successfully retrieved",
       });
     } catch (error) {
-      throw error;
+      next(error);
     }
   }
 
@@ -181,13 +182,13 @@ export class ProjectControllers {
 
       console.log(taskDetails);
 
-      return res.status(200).json({
+      return res.status(StatusCode.OK).json({
         success: true,
         message: "task details successfully retrieved",
         data: taskDetails,
       });
     } catch (error) {
-      throw error;
+      next(error);
     }
   }
 
@@ -201,13 +202,13 @@ export class ProjectControllers {
 
       console.log(updatedTask);
 
-      return res.status(200).json({
+      return res.status(StatusCode.OK).json({
         success: true,
         data: updatedTask,
         message: "Task updated successfully",
       });
     } catch (error) {
-      throw error;
+      next(error);
     }
   }
 
@@ -216,21 +217,19 @@ export class ProjectControllers {
       const user = req.user;
       if (!user?._id)
         return res
-          .status(404)
+          .status(StatusCode.UNAUTHORIZED)
           .json({ success: false, message: "User not found" });
 
       const tasks = await this.projectUseCases.getDevTasks(user._id);
 
-      return res
-        .status(200)
-        .json({
-          success: true,
-          message: " tasks returned successfully",
-          data: tasks,
-        });
+      return res.status(StatusCode.OK).json({
+        success: true,
+        message: " tasks returned successfully",
+        data: tasks,
+      });
     } catch (error) {
       console.log("error while retrieving tasks for the developer");
-      throw error;
+      next(error);
     }
   }
 }

@@ -4,6 +4,7 @@ import { ICreateTenant } from "../interfaces/ITenant";
 import { ITenantAdminUseCases } from "../interfaces/ITenantAdminUseCases";
 
 import { NextFunction, Request, Response } from "express";
+import { StatusCode } from "../interfaces/StatusCode";
 
 export class TenantController {
   constructor(private tenantUseCases: ITenantAdminUseCases) {}
@@ -21,7 +22,7 @@ export class TenantController {
       console.log(newTenant);
 
       return res
-        .status(201)
+        .status(StatusCode.CREATED)
         .json({ success: true, data: "newTenant", message: "Tenant created" });
     } catch (error) {
       next(error);
@@ -36,7 +37,7 @@ export class TenantController {
 
       const tenant = await this.tenantUseCases.getTenant(tenantAdmin);
 
-      return res.status(200).json({
+      return res.status(StatusCode.OK).json({
         success: true,
         data: tenant,
         message: "retrieved tenant successfully",
@@ -56,7 +57,7 @@ export class TenantController {
       const data = await this.tenantUseCases.editTenant(tenantData);
 
       return res
-        .status(200)
+        .status(StatusCode.OK)
         .json({ success: true, data, message: "tenant updated successfully" });
     } catch (error) {
       throw error;

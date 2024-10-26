@@ -1,5 +1,6 @@
 import { NextFunction, Request, Response } from "express";
 import { CustomError } from "./CustonError";
+import { StatusCode } from "../interfaces/StatusCode";
 
 export const errorHandler = (
   err: CustomError,
@@ -15,7 +16,7 @@ export const errorHandler = (
     }
   } else {
     res
-      .status(500)
+      .status(StatusCode.INTERNAL_SERVER_ERROR)
       .json({ error: "An unexpected error occurred. Please try again later." });
   }
 };

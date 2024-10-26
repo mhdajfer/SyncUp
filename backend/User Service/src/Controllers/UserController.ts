@@ -11,6 +11,7 @@ import { CustomRequest } from "../interfaces/CustomRequest";
 import hashPassword from "../Utils/bcrypt";
 import multer from "multer";
 import AWS, { S3 } from "aws-sdk";
+import { StatusCode } from "../interfaces/StatusCode";
 
 export class UserController {
   private userUseCase: IUserUseCases;
@@ -100,7 +101,7 @@ export class UserController {
 
       if (!user)
         return res
-          .status(400)
+          .status(StatusCode.BAD_REQUEST)
           .json({ success: false, message: "User not exist", data: null });
 
       const kafkaConnection = new KafkaConnection();
@@ -111,7 +112,7 @@ export class UserController {
 
       await userProducer.inviteUsers(user, inviteToken);
 
-      return res.status(201).json({
+      return res.status(StatusCode.CREATED).json({
         success: true,
         data: user,
         message: "check you mail",
@@ -147,7 +148,7 @@ export class UserController {
 
       await userProducer.inviteUsers(data, inviteToken);
 
-      return res.status(201).json({
+      return res.status(StatusCode.CREATED).json({
         success: true,
         data,
         message: "added invitee",
@@ -168,7 +169,7 @@ export class UserController {
         ? "User blocked successfully"
         : "User unblocked successfully";
 
-      return res.status(200).json({
+      return res.status(StatusCode.OK).json({
         success: true,
         data: result,
         message: message,
@@ -198,7 +199,9 @@ export class UserController {
 
       await userProducer.notifyRegistrationSuccess(user);
 
-      return res.status(200).json({ success: true, message: "user verified" });
+      return res
+        .status(StatusCode.OK)
+        .json({ success: true, message: "user verified" });
     } catch (error) {
       console.error("Error verifying user:", error);
       next(error);
@@ -245,7 +248,7 @@ export class UserController {
 
       console.log("logged in successfully.....", user);
       return res
-        .status(200)
+        .status(StatusCode.OK)
         .json({ user: user, refreshToken, accessToken, success: true });
     } catch (error) {
       console.log("error while signing up with google", error);
@@ -278,7 +281,7 @@ export class UserController {
       await userProducer.sendMessage("create", user, data);
 
       return res
-        .status(201)
+        .status(StatusCode.OK)
         .json({ success: true, data, message: `otp send to ${user.email}` });
     } catch (error: any) {
       console.log(error.message);
@@ -312,10 +315,12 @@ export class UserController {
 
       console.log("list of managers", managerList);
 
-      return res.status(200).json({ success: true, data: managerList });
+      return res
+        .status(StatusCode.OK)
+        .json({ success: true, data: managerList });
     } catch (error) {
       console.error("Error retrieving managers list:", error);
-      return res.status(500).json({ message: "Internal server error" });
+      next(error);
     }
   }
 
@@ -334,10 +339,10 @@ export class UserController {
 
       const devList = await this.userUseCase.getDevList(tenantAdmin.tenant_id);
 
-      return res.status(200).json({ success: true, data: devList });
+      return res.status(StatusCode.OK).json({ success: true, data: devList });
     } catch (error) {
       console.error("Error retrieving developer list:", error);
-      return res.status(500).json({ message: "Internal server error" });
+      next(error);
     }
   }
 
@@ -361,7 +366,7 @@ export class UserController {
         JSON.stringify(userData)
       );
 
-      return res.status(200).json({
+      return res.status(StatusCode.OK).json({
         success: true,
         data: userData,
         message: "profile updated successfully",
@@ -381,7 +386,7 @@ export class UserController {
       if (!tenantAdmin?.tenant_id) throw new CustomError("No users", 400);
       const userList = await this.userUseCase.getUsers(tenantAdmin.tenant_id);
 
-      res.status(200).json({
+      res.status(StatusCode.OK).json({
         success: true,
         data: userList,
         message: "retrieved users successfully",
@@ -397,13 +402,16 @@ export class UserController {
 
       const user = await this.userUseCase.getUserById(id);
 
-      if (!user) return res.status(404).json({ message: "User not found" });
+      if (!user)
+        return res
+          .status(StatusCode.NOT_FOUND)
+          .json({ message: "User not found" });
       res
-        .status(200)
+        .status(StatusCode.OK)
         .json({ success: true, data: user, message: "retrieved user details" });
     } catch (error: any) {
       console.log(`Error while retrieving user : ${error.message}`);
-      throw error;
+      next(error);
     }
   }
   async userLogin(req: Request, res: Response, next: NextFunction) {
@@ -418,7 +426,7 @@ export class UserController {
 
       console.log("logged in successfully.....", user);
       return res
-        .status(200)
+        .status(StatusCode.OK)
         .json({ user: user, refreshToken, accessToken, success: true });
     } catch (error: any) {
       console.error("Error logging developer:", error);
@@ -437,7 +445,7 @@ export class UserController {
 
       if (!user)
         return res
-          .status(401)
+          .status(StatusCode.UNAUTHORIZED)
           .json({ success: false, message: "User not found", data: null });
 
       delete user.__v;
@@ -447,16 +455,14 @@ export class UserController {
       const newAccessToken = createToken(user as IUser);
       console.log("sending new access token......");
 
-      res.status(200).json({
+      res.status(StatusCode.OK).json({
         success: true,
         newAccessToken,
         message: "created new access token",
       });
     } catch (error: any) {
       console.log(`Error while login: ${error}`);
-      return res
-        .status(400)
-        .json({ message: "Error while Login", error: error.message });
+      next(error);
     }
   }
 
@@ -478,13 +484,11 @@ export class UserController {
       await userProducer.sendMessage("create", user, otp);
 
       return res
-        .status(201)
+        .status(StatusCode.CREATED)
         .json({ success: true, user, message: "user created successfully" });
     } catch (error: any) {
       console.log(`Error while login: ${error}`);
-      return res
-        .status(400)
-        .json({ message: "Error while Login", error: error.message });
+      next(error);
     }
   }
 
@@ -502,19 +506,23 @@ export class UserController {
         if (err instanceof multer.MulterError) {
           console.error("Multer error:", err);
           return res
-            .status(400)
+            .status(StatusCode.BAD_REQUEST)
             .json({ message: "File upload failed", error: err });
         } else if (err) {
           console.error("Unknown error:", err);
           return res
-            .status(500)
+            .status(StatusCode.INTERNAL_SERVER_ERROR)
             .json({ message: "Internal Server Error", error: err });
         }
 
         if (!req.file) {
-          return res.status(400).json({ message: "No file uploaded" });
+          return res
+            .status(StatusCode.BAD_REQUEST)
+            .json({ message: "No file uploaded" });
         } else if (!req.user?._id) {
-          return res.status(400).json({ message: "No user found" });
+          return res
+            .status(StatusCode.BAD_REQUEST)
+            .json({ message: "No user found" });
         }
 
         const currentUser = await this.userUseCase.getUserByEmail(
@@ -522,7 +530,7 @@ export class UserController {
         );
         if (!currentUser)
           return res
-            .status(404)
+            .status(StatusCode.UNAUTHORIZED)
             .json({ message: "user not found", data: null, success: false });
 
         const oldAvatarUrl = currentUser.avatar;
@@ -546,7 +554,7 @@ export class UserController {
           await this.deleteImageFromS3(oldKey);
         }
 
-        res.status(200).json({
+        res.status(StatusCode.OK).json({
           success: true,
           message: "Avatar updated successfully",
           data: updatedUser,
@@ -554,7 +562,7 @@ export class UserController {
       });
     } catch (error) {
       console.log("error while uploading image");
-      throw error;
+      next(error);
     }
   }
 
