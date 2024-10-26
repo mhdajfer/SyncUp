@@ -19,69 +19,12 @@ import {
 } from "@dnd-kit/sortable";
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
-import { Card, CardContent, CardHeader, CardTitle } from "@/Components/ui/card";
-import { Badge } from "@/Components/ui/badge";
-import { Avatar, AvatarFallback, AvatarImage } from "@/Components/ui/avatar";
-import { CalendarDays, CalendarIcon, User } from "lucide-react";
+import { CalendarDays, User } from "lucide-react";
 import { Task } from "@/interfaces/Project";
 // import TaskCards from "../Cards/TaskCards";
 import { useRouter } from "next/navigation";
 import { format } from "date-fns";
 
-// const TaskCard: React.FC<{ task: Task }> = ({ task }) => {
-//   return (
-//     <Card className="mb-4 cursor-grab active:cursor-grabbing">
-//       <CardHeader>
-//         <CardTitle
-//           className="text-sm font-medium"
-//           onClick={() => console.log("asdfasd")}
-//         >
-//           {task.title}
-//         </CardTitle>
-//       </CardHeader>
-//       <CardContent>
-//         <div className="flex items-center justify-between mb-2">
-//           <Badge
-//             variant={
-//               task.priority === "high"
-//                 ? "destructive"
-//                 : task.priority === "medium"
-//                 ? "default"
-//                 : "secondary"
-//             }
-//           >
-//             {task.priority}
-//           </Badge>
-//           <div className="flex items-center">
-//             <CalendarIcon className="w-4 h-4 mr-1" />
-//             <span className="text-xs">{task.due_date}</span>
-//           </div>
-//         </div>
-//         <div className="flex items-center">
-//           <Avatar className="w-6 h-6 mr-2">
-//             <AvatarImage
-//               src={
-//                 typeof task.assignee === "object"
-//                   ? task.assignee.avatar
-//                   : undefined
-//               }
-//             />
-//             <AvatarFallback>
-//               {typeof task.assignee === "object"
-//                 ? task.assignee.firstName.charAt(0)
-//                 : task.assignee.charAt(0)}
-//             </AvatarFallback>
-//           </Avatar>
-//           <span className="text-xs">
-//             {typeof task.assignee === "object"
-//               ? task.assignee.firstName
-//               : task.assignee}
-//           </span>
-//         </div>
-//       </CardContent>
-//     </Card>
-//   );
-// };
 export function TaskCards({ task }: { task: Task }) {
   const router = useRouter();
 
@@ -169,7 +112,10 @@ const Column: React.FC<{ title: string; tasks: Task[]; status: string }> = ({
       `}</style>
       <div className="border border-gray-600  p-4 rounded-lg w-full md:w-1/3 md:h-[600px] md:overflow-y-auto custom-scrollbar">
         <h2 className="text-lg font-semibold mb-4">{title}</h2>
-        <SortableContext items={tasks} strategy={verticalListSortingStrategy}>
+        <SortableContext
+          items={tasks.map((task) => task._id || 1)}
+          strategy={verticalListSortingStrategy}
+        >
           {tasks.length === 0 ? (
             <div className=" text-center text-gray-200">No tasks yet</div>
           ) : (

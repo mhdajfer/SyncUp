@@ -1,7 +1,7 @@
 "use client";
 
 import { getDevTasks } from "@/api/projectService/project";
-import TaskCards from "@/Components/Cards/TaskCards";
+// import TaskCards from "@/Components/Cards/TaskCards";
 import TasksBoard from "@/Components/Dashboard/TasksBoard";
 import { Task } from "@/interfaces/Project";
 import { useEffect, useState } from "react";

@@ -51,7 +51,7 @@ export default function GoogleLogin() {
     };
 
     login();
-  }, [status, session, router]);
+  }, [status, session, router, dispatch]);
 
   return <div>Logging in...</div>;
 }
