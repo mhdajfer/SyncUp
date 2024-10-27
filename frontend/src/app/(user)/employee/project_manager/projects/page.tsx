@@ -15,7 +15,7 @@ export default function Page() {
     getData();
   }, []);
 
-  console.log(projectList);
+  console.log("prjcts", projectList);
 
   return (
     <>

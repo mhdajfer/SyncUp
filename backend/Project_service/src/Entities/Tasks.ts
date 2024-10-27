@@ -31,6 +31,10 @@ const TaskSchema: Schema = new Schema({
   remarks: {
     type: String,
   },
+  start_date: {
+    type: Date,
+    required: true,
+  },
   due_date: {
     type: Date,
     required: true,

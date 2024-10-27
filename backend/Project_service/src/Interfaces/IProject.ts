@@ -12,7 +12,7 @@ export interface IProject {
   created_by: string;
 }
 
-export interface Task {
+export interface  Task {
   _id?: string;
   title: string;
   desc?: string;
@@ -20,6 +20,7 @@ export interface Task {
   projectId: string;
   status?: string;
   priority?: string;
+  start_date: Date;
   due_date: Date;
   remarks?: string;
 }

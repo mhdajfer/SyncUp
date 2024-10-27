@@ -23,6 +23,7 @@ export interface Task {
   desc?: string;
   assignee: string | User;
   priority?: string;
+  start_date: string;
   due_date: string;
   remarks?: string;
 }

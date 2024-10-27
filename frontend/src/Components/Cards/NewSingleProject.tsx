@@ -51,6 +51,7 @@ export default function NewSingleProject() {
       title: "",
       status: "",
       projectId: "",
+      start_date: "",
       due_date: "",
       assignee: "",
       priority: "",
@@ -162,6 +163,7 @@ export default function NewSingleProject() {
             priority: "",
             remarks: "",
             desc: "",
+            start_date: "",
           },
         ]);
       } else {
@@ -229,6 +231,7 @@ export default function NewSingleProject() {
         priority: "",
         remarks: "",
         desc: "",
+        start_date: "",
       },
     ]);
   };
@@ -499,7 +502,7 @@ export default function NewSingleProject() {
                         </div>
                       </div>
                     ) : (
-                      ""
+                      <h2>No tasks were created for this project...</h2>
                     )}
 
                     <div className="">
@@ -508,20 +511,21 @@ export default function NewSingleProject() {
                       {newTasks.map((task, index) => (
                         <div
                           key={index}
-                          className="border border-gray-600 p-4 rounded-lg bg-gray-900 mb-4 relative pe-20"
+                          className="border border-gray-700 p-6 rounded-xl bg-gray-800 mb-6 shadow-md relative pe-24 transition-all hover:shadow-lg"
                         >
                           <input
                             type="text"
                             placeholder="Task Name"
-                            className="w-full bg-gray-700 text-gray-100 border-gray-600 
-                 focus:border-blue-500 p-2 mb-3 rounded"
+                            className="w-full bg-gray-700 text-gray-100 border border-gray-600 
+                 focus:ring-2 focus:ring-blue-500 focus:outline-none 
+                 p-3 mb-4 rounded-lg placeholder-gray-400 transition-colors"
                             value={task.title}
                             onChange={(e) =>
                               handleTaskChange(index, "title", e.target.value)
                             }
                           />
 
-                          <div className="mb-3">
+                          <div className="mb-4">
                             <Tiptap
                               content={task.desc}
                               setContent={(content) =>
@@ -530,44 +534,97 @@ export default function NewSingleProject() {
                             />
                           </div>
 
-                          <input
-                            type="date"
-                            className="w-full bg-gray-700 text-gray-100 border-gray-600 
-                 focus:border-blue-500 p-2 mb-3 rounded"
-                            value={task.due_date}
-                            onChange={(e) =>
-                              handleTaskChange(
-                                index,
-                                "due_date",
-                                e.target.value
-                              )
-                            }
-                          />
+                          <div>
+                            <label
+                              className={` text-gray-400 text-sm 
+                    transition-all duration-200 
+                    `}
+                            >
+                              Start Date
+                            </label>
+                            <input
+                              type="date"
+                              placeholder="Start Date"
+                              className="w-full bg-gray-700 text-gray-100 border border-gray-600 
+                 focus:ring-2 focus:ring-blue-500 focus:outline-none 
+                 p-3 mb-4 rounded-lg transition-colors"
+                              value={task.start_date}
+                              min={new Date().toISOString().split("T")[0]}
+                              max={task.due_date || ""}
+                              onChange={(e) =>
+                                handleTaskChange(
+                                  index,
+                                  "start_date",
+                                  e.target.value
+                                )
+                              }
+                            />
+                          </div>
 
-                          <Select
-                            onValueChange={(value) =>
-                              handleTaskChange(index, "assignee", value)
-                            }
-                          >
-                            <SelectTrigger className="w-full bg-gray-700 text-white mb-3 rounded">
-                              <SelectValue placeholder="Select a developer" />
-                            </SelectTrigger>
+                          <div className=" mb-6">
+                            <label
+                              className={` text-gray-400 text-sm 
+                    transition-all duration-200 
+                    `}
+                            >
+                              Due Date
+                            </label>
+                            <input
+                              type="date"
+                              className="w-full bg-gray-700 text-gray-100 border border-gray-600 
+                   focus:ring-2 focus:ring-blue-500 focus:outline-none 
+                   p-3 rounded-lg transition-colors"
+                              value={task.due_date}
+                              min={task.start_date || ""}
+                              onChange={(e) =>
+                                handleTaskChange(
+                                  index,
+                                  "due_date",
+                                  e.target.value
+                                )
+                              }
+                            />
+                          </div>
 
-                            <SelectContent>
-                              {developers.map((developer) => (
-                                <SelectItem
-                                  key={developer?._id}
-                                  value={developer?._id || ""}
-                                >
-                                  {developer.firstName}
-                                </SelectItem>
-                              ))}
-                            </SelectContent>
-                          </Select>
+                          <div>
+                            <label
+                              className={` text-gray-400 text-sm 
+                    transition-all duration-200 
+                   `}
+                            >
+                              Assignee
+                            </label>
+                            <Select
+                              onValueChange={(value) =>
+                                handleTaskChange(index, "assignee", value)
+                              }
+                            >
+                              <SelectTrigger
+                                className="w-full bg-gray-700 text-white p-3 rounded-lg 
+                              border border-gray-600 mb-4 transition-colors 
+                              hover:border-blue-500"
+                              >
+                                <SelectValue placeholder="Select a Developer" />
+                              </SelectTrigger>
 
+                              <SelectContent>
+                                {developers.map((developer) => (
+                                  <SelectItem
+                                    key={developer?._id}
+                                    value={developer?._id || ""}
+                                  >
+                                    {developer.firstName}
+                                  </SelectItem>
+                                ))}
+                              </SelectContent>
+                            </Select>
+                          </div>
+
+                          {/* Cancel Button */}
                           <X
-                            className="h-4 w-4 text-gray-200 hover:text-white cursor-pointer 
-                 absolute right-5 top-[50%] transform -translate-y-1/2"
+                            className="h-5 w-5 text-gray-400 hover:text-white cursor-pointer 
+                 absolute right-6 top-[50%] transform -translate-y-1/2 
+                 transition-colors"
                             onClick={() => handleCancelTask(index)}
                           />
                         </div>
