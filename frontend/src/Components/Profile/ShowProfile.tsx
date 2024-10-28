@@ -15,10 +15,14 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/Components/ui/avatar";
 import { User } from "@/interfaces/User";
 import { AxiosError } from "axios";
 import { toast } from "sonner";
+import Cookies from "js-cookie";
 import { editProfile, uploadImage } from "@/api/userService/user";
+import { useDispatch } from "react-redux";
+import { loginSuccess } from "@/store/slices/authSlice";
 
 export default function ShowProfile({ initialUser }: { initialUser: User }) {
   const [user, setUser] = useState<User>(initialUser);
+  const dispatch = useDispatch();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [imageUploaded, setImageUploaded] = useState<File | null>();
 
@@ -57,11 +61,14 @@ export default function ShowProfile({ initialUser }: { initialUser: User }) {
     const response = await uploadImage(imageUploaded);
 
     if (response.success) {
+      const accessToken = Cookies.get("accessToken");
+      if (!accessToken) return toast.error("Access token not found");
       toast.success(response.message);
       setUser((prevUser) => ({
         ...prevUser,
         avatar: response.data.avatar as string,
       }));
+      dispatch(loginSuccess({ accessToken, user }));
     } else return toast.error("Image upload failed");
   };
 
