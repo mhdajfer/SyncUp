@@ -10,7 +10,7 @@ import { connectConsumers } from "./events/Consumers";
 const app = express();
 dotenv.config();
 
-const port = process.env.PORT || 3003;
+const port = process.env.PORT ;
 
 app.use(cors());
 app.use(cookieParser());
