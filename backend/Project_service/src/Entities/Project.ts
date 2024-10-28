@@ -20,6 +20,7 @@ const projectSchema = new Schema({
   managerId: {
     type: Types.ObjectId,
     required: true,
+    ref: "User",
   },
   start_date: {
     type: Date,

@@ -296,7 +296,7 @@ export default function NewSingleProject() {
       <Dialog open={isOpen} onOpenChange={setIsOpen}>
         <AnimatePresence>
           {isOpen && (
-            <div>
+            <div className="md:min-w-[1000px]">
               <motion.div
                 initial={{ opacity: 0, scale: 0.9 }}
                 animate={{ opacity: 1, scale: 1 }}
@@ -402,7 +402,17 @@ export default function NewSingleProject() {
                       <div className="flex items-center">
                         <UserIcon className="w-5 h-5 mr-2 text-gray-400" />
                         {!isEditing ? (
-                          <span>Manager: {project?.managerId}</span>
+                          <span>
+                            Manager:{" "}
+                            {typeof project?.managerId === "string" ? (
+                              <span>{project.managerId}</span>
+                            ) : (
+                              <span>
+                                {project?.managerId.firstName}{" "}
+                                {project?.managerId.lastName}
+                              </span>
+                            )}
+                          </span>
                         ) : (
                           <Select
                             onValueChange={(value) =>
@@ -411,7 +421,11 @@ export default function NewSingleProject() {
                                 managerId: value,
                               })
                             }
-                            value={editedProject.managerId}
+                            value={
+                              typeof editedProject?.managerId === "string"
+                                ? editedProject.managerId
+                                : editedProject.managerId._id
+                            }
                           >
                             <SelectTrigger className="w-full bg-gray-700 text-white">
                               <SelectValue placeholder="Select a manager" />

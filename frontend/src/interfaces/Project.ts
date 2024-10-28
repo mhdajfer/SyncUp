@@ -4,7 +4,7 @@ export interface Project {
   _id?: string;
   name: string;
   description: string;
-  managerId: string;
+  managerId: string | User;
   start_date: string;
   due_date: string;
   status: string;

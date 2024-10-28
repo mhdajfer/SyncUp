@@ -43,7 +43,9 @@ export class ProjectRepository implements IProjectRepository {
 
   async getOneProject(projectId: string): Promise<IProject> {
     try {
-      const project = await Project.findOne({ _id: projectId });
+      const project = await Project.findOne({ _id: projectId }).populate(
+        "managerId"
+      );
 
       if (!project) throw new CustomError("Project not found", 400);
 
@@ -131,7 +133,9 @@ export class ProjectRepository implements IProjectRepository {
 
   async getOneTask(taskId: string): Promise<Task> {
     try {
-      const taskDetails = await taskModel.findOne({ _id: taskId });
+      const taskDetails = await taskModel
+        .findOne({ _id: taskId })
+        .populate("assignee");
 
       return taskDetails as unknown as Task;
     } catch (error) {
