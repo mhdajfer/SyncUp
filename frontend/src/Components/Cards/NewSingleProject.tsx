@@ -39,6 +39,18 @@ import { User as IUser } from "@/interfaces/User";
 import { format } from "date-fns";
 import Tiptap from "../RichText/TipTap";
 
+interface newTask {
+  title: string;
+  status: string;
+  projectId: string;
+  due_date: string;
+  assignee: string;
+  priority: string;
+  remarks: string;
+  desc: string;
+  start_date: string;
+}
+
 export default function NewSingleProject() {
   const router = useRouter();
   const { projectId }: { projectId: string } = useParams();
@@ -46,19 +58,7 @@ export default function NewSingleProject() {
   //   const [newComment, setNewComment] = useState("");
   const [managers, setManagers] = useState<IUser[]>([]);
   const [isOpen, setIsOpen] = useState(false);
-  const [newTasks, setNewTasks] = useState([
-    {
-      title: "",
-      status: "",
-      projectId: "",
-      start_date: "",
-      due_date: "",
-      assignee: "",
-      priority: "",
-      remarks: "",
-      desc: "",
-    },
-  ]);
+  const [newTasks, setNewTasks] = useState<newTask[]>([]);
 
   const [tasks, setTasks] = useState<Task[]>([]);
 
@@ -152,20 +152,7 @@ export default function NewSingleProject() {
         setIsEditing(false);
 
         setTasks((prevTasks) => [...prevTasks, ...newTasks]);
-        newTasks[0].desc = "";
-        setNewTasks([
-          {
-            title: "",
-            status: "",
-            projectId: "",
-            due_date: "",
-            assignee: "",
-            priority: "",
-            remarks: "",
-            desc: "",
-            start_date: "",
-          },
-        ]);
+        setTimeout(() => setNewTasks([]), 1000);
       } else {
         toast.error(response.message);
       }
