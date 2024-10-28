@@ -9,15 +9,19 @@ import { toast } from "sonner";
 import { editTask, getTask } from "@/api/projectService/project";
 import { Task } from "@/interfaces/Project";
 import Tiptap from "../RichText/TipTap";
+import { User as UserType } from "@/interfaces/User";
+import { getDevelopers } from "@/api/userService/user";
 
 export default function TaskDetails() {
   const { taskId }: { taskId: string } = useParams();
+  const [developers, setDevelopers] = useState<UserType[]>([]);
   const [task, setTask] = useState<Task>({
     _id: "",
     title: "",
     projectId: "",
     status: "",
     desc: "",
+    start_date: "",
     assignee: "",
     priority: "",
     due_date: "",
@@ -82,8 +86,21 @@ export default function TaskDetails() {
         }
       }
     }
+    async function getDevs() {
+      try {
+        const response = await getDevelopers();
+
+        if (response.success) {
+          setDevelopers(response.data);
+        } else toast.error(response.message);
+      } catch (error) {
+        toast.error("error while fetching task details");
+        console.log(error);
+      }
+    }
 
     getTaskDetails();
+    getDevs();
   }, [taskId]);
 
   return (
@@ -173,6 +190,7 @@ export default function TaskDetails() {
                 )}
               </div>
             </div>
+
             <div>
               <label
                 htmlFor="assignee"
@@ -180,19 +198,26 @@ export default function TaskDetails() {
               >
                 Assignee
               </label>
-              <input
-                type="text"
-                id="assignee"
+              <select
                 name="assignee"
+                id="assignee"
+                className="mt-1 block w-full px-3 py-2 bg-gray-800 border border-gray-700 rounded-md text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
                 value={
-                  typeof editedTask.assignee == "string"
+                  typeof editedTask.assignee === "string"
                     ? editedTask.assignee
-                    : editedTask.assignee.firstName
+                    : editedTask.assignee?._id
                 }
                 onChange={handleChange}
-                className="mt-1 block w-full px-3 py-2 bg-gray-800 border border-gray-700 rounded-md text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
-              />
+              >
+                {developers.length > 0 &&
+                  developers.map((developer) => (
+                    <option key={developer._id} value={developer._id}>
+                      {developer.firstName} {developer.lastName}
+                    </option>
+                  ))}
+              </select>
             </div>
+
             <div>
               <label
                 htmlFor="priority"
@@ -212,21 +237,41 @@ export default function TaskDetails() {
                 <option value="High">High</option>
               </select>
             </div>
-            <div>
-              <label
-                htmlFor="due_date"
-                className="block text-sm font-medium text-gray-400"
-              >
-                Due Date
-              </label>
-              <input
-                type="date"
-                id="due_date"
-                name="due_date"
-                value={editedTask.due_date}
-                onChange={handleChange}
-                className="mt-1 block w-full px-3 py-2 bg-gray-800 border border-gray-700 rounded-md text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
-              />
+            <div className="flex space-x-28">
+              <div>
+                <label
+                  htmlFor="start_date"
+                  className="block text-sm font-medium text-gray-400"
+                >
+                  New Start Date
+                </label>
+                <input
+                  type="date"
+                  id="start_date"
+                  name="start_date"
+                  min={new Date().toISOString().split("T")[0]}
+                  value={editedTask.due_date}
+                  onChange={handleChange}
+                  className="mt-1 block w-full px-3 py-2 bg-gray-800 border border-gray-700 rounded-md text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+              </div>
+              <div>
+                <label
+                  htmlFor="due_date"
+                  className="block text-sm font-medium text-gray-400"
+                >
+                  New Due Date
+                </label>
+                <input
+                  type="date"
+                  id="due_date"
+                  name="due_date"
+                  min={editedTask.start_date}
+                  value={editedTask.due_date}
+                  onChange={handleChange}
+                  className="mt-1 block w-full px-3 py-2 bg-gray-800 border border-gray-700 rounded-md text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+              </div>
             </div>
             <div>
               <label
@@ -280,16 +325,32 @@ export default function TaskDetails() {
                   </p>
                 </div>
               </div>
-              <div className="flex items-center">
-                <CalendarDays className="w-5 h-5 mr-2 text-red-400" />
-                <div>
-                  <p className="text-gray-400">Due Date</p>
+              <div className="flex space-x-16">
+                <div className="flex items-center">
+                  <CalendarDays className="w-5 h-5 mr-2 text-green-500" />
+                  <div>
+                    <p className="text-gray-400">Start Date</p>
 
-                  {task.due_date ? (
-                    <p>{format(new Date(task.due_date), "MMMM dd, yyyy")}</p>
-                  ) : (
-                    <p>No due date available</p>
-                  )}
+                    {task.due_date ? (
+                      <p>
+                        {format(new Date(task.start_date), "MMMM dd, yyyy")}
+                      </p>
+                    ) : (
+                      <p>No due date available</p>
+                    )}
+                  </div>
+                </div>
+                <div className="flex items-center">
+                  <CalendarDays className="w-5 h-5 mr-2 text-red-400" />
+                  <div>
+                    <p className="text-gray-400">Due Date</p>
+
+                    {task.due_date ? (
+                      <p>{format(new Date(task.due_date), "MMMM dd, yyyy")}</p>
+                    ) : (
+                      <p>No due date available</p>
+                    )}
+                  </div>
                 </div>
               </div>
               <div className="flex items-center">
