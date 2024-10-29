@@ -117,3 +117,21 @@ export const getDevTasks = async () => {
     throw error;
   }
 };
+
+export const addTeamMember = async (userId: string, projectId: string) => {
+  try {
+    const response = await userInstance.post("/projects/team/add", {
+      userId,
+      projectId,
+    });
+
+    return response.data as {
+      success: boolean;
+      message: string;
+      data: Project;
+    };
+  } catch (error) {
+    console.log("error while adding team member");
+    throw error;
+  }
+};

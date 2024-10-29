@@ -43,9 +43,10 @@ export class ProjectRepository implements IProjectRepository {
 
   async getOneProject(projectId: string): Promise<IProject> {
     try {
-      const project = await Project.findOne({ _id: projectId }).populate(
-        "managerId"
-      );
+      const project = await Project.findOne({ _id: projectId })
+        .populate("managerId")
+        .populate("developers")
+        .exec();
 
       if (!project) throw new CustomError("Project not found", 400);
 
@@ -162,6 +163,23 @@ export class ProjectRepository implements IProjectRepository {
       const tasks = await taskModel.find({ assignee: assignee });
 
       return tasks as unknown as Task[];
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async addTeamMember(userId: string, projectId: string): Promise<IProject> {
+    try {
+      const response = await Project.findOneAndUpdate(
+        { _id: projectId, developers: { $ne: userId } },
+        { $push: { developers: { _id: userId } } },
+        { new: true }
+      )
+        .populate("managerId")
+        .populate("developers")
+        .exec();
+
+      return response as unknown as IProject;
     } catch (error) {
       throw error;
     }

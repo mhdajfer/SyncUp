@@ -68,4 +68,10 @@ router.get(
   projectController.getDevTasks.bind(projectController)
 );
 
+router.post(
+  "/team/add",
+  userAuth,
+  projectController.AddTeamMember.bind(projectController)
+);
+
 export default router;

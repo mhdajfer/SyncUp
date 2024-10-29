@@ -38,6 +38,7 @@ import { AxiosError } from "axios";
 import { User as IUser } from "@/interfaces/User";
 import { format } from "date-fns";
 import Tiptap from "../RichText/TipTap";
+import ProjectTeam from "./ProjectTeam";
 
 interface newTask {
   title: string;
@@ -78,6 +79,7 @@ export default function NewSingleProject() {
   });
 
   const [developers, setDevelopers] = useState<IUser[]>([]);
+  const [projectTeam, setProjectTeam] = useState<IUser[]>([]);
 
   useEffect(() => {
     setIsOpen(true);
@@ -457,6 +459,15 @@ export default function NewSingleProject() {
                       {isEditing ? "Save Changes" : "Edit Project"}
                     </Button>
 
+                    {project && (
+                      <ProjectTeam
+                        developers={developers}
+                        project={project}
+                        setProject={setProject}
+                        setProjectTeam={setProjectTeam}
+                      />
+                    )}
+
                     {tasks.length > 0 ? (
                       <div className=" ">
                         <h2 className="text-md font-bold text-gray-100 mb-6">
@@ -621,7 +632,6 @@ export default function NewSingleProject() {
                             </Select>
                           </div>
 
-                          {/* Cancel Button */}
                           <X
                             className="h-5 w-5 text-gray-400 hover:text-white cursor-pointer 
                  absolute right-6 top-[50%] transform -translate-y-1/2 

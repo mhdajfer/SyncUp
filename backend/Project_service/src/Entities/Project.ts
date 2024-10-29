@@ -22,6 +22,12 @@ const projectSchema = new Schema({
     required: true,
     ref: "User",
   },
+  developers: [
+    {
+      type: Types.ObjectId,
+      ref: "User",
+    },
+  ],
   start_date: {
     type: Date,
     required: true,

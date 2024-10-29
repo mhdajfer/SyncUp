@@ -232,4 +232,26 @@ export class ProjectControllers {
       next(error);
     }
   }
+
+  async AddTeamMember(req: Request, res: Response, next: NextFunction) {
+    try {
+      const { userId, projectId } = req.body;
+
+      const project = await this.projectUseCases.addTeamMember(
+        userId,
+        projectId
+      );
+
+      console.log("member added ...", project);
+
+      return res.status(StatusCode.OK).json({
+        success: true,
+        message: "new team member added successfully",
+        data: project,
+      });
+    } catch (error) {
+      console.log("error while adding a new member to the team");
+      next(error);
+    }
+  }
 }

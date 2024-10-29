@@ -134,4 +134,19 @@ export class ProjectUseCases implements IProjectUseCases {
       throw error;
     }
   }
+
+  async addTeamMember(userId: string, projectId: string): Promise<IProject> {
+    try {
+      const project = await this.projectRepository.addTeamMember(
+        userId,
+        projectId
+      );
+
+      if (!project) throw new CustomError("Member already exists", 409);
+
+      return project;
+    } catch (error) {
+      throw error;
+    }
+  }
 }

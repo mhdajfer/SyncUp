@@ -5,6 +5,7 @@ export interface IProject {
   managerId: string;
   start_date: Date;
   due_date: Date;
+  developers?: string[];
   status: string;
   budget: number;
   goal: string;
@@ -12,7 +13,7 @@ export interface IProject {
   created_by: string;
 }
 
-export interface  Task {
+export interface Task {
   _id?: string;
   title: string;
   desc?: string;

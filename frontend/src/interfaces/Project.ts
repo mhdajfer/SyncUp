@@ -10,6 +10,7 @@ export interface Project {
   status: string;
   budget: number;
   goal: string;
+  developers?: User[];
   document: File | null;
   comments?: Comment[];
   created_by: string;
