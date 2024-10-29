@@ -79,7 +79,6 @@ export default function NewSingleProject() {
   });
 
   const [developers, setDevelopers] = useState<IUser[]>([]);
-  const [projectTeam, setProjectTeam] = useState<IUser[]>([]);
 
   useEffect(() => {
     setIsOpen(true);
@@ -464,7 +463,6 @@ export default function NewSingleProject() {
                         developers={developers}
                         project={project}
                         setProject={setProject}
-                        setProjectTeam={setProjectTeam}
                       />
                     )}
 

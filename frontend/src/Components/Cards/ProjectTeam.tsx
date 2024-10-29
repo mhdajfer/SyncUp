@@ -2,7 +2,6 @@
 
 import React, { useState } from "react";
 import { Card, CardContent } from "@/Components/ui/card";
-import { Input } from "@/Components/ui/input";
 import { Button } from "@/Components/ui/button";
 import { X, Users, Plus } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@radix-ui/react-avatar";
@@ -27,24 +26,41 @@ import {
   SelectValue,
 } from "@/Components/ui/select";
 import { toast } from "sonner";
-import { addTeamMember } from "@/api/projectService/project";
+import { addTeamMember, removeTeamMember } from "@/api/projectService/project";
 import { AxiosError } from "axios";
 
 export default function ProjectTeam({
   project,
   developers,
   setProject,
-  setProjectTeam,
 }: {
   project: Project;
   developers: User[];
   setProject: (project: Project) => void;
-  setProjectTeam: (user: User[]) => void;
 }) {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [newDev, setNewDev] = useState<User | null>(null);
 
-  const handleRemoveDeveloper = (developerId: string) => {};
+  const handleRemoveDeveloper = async (developerId: string) => {
+    try {
+      if (!developerId) return toast.error("developer not selected");
+      if (!project._id) return toast.error("Project not found");
+      const response = await removeTeamMember(developerId, project._id);
+
+      if (response.success) {
+        setIsDialogOpen(false);
+        setProject(response.data);
+        toast.success(response.message);
+      } else {
+        toast.error(" member not removed");
+      }
+    } catch (error: unknown) {
+      if (error instanceof AxiosError) {
+        toast.error(error.response?.data.error);
+      }
+      console.log(error);
+    }
+  };
 
   const handleSetMember = (value: string) => {
     const user = developers.find((dev) => dev._id === value);
@@ -55,8 +71,8 @@ export default function ProjectTeam({
 
   const handleAddMember = async () => {
     try {
-      if (!newDev?._id || !project._id)
-        return toast.error("add member not added");
+      if (!newDev?._id) return toast.error("developer not selected");
+      if (!project._id) return toast.error("Project not found");
       const response = await addTeamMember(newDev?._id, project._id);
 
       if (response.success) {
@@ -161,7 +177,7 @@ export default function ProjectTeam({
                       variant="ghost"
                       size="icon"
                       className="text-gray-400 hover:text-gray-100 hover:bg-gray-600"
-                      onClick={() => handleRemoveDeveloper(dev._id)}
+                      onClick={() => handleRemoveDeveloper(dev._id || "")}
                     >
                       <X className="h-4 w-4" />
                     </Button>

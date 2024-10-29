@@ -149,4 +149,23 @@ export class ProjectUseCases implements IProjectUseCases {
       throw error;
     }
   }
+
+  async removeTeamMember(userId: string, projectId: string): Promise<IProject> {
+    try {
+      const project = await this.projectRepository.removeTeamMember(
+        userId,
+        projectId
+      );
+
+      if (!project) {
+        throw new CustomError(
+          "Project not found or developer not part of the team",
+          409
+        );
+      }
+      return project;
+    } catch (error) {
+      throw error;
+    }
+  }
 }

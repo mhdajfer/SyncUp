@@ -246,11 +246,33 @@ export class ProjectControllers {
 
       return res.status(StatusCode.OK).json({
         success: true,
-        message: "new team member added successfully",
+        message: "new team member added",
         data: project,
       });
     } catch (error) {
       console.log("error while adding a new member to the team");
+      next(error);
+    }
+  }
+
+  async removeTeamMember(req: Request, res: Response, next: NextFunction) {
+    try {
+      const { userId, projectId } = req.body;
+
+      const project = await this.projectUseCases.removeTeamMember(
+        userId,
+        projectId
+      );
+
+      console.log("member removed ...", project);
+
+      return res.status(StatusCode.OK).json({
+        success: true,
+        message: "team member removed",
+        data: project,
+      });
+    } catch (error) {
+      console.log("error while removing member");
       next(error);
     }
   }

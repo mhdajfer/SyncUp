@@ -135,3 +135,21 @@ export const addTeamMember = async (userId: string, projectId: string) => {
     throw error;
   }
 };
+
+export const removeTeamMember = async (userId: string, projectId: string) => {
+  try {
+    const response = await userInstance.post("/projects/team/remove", {
+      userId,
+      projectId,
+    });
+
+    return response.data as {
+      success: boolean;
+      message: string;
+      data: Project;
+    };
+  } catch (error) {
+    console.log("error while removing team member");
+    throw error;
+  }
+};

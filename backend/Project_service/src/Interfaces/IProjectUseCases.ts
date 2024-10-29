@@ -16,4 +16,5 @@ export interface IProjectUseCases {
   editTask(data: Task): Promise<Task>;
   getDevTasks(assignee: string): Promise<Task[]>;
   addTeamMember(userId: string, projectId: string): Promise<IProject>;
+  removeTeamMember(userId: string, projectId: string): Promise<IProject>;
 }

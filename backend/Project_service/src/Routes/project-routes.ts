@@ -74,4 +74,10 @@ router.post(
   projectController.AddTeamMember.bind(projectController)
 );
 
+router.post(
+  "/team/remove",
+  userAuth,
+  projectController.removeTeamMember.bind(projectController)
+);
+
 export default router;

@@ -13,9 +13,9 @@ export interface IProjectRepository {
   addTasks(data: Task[]): Promise<Task>;
   getTasks(projectId: string): Promise<Task[]>;
   getOneTask(taskId: string): Promise<Task>;
- getDevTasks(assignee : string): Promise<Task[]>;
+  getDevTasks(assignee: string): Promise<Task[]>;
   editTask(data: Task): Promise<Task>;
 
-
   addTeamMember(userId: string, projectId: string): Promise<IProject>;
+  removeTeamMember(userId: string, projectId: string): Promise<IProject>;
 }

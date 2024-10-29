@@ -184,4 +184,20 @@ export class ProjectRepository implements IProjectRepository {
       throw error;
     }
   }
+
+  async removeTeamMember(userId: string, projectId: string): Promise<IProject> {
+    try {
+      const response = await Project.findOneAndUpdate(
+        { _id: projectId },
+        { $pull: { developers: userId } },
+        { new: true }
+      )
+        .populate("developers")
+        .populate("managerId");
+
+      return response as unknown as IProject;
+    } catch (error) {
+      throw error;
+    }
+  }
 }
