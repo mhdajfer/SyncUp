@@ -143,6 +143,8 @@ export default function NewSingleProject() {
     try {
       console.log(newTasks);
 
+      if (newTasks.length == 0) return toast.warning("new tasks not found");
+
       if (!validateTasks(newTasks) || !project?._id)
         return toast.error("Invalid details provided");
 
@@ -618,14 +620,15 @@ export default function NewSingleProject() {
                               </SelectTrigger>
 
                               <SelectContent>
-                                {developers.map((developer) => (
-                                  <SelectItem
-                                    key={developer?._id}
-                                    value={developer?._id || ""}
-                                  >
-                                    {developer.firstName}
-                                  </SelectItem>
-                                ))}
+                                {project?.developers &&
+                                  project?.developers.map((developer) => (
+                                    <SelectItem
+                                      key={developer?._id}
+                                      value={developer?._id || ""}
+                                    >
+                                      {developer.firstName}
+                                    </SelectItem>
+                                  ))}
                               </SelectContent>
                             </Select>
                           </div>
