@@ -1,5 +1,5 @@
 import { NextFunction, Request, Response } from "express";
-import { IProject } from "../Interfaces/IProject";
+import { IProject, Task } from "../Interfaces/IProject";
 import { IProjectUseCases } from "../Interfaces/IProjectUseCases";
 import { validationResult } from "express-validator";
 import { CustomRequest } from "../Interfaces/CustomRequest";
@@ -127,7 +127,7 @@ export class ProjectControllers {
     try {
       const { tasks, projectId } = req.body;
 
-      const tasksWithProjectId = tasks.map((task: any) => ({
+      const tasksWithProjectId: Task[] = tasks.map((task: any) => ({
         ...task,
         status: task.status || undefined,
         priority: task.priority || undefined,

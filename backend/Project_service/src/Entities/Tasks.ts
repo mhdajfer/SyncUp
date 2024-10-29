@@ -18,6 +18,11 @@ const TaskSchema: Schema = new Schema({
     ref: "User",
     required: true,
   },
+  category: {
+    type: String,
+    required: true,
+    enum: ["Feature", "Bug", "Testing", "Planning"],
+  },
   priority: {
     type: String,
     enum: ["high", "medium", "low"],

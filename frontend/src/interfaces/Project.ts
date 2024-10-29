@@ -21,6 +21,7 @@ export interface Task {
   title: string;
   projectId: string;
   status: string;
+  category: string;
   desc?: string;
   assignee: string | User;
   priority?: string;
@@ -34,4 +35,11 @@ interface Comment {
   author: string;
   content: string;
   timestamp: string;
+}
+
+export enum TaskCategory {
+  "Feature",
+  "Bug",
+  "Testing",
+  "Planning",
 }

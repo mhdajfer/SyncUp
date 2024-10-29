@@ -39,6 +39,7 @@ import { User as IUser } from "@/interfaces/User";
 import { format } from "date-fns";
 import Tiptap from "../RichText/TipTap";
 import ProjectTeam from "./ProjectTeam";
+import { TASK_CATEGORY } from "@/Consts";
 
 interface newTask {
   title: string;
@@ -48,6 +49,7 @@ interface newTask {
   assignee: string;
   priority: string;
   remarks: string;
+  category: string;
   desc: string;
   start_date: string;
 }
@@ -222,6 +224,7 @@ export default function NewSingleProject() {
         remarks: "",
         desc: "",
         start_date: "",
+        category: ""
       },
     ]);
   };
@@ -545,57 +548,88 @@ export default function NewSingleProject() {
                               }
                             />
                           </div>
+                          <div className="grid grid-cols-3 gap-6">
+                            <div>
+                              <label
+                                className={` text-gray-400 text-sm 
+                    transition-all duration-200 
+                    `}
+                              >
+                                Start Date
+                              </label>
+                              <input
+                                type="date"
+                                placeholder="Start Date"
+                                className="w-full bg-gray-700 text-gray-100 border border-gray-600 
+                 focus:ring-2 focus:ring-blue-500 focus:outline-none 
+                 p-3 mb-4 rounded-lg transition-colors"
+                                value={task.start_date}
+                                min={new Date().toISOString().split("T")[0]}
+                                max={task.due_date || ""}
+                                onChange={(e) =>
+                                  handleTaskChange(
+                                    index,
+                                    "start_date",
+                                    e.target.value
+                                  )
+                                }
+                              />
+                            </div>
 
+                            <div className=" mb-6">
+                              <label
+                                className={` text-gray-400 text-sm 
+                    transition-all duration-200 
+                    `}
+                              >
+                                Due Date
+                              </label>
+                              <input
+                                type="date"
+                                className="w-full bg-gray-700 text-gray-100 border border-gray-600 
+                   focus:ring-2 focus:ring-blue-500 focus:outline-none 
+                   p-3 rounded-lg transition-colors"
+                                value={task.due_date}
+                                min={task.start_date || ""}
+                                onChange={(e) =>
+                                  handleTaskChange(
+                                    index,
+                                    "due_date",
+                                    e.target.value
+                                  )
+                                }
+                              />
+                            </div>
+                          </div>
                           <div>
                             <label
                               className={` text-gray-400 text-sm 
                     transition-all duration-200 
-                    `}
+                   `}
                             >
-                              Start Date
+                              Category
                             </label>
-                            <input
-                              type="date"
-                              placeholder="Start Date"
-                              className="w-full bg-gray-700 text-gray-100 border border-gray-600 
-                 focus:ring-2 focus:ring-blue-500 focus:outline-none 
-                 p-3 mb-4 rounded-lg transition-colors"
-                              value={task.start_date}
-                              min={new Date().toISOString().split("T")[0]}
-                              max={task.due_date || ""}
-                              onChange={(e) =>
-                                handleTaskChange(
-                                  index,
-                                  "start_date",
-                                  e.target.value
-                                )
+                            <Select
+                              onValueChange={(value) =>
+                                handleTaskChange(index, "category", value)
                               }
-                            />
-                          </div>
+                            >
+                              <SelectTrigger
+                                className="w-full bg-gray-700 text-white p-3 rounded-lg 
+                              border border-gray-600 mb-4 transition-colors 
+                              hover:border-blue-500"
+                              >
+                                <SelectValue placeholder="Select Category" />
+                              </SelectTrigger>
 
-                          <div className=" mb-6">
-                            <label
-                              className={` text-gray-400 text-sm 
-                    transition-all duration-200 
-                    `}
-                            >
-                              Due Date
-                            </label>
-                            <input
-                              type="date"
-                              className="w-full bg-gray-700 text-gray-100 border border-gray-600 
-                   focus:ring-2 focus:ring-blue-500 focus:outline-none 
-                   p-3 rounded-lg transition-colors"
-                              value={task.due_date}
-                              min={task.start_date || ""}
-                              onChange={(e) =>
-                                handleTaskChange(
-                                  index,
-                                  "due_date",
-                                  e.target.value
-                                )
-                              }
-                            />
+                              <SelectContent>
+                                {TASK_CATEGORY.map((category, i) => (
+                                  <SelectItem key={i} value={category}>
+                                    {category}
+                                  </SelectItem>
+                                ))}
+                              </SelectContent>
+                            </Select>
                           </div>
 
                           <div>

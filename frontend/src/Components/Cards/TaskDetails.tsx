@@ -1,7 +1,15 @@
 "use client";
 import { useEffect, useState } from "react";
 import { format } from "date-fns";
-import { CalendarDays, Edit, Flag, Save, User, X } from "lucide-react";
+import {
+  CalendarDays,
+  Edit,
+  Flag,
+  Save,
+  User,
+  X,
+  BookOpen,
+} from "lucide-react";
 import { AnimatePresence, motion } from "framer-motion";
 import { useParams } from "next/navigation";
 import { AxiosError } from "axios";
@@ -11,6 +19,7 @@ import { Task } from "@/interfaces/Project";
 import Tiptap from "../RichText/TipTap";
 import { User as UserType } from "@/interfaces/User";
 import { getDevelopers } from "@/api/userService/user";
+import { TASK_CATEGORY } from "@/Consts";
 
 export default function TaskDetails() {
   const { taskId }: { taskId: string } = useParams();
@@ -217,6 +226,27 @@ export default function TaskDetails() {
                   ))}
               </select>
             </div>
+            <div>
+              <label
+                htmlFor="category"
+                className="block text-sm font-medium text-gray-400"
+              >
+                Category
+              </label>
+              <select
+                name="category"
+                id="category"
+                className="mt-1 block w-full px-3 py-2 bg-gray-800 border border-gray-700 rounded-md text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                value={editedTask.category}
+                onChange={handleChange}
+              >
+                {TASK_CATEGORY.map((category, i) => (
+                  <option key={i} value={category}>
+                    {category}
+                  </option>
+                ))}
+              </select>
+            </div>
 
             <div>
               <label
@@ -360,15 +390,24 @@ export default function TaskDetails() {
                   <p>{task.status}</p>
                 </div>
               </div>
-              {task.priority && (
+              <div className="flex space-x-36">
+                {task.priority && (
+                  <div className="flex items-center">
+                    <Flag className="w-5 h-5 mr-2 text-yellow-400" />
+                    <div>
+                      <p className="text-gray-400">Priority</p>
+                      <p>{task.priority}</p>
+                    </div>
+                  </div>
+                )}
                 <div className="flex items-center">
-                  <Flag className="w-5 h-5 mr-2 text-yellow-400" />
+                  <BookOpen className="w-5 h-5 mr-2 " />
                   <div>
-                    <p className="text-gray-400">Priority</p>
-                    <p>{task.priority}</p>
+                    <p className="text-gray-400">Category</p>
+                    <p>{task.category}</p>
                   </div>
                 </div>
-              )}
+              </div>
             </div>
 
             {task.desc && (
