@@ -19,7 +19,7 @@ import { toast } from "sonner";
 import { submitComment } from "@/api/Communication/comments";
 import { AxiosError } from "axios";
 import { User } from "@/interfaces/User";
-import { format, parseISO } from "date-fns";
+import { format } from "date-fns";
 
 export default function CommentSection({
   initialComments = [],

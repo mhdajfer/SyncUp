@@ -24,7 +24,7 @@ import {
   getOneProject,
   getProjectTasks,
 } from "@/api/projectService/project";
-import { Project, Task } from "@/interfaces/Project";
+import { Comment, Project, Task } from "@/interfaces/Project";
 import {
   Select,
   SelectContent,
@@ -51,6 +51,7 @@ interface newTask {
   remarks: string;
   category: string;
   desc: string;
+  comments: Comment[];
   start_date: string;
 }
 
@@ -76,7 +77,6 @@ export default function NewSingleProject({ role }: { role: string }) {
     budget: 0,
     goal: "",
     document: null,
-    comments: [],
     created_by: "",
   });
 
@@ -225,6 +225,7 @@ export default function NewSingleProject({ role }: { role: string }) {
         desc: "",
         start_date: "",
         category: "",
+        comments: [],
       },
     ]);
   };
@@ -315,13 +316,38 @@ export default function NewSingleProject({ role }: { role: string }) {
                           {project?.name}
                         </span>
                       )}
-                      <Badge
-                        className={`${getStatusColor(
-                          project?.status || "pending"
-                        )} text-white`}
-                      >
-                        {project?.status}
-                      </Badge>
+                      {isEditing ? (
+                        <Select
+                          onValueChange={(value) =>
+                            setEditedProject({
+                              ...editedProject,
+                              status: value,
+                            })
+                          }
+                          value={project?.status}
+                        >
+                          <SelectTrigger className="w-full bg-gray-700 text-white">
+                            <SelectValue placeholder="Select a manager" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value={"in progress"}>
+                              In Progress
+                            </SelectItem>
+                            <SelectItem value={"completed"}>
+                              Completed
+                            </SelectItem>
+                            <SelectItem value={"pending"}>Pending</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      ) : (
+                        <Badge
+                          className={`${getStatusColor(
+                            project?.status || "pending"
+                          )} text-white`}
+                        >
+                          {project?.status}
+                        </Badge>
+                      )}
                     </CardTitle>
                   </CardHeader>
                   <CardContent className="space-y-6 mt-6 max-h-[70vh] overflow-y-auto custom-scrollbar">
@@ -465,6 +491,7 @@ export default function NewSingleProject({ role }: { role: string }) {
 
                     {project && project.developers && (
                       <ProjectTeam
+                        role={role}
                         developers={developers}
                         project={project}
                         setProject={setProject}
@@ -484,10 +511,12 @@ export default function NewSingleProject({ role }: { role: string }) {
                             >
                               <h3
                                 className={`first-letter:text-lg font-semibold text-gray-100 mb-2 ${
-                                  role === "manager" ? "" : "hover:underline"
-                                } cursor-pointer hover:text-gray-200`}
+                                  role === "pManager"
+                                    ? "hover:underline cursor-pointer"
+                                    : ""
+                                }  hover:text-gray-200`}
                                 onClick={() => {
-                                  if (role !== "manager")
+                                  if (role == "pManager")
                                     router.push(`${projectId}/${task._id}`);
                                 }}
                               >
@@ -523,177 +552,179 @@ export default function NewSingleProject({ role }: { role: string }) {
                       <h2>No tasks were created for this project...</h2>
                     )}
 
-                    <div className="">
-                      <h3 className="text-lg font-semibold mb-2">Tasks</h3>
+                    {role !== "dev" && (
+                      <div className="">
+                        <h3 className="text-lg font-semibold mb-2">Tasks</h3>
 
-                      {newTasks.map((task, index) => (
-                        <div
-                          key={index}
-                          className="border border-gray-700 p-6 rounded-xl bg-gray-800 mb-6 shadow-md relative pe-24 transition-all hover:shadow-lg"
-                        >
-                          <input
-                            type="text"
-                            placeholder="Task Name"
-                            className="w-full bg-gray-700 text-gray-100 border border-gray-600 
+                        {newTasks.map((task, index) => (
+                          <div
+                            key={index}
+                            className="border border-gray-700 p-6 rounded-xl bg-gray-800 mb-6 shadow-md relative pe-24 transition-all hover:shadow-lg"
+                          >
+                            <input
+                              type="text"
+                              placeholder="Task Name"
+                              className="w-full bg-gray-700 text-gray-100 border border-gray-600 
                  focus:ring-2 focus:ring-blue-500 focus:outline-none 
                  p-3 mb-4 rounded-lg placeholder-gray-400 transition-colors"
-                            value={task.title}
-                            onChange={(e) =>
-                              handleTaskChange(index, "title", e.target.value)
-                            }
-                          />
-
-                          <div className="mb-4">
-                            <Tiptap
-                              content={task.desc}
-                              setContent={(content) =>
-                                handleTaskChange(index, "desc", content)
+                              value={task.title}
+                              onChange={(e) =>
+                                handleTaskChange(index, "title", e.target.value)
                               }
                             />
-                          </div>
-                          <div className="grid grid-cols-3 gap-6">
+
+                            <div className="mb-4">
+                              <Tiptap
+                                content={task.desc}
+                                setContent={(content) =>
+                                  handleTaskChange(index, "desc", content)
+                                }
+                              />
+                            </div>
+                            <div className="grid grid-cols-3 gap-6">
+                              <div>
+                                <label
+                                  className={` text-gray-400 text-sm 
+                    transition-all duration-200 
+                    `}
+                                >
+                                  Start Date
+                                </label>
+                                <input
+                                  type="date"
+                                  placeholder="Start Date"
+                                  className="w-full bg-gray-700 text-gray-100 border border-gray-600 
+                 focus:ring-2 focus:ring-blue-500 focus:outline-none 
+                 p-3 mb-4 rounded-lg transition-colors"
+                                  value={task.start_date}
+                                  min={new Date().toISOString().split("T")[0]}
+                                  max={task.due_date || ""}
+                                  onChange={(e) =>
+                                    handleTaskChange(
+                                      index,
+                                      "start_date",
+                                      e.target.value
+                                    )
+                                  }
+                                />
+                              </div>
+
+                              <div className=" mb-6">
+                                <label
+                                  className={` text-gray-400 text-sm 
+                    transition-all duration-200 
+                    `}
+                                >
+                                  Due Date
+                                </label>
+                                <input
+                                  type="date"
+                                  className="w-full bg-gray-700 text-gray-100 border border-gray-600 
+                   focus:ring-2 focus:ring-blue-500 focus:outline-none 
+                   p-3 rounded-lg transition-colors"
+                                  value={task.due_date}
+                                  min={task.start_date || ""}
+                                  onChange={(e) =>
+                                    handleTaskChange(
+                                      index,
+                                      "due_date",
+                                      e.target.value
+                                    )
+                                  }
+                                />
+                              </div>
+                            </div>
                             <div>
                               <label
                                 className={` text-gray-400 text-sm 
                     transition-all duration-200 
-                    `}
+                   `}
                               >
-                                Start Date
+                                Category
                               </label>
-                              <input
-                                type="date"
-                                placeholder="Start Date"
-                                className="w-full bg-gray-700 text-gray-100 border border-gray-600 
-                 focus:ring-2 focus:ring-blue-500 focus:outline-none 
-                 p-3 mb-4 rounded-lg transition-colors"
-                                value={task.start_date}
-                                min={new Date().toISOString().split("T")[0]}
-                                max={task.due_date || ""}
-                                onChange={(e) =>
-                                  handleTaskChange(
-                                    index,
-                                    "start_date",
-                                    e.target.value
-                                  )
+                              <Select
+                                onValueChange={(value) =>
+                                  handleTaskChange(index, "category", value)
                                 }
-                              />
+                              >
+                                <SelectTrigger
+                                  className="w-full bg-gray-700 text-white p-3 rounded-lg 
+                              border border-gray-600 mb-4 transition-colors 
+                              hover:border-blue-500"
+                                >
+                                  <SelectValue placeholder="Select Category" />
+                                </SelectTrigger>
+
+                                <SelectContent>
+                                  {TASK_CATEGORY.map((category, i) => (
+                                    <SelectItem key={i} value={category}>
+                                      {category}
+                                    </SelectItem>
+                                  ))}
+                                </SelectContent>
+                              </Select>
                             </div>
 
-                            <div className=" mb-6">
+                            <div>
                               <label
                                 className={` text-gray-400 text-sm 
                     transition-all duration-200 
-                    `}
+                   `}
                               >
-                                Due Date
+                                Assignee
                               </label>
-                              <input
-                                type="date"
-                                className="w-full bg-gray-700 text-gray-100 border border-gray-600 
-                   focus:ring-2 focus:ring-blue-500 focus:outline-none 
-                   p-3 rounded-lg transition-colors"
-                                value={task.due_date}
-                                min={task.start_date || ""}
-                                onChange={(e) =>
-                                  handleTaskChange(
-                                    index,
-                                    "due_date",
-                                    e.target.value
-                                  )
+                              <Select
+                                onValueChange={(value) =>
+                                  handleTaskChange(index, "assignee", value)
                                 }
-                              />
+                              >
+                                <SelectTrigger
+                                  className="w-full bg-gray-700 text-white p-3 rounded-lg 
+                              border border-gray-600 mb-4 transition-colors 
+                              hover:border-blue-500"
+                                >
+                                  <SelectValue placeholder="Select a Developer" />
+                                </SelectTrigger>
+
+                                <SelectContent>
+                                  {project?.developers &&
+                                    project?.developers.map((developer) => (
+                                      <SelectItem
+                                        key={developer?._id}
+                                        value={developer?._id || ""}
+                                      >
+                                        {developer.firstName}
+                                      </SelectItem>
+                                    ))}
+                                </SelectContent>
+                              </Select>
                             </div>
-                          </div>
-                          <div>
-                            <label
-                              className={` text-gray-400 text-sm 
-                    transition-all duration-200 
-                   `}
-                            >
-                              Category
-                            </label>
-                            <Select
-                              onValueChange={(value) =>
-                                handleTaskChange(index, "category", value)
-                              }
-                            >
-                              <SelectTrigger
-                                className="w-full bg-gray-700 text-white p-3 rounded-lg 
-                              border border-gray-600 mb-4 transition-colors 
-                              hover:border-blue-500"
-                              >
-                                <SelectValue placeholder="Select Category" />
-                              </SelectTrigger>
 
-                              <SelectContent>
-                                {TASK_CATEGORY.map((category, i) => (
-                                  <SelectItem key={i} value={category}>
-                                    {category}
-                                  </SelectItem>
-                                ))}
-                              </SelectContent>
-                            </Select>
-                          </div>
-
-                          <div>
-                            <label
-                              className={` text-gray-400 text-sm 
-                    transition-all duration-200 
-                   `}
-                            >
-                              Assignee
-                            </label>
-                            <Select
-                              onValueChange={(value) =>
-                                handleTaskChange(index, "assignee", value)
-                              }
-                            >
-                              <SelectTrigger
-                                className="w-full bg-gray-700 text-white p-3 rounded-lg 
-                              border border-gray-600 mb-4 transition-colors 
-                              hover:border-blue-500"
-                              >
-                                <SelectValue placeholder="Select a Developer" />
-                              </SelectTrigger>
-
-                              <SelectContent>
-                                {project?.developers &&
-                                  project?.developers.map((developer) => (
-                                    <SelectItem
-                                      key={developer?._id}
-                                      value={developer?._id || ""}
-                                    >
-                                      {developer.firstName}
-                                    </SelectItem>
-                                  ))}
-                              </SelectContent>
-                            </Select>
-                          </div>
-
-                          <X
-                            className="h-5 w-5 text-gray-400 hover:text-white cursor-pointer 
+                            <X
+                              className="h-5 w-5 text-gray-400 hover:text-white cursor-pointer 
                  absolute right-6 top-[50%] transform -translate-y-1/2 
                  transition-colors"
-                            onClick={() => handleCancelTask(index)}
-                          />
-                        </div>
-                      ))}
+                              onClick={() => handleCancelTask(index)}
+                            />
+                          </div>
+                        ))}
 
-                      <div className="flex space-x-5">
-                        <Button
-                          onClick={handleAddTask}
-                          className="mt-2 bg-blue-800 hover:bg-blue-700 text-white"
-                        >
-                          Add Task
-                        </Button>
-                        <Button
-                          onClick={handleCreateTasks}
-                          className="mt-2 bg-violet-900 hover:bg-violet-700 text-white"
-                        >
-                          Create Tasks
-                        </Button>
+                        <div className="flex space-x-5">
+                          <Button
+                            onClick={handleAddTask}
+                            className="mt-2 bg-blue-800 hover:bg-blue-700 text-white"
+                          >
+                            Add Task
+                          </Button>
+                          <Button
+                            onClick={handleCreateTasks}
+                            className="mt-2 bg-violet-900 hover:bg-violet-700 text-white"
+                          >
+                            Create Tasks
+                          </Button>
+                        </div>
                       </div>
-                    </div>
+                    )}
                   </CardContent>
                 </Card>
               </motion.div>

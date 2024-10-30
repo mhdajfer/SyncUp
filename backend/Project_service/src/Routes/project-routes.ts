@@ -43,6 +43,12 @@ router.get(
   projectController.getAssignedProjects.bind(projectController)
 );
 
+router.get(
+  "/forDev",
+  userAuth,
+  projectController.getAssignedProjectsForDev.bind(projectController)
+);
+
 router.post(
   "/tasks/new",
   userAuth,

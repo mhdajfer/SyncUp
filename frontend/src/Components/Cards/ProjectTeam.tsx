@@ -33,8 +33,10 @@ export default function ProjectTeam({
   project,
   developers,
   setProject,
+  role = "noDev",
 }: {
   project: Project;
+  role?: string;
   developers: User[];
   setProject: (project: Project) => void;
 }) {
@@ -94,13 +96,15 @@ export default function ProjectTeam({
     <Card className="bg-gray-800 border-gray-700 pt-10 relative">
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
         <DialogTrigger asChild>
-          <Button
-            variant="outline"
-            size="sm"
-            className="  absolute right-6 bg-blue-700 border-0 text-white hover:bg-blue-800 hover:text-white"
-          >
-            <Plus className="w-4 h-4 mr-2" /> Add Member
-          </Button>
+          {role !== "dev" && (
+            <Button
+              variant="outline"
+              size="sm"
+              className="  absolute right-6 bg-blue-700 border-0 text-white hover:bg-blue-800 hover:text-white"
+            >
+              <Plus className="w-4 h-4 mr-2" /> Add Member
+            </Button>
+          )}
         </DialogTrigger>
         <DialogContent className="bg-gray-900 p-4 rounded-md left-[50%] text-gray-100 absolute">
           <DialogHeader>
@@ -177,7 +181,11 @@ export default function ProjectTeam({
                       variant="ghost"
                       size="icon"
                       className="text-gray-400 hover:text-gray-100 hover:bg-gray-600"
-                      onClick={() => handleRemoveDeveloper(dev._id || "")}
+                      onClick={() => {
+                        if (role !== "dev")
+                          handleRemoveDeveloper(dev._id || "");
+                        else return toast.warning("Not authorized");
+                      }}
                     >
                       <X className="h-4 w-4" />
                     </Button>

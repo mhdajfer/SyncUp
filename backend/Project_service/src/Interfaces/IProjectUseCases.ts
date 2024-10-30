@@ -9,6 +9,7 @@ export interface IProjectUseCases {
   createUser(user: IUser): Promise<IUser>;
   editProject(data: IProject): Promise<IProject>;
   getAssignedProjects(managerId: string): Promise<IProject[]>;
+  getAssignedProjectsForDev(devId: string): Promise<IProject[]>;
 
   addTasks(data: Task[]): Promise<Task>;
   getTasks(projectId: string): Promise<Task[]>;

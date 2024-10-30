@@ -5,6 +5,7 @@ import User from "../Frameworks/models/userModel";
 import { CustomError } from "../ErrorHandler/CustonError";
 import { IUser } from "../Interfaces/IUser";
 import taskModel from "../Frameworks/models/Task";
+import { ObjectId } from "mongodb";
 
 export class ProjectRepository implements IProjectRepository {
   async createProject(input: IProject): Promise<IProject> {
@@ -33,6 +34,20 @@ export class ProjectRepository implements IProjectRepository {
   async getAssignedProjects(managerId: string): Promise<IProject[]> {
     try {
       const projectList = await Project.find({ managerId: managerId });
+
+      return projectList as unknown as IProject[];
+    } catch (error) {
+      console.error("Error fetching projects:", error);
+      return [];
+    }
+  }
+
+  async getAssignedProjectsForDev(devId: string): Promise<IProject[]> {
+    try {
+      console.log('userid', devId);
+      const projectList = await Project.find({
+        developers: { $in: [new ObjectId(devId)] },
+      });
 
       return projectList as unknown as IProject[];
     } catch (error) {

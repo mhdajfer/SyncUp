@@ -1,0 +1,33 @@
+"use client";
+import { getProjects } from "@/api/projectService/project";
+import ProjectCard from "@/Components/Cards/ProjectCard";
+import NoData from "@/Components/NoData/NoData";
+import { Project } from "@/interfaces/Project";
+import { useEffect, useState } from "react";
+export default function Page() {
+  const [projectList, setProject] = useState<Project[]>([]);
+
+  useEffect(() => {
+    async function getData() {
+      const data = await getProjects("forDev");
+      setProject(data.result);
+    }
+    getData();
+  }, []);
+
+  console.log("prjcts", projectList);
+
+  return (
+    <>
+      {projectList.length > 0 ? (
+        <div className="flex flex-wrap justify-center px-8 ">
+          {projectList.map((project, i) => (
+            <ProjectCard project={project} key={i} />
+          ))}
+        </div>
+      ) : (
+        <NoData />
+      )}
+    </>
+  );
+}

@@ -27,6 +27,18 @@ export class ProjectUseCases implements IProjectUseCases {
       throw error;
     }
   }
+
+  async getAssignedProjectsForDev(devId: string): Promise<IProject[]> {
+    try {
+      const data = await this.projectRepository.getAssignedProjectsForDev(
+        devId
+      );
+
+      return data;
+    } catch (error) {
+      throw error;
+    }
+  }
   async createProject(input: IProject): Promise<IProject> {
     try {
       const data = await this.projectRepository.createProject(input);

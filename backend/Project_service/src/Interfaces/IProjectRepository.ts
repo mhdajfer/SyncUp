@@ -9,6 +9,7 @@ export interface IProjectRepository {
   createUser(user: IUser): Promise<IUser>;
   editProject(data: IProject): Promise<IProject>;
   getAssignedProjects(projectId: string): Promise<IProject[]>;
+  getAssignedProjectsForDev(projectId: string): Promise<IProject[]>;
 
   addTasks(data: Task[]): Promise<Task>;
   getTasks(projectId: string): Promise<Task[]>;
