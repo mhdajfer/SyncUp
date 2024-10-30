@@ -31,6 +31,8 @@ export class TenantAdminRepository implements ITenantAdminRepository {
   async getTenant(tenantAdmin: IUser): Promise<ITenants> {
     try {
       const user = await Tenant.findOne({ user_id: tenantAdmin._id });
+      console.log(user);
+      
 
       if (!user) throw new CustomError("No tenant admin found", 400);
 

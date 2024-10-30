@@ -17,8 +17,12 @@ const userSchema = new Schema({
   age: { type: Number, min: 0, max: 120 },
   isVerified: { type: Boolean, default: false },
   isDeleted: { type: Boolean, default: false },
-  phoneNumber: { type: Number, required: true },
-  role: { type: String, enum: ["manager", "dev", "pManager", "tenant-admin"] },
+  phoneNumber: { type: Number },
+  role: {
+    type: String,
+    enum: ["manager", "dev", "pManager", "tenant-admin"],
+    default: "tenant-admin",
+  },
   tenant_id: {
     type: String,
   },

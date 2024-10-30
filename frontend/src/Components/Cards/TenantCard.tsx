@@ -25,8 +25,10 @@ import {
 } from "@/api/tenantService/tenant";
 import { ITenant, ITenantFrontend } from "@/interfaces/User";
 import { AxiosError } from "axios";
+import { useRouter } from "next/navigation";
 
 export default function TenantCard() {
+  const router = useRouter();
   const [tenant, setTenant] = useState<ITenantFrontend>({
     tenant_id: "",
     register_date: "",
@@ -80,6 +82,7 @@ export default function TenantCard() {
       }
       toast.error("something went wrong");
       console.log("Error retrieving tenant", error);
+      router.push("tenant/create");
     }
   }
 

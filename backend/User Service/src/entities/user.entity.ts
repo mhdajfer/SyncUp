@@ -30,6 +30,7 @@ const userSchema = new Schema({
   role: {
     type: String,
     enum: ["manager", "dev", "pManager", "tenant-admin"],
+    default: "tenant-admin",
   },
   tenant_id: {
     type: String,

@@ -90,8 +90,6 @@ export class UserUseCases implements IUserUseCases {
       if (!user) throw new CustomError(`User ${username} not exist`, 400);
       console.log(user);
 
-      if (!user.isVerified)
-        throw new CustomError(`User ${username} not verified`, 400);
       if (user.isBlocked)
         throw new CustomError(`User ${username} blocked`, 400);
 
@@ -99,6 +97,8 @@ export class UserUseCases implements IUserUseCases {
       const refreshToken = createRefreshToken(user);
 
       if (useCase == "normal") {
+        if (!user.isVerified)
+          throw new CustomError(`User ${username} not verified`, 400);
         const res = await bcrypt.compare(password, user.password);
 
         if (!res) throw new CustomError("Incorrect password", 400);

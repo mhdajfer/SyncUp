@@ -60,7 +60,9 @@ export class TenantController {
         .status(StatusCode.OK)
         .json({ success: true, data, message: "tenant updated successfully" });
     } catch (error) {
-      throw error;
+      console.log("error while updating tenant", error);
+
+      next(error);
     }
   }
 }

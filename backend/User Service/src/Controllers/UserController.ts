@@ -224,21 +224,36 @@ export class UserController {
       console.log("userdata", userData);
 
       const existingUser = await this.userUseCase.getUserByEmail(
-        userDetails.email
+        userData.email
       );
+
+      console.log("existingUser", existingUser);
 
       let data;
 
       if (!existingUser) {
-        data = await this.userUseCase.createUser(userData);
+        data = await this.userUseCase.createUser({
+          ...userData,
+          isVerified: true,
+        });
+        console.log("createdUser", data);
+
         if (!data) throw new CustomError("user not created", 409);
+
+        const kafkaConnection = new KafkaConnection();
+        const producer = await kafkaConnection.getProducerInstance();
+        const userProducer = new UserProducer(producer);
+
+        await userProducer.sendMessage(
+          "create",
+          { ...userData, isVerified: true },
+          data
+        );
+        await userProducer.notifyRegistrationSuccess({
+          ...userData,
+          isVerified: true,
+        });
       }
-
-      // const kafkaConnection = new KafkaConnection();
-      // const producer = await kafkaConnection.getProducerInstance();
-      // const userProducer = new UserProducer(producer);
-
-      // await userProducer.sendMessage("create", userData, data);
 
       const { user, accessToken, refreshToken } = await this.userUseCase.login(
         userDetails.email,
@@ -252,7 +267,7 @@ export class UserController {
         .json({ user: user, refreshToken, accessToken, success: true });
     } catch (error) {
       console.log("error while signing up with google", error);
-      throw next(error);
+      next(error);
     }
   }
 
