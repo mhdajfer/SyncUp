@@ -44,7 +44,7 @@ export class ProjectRepository implements IProjectRepository {
 
   async getAssignedProjectsForDev(devId: string): Promise<IProject[]> {
     try {
-      console.log('userid', devId);
+      console.log("userid", devId);
       const projectList = await Project.find({
         developers: { $in: [new ObjectId(devId)] },
       });
@@ -176,7 +176,10 @@ export class ProjectRepository implements IProjectRepository {
 
   async getDevTasks(assignee: string): Promise<Task[]> {
     try {
-      const tasks = await taskModel.find({ assignee: assignee });
+      const tasks = await taskModel
+        .find({ assignee: assignee })
+        .populate("assignee")
+        .exec();
 
       return tasks as unknown as Task[];
     } catch (error) {
