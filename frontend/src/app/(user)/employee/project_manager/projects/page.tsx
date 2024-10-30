@@ -9,7 +9,7 @@ export default function Page() {
 
   useEffect(() => {
     async function getData() {
-      const data = await getProjects(true);
+      const data = await getProjects("forPM");
       setProject(data.result);
     }
     getData();

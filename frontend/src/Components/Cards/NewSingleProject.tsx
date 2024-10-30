@@ -54,7 +54,7 @@ interface newTask {
   start_date: string;
 }
 
-export default function NewSingleProject() {
+export default function NewSingleProject({ role }: { role: string }) {
   const router = useRouter();
   const { projectId }: { projectId: string } = useParams();
   const [project, setProject] = useState<Project | null>(null);
@@ -224,7 +224,7 @@ export default function NewSingleProject() {
         remarks: "",
         desc: "",
         start_date: "",
-        category: ""
+        category: "",
       },
     ]);
   };
@@ -463,7 +463,7 @@ export default function NewSingleProject() {
                       {isEditing ? "Save Changes" : "Edit Project"}
                     </Button>
 
-                    {project && (
+                    {project && project.developers && (
                       <ProjectTeam
                         developers={developers}
                         project={project}
@@ -483,10 +483,13 @@ export default function NewSingleProject() {
                               className="bg-gray-900 p-4 rounded-md shadow w-full h-full"
                             >
                               <h3
-                                className="text-lg font-semibold text-gray-100 mb-2 hover:underline cursor-pointer hover:text-gray-200"
-                                onClick={() =>
-                                  router.push(`${projectId}/${task._id}`)
-                                }
+                                className={`first-letter:text-lg font-semibold text-gray-100 mb-2 ${
+                                  role === "manager" ? "" : "hover:underline"
+                                } cursor-pointer hover:text-gray-200`}
+                                onClick={() => {
+                                  if (role !== "manager")
+                                    router.push(`${projectId}/${task._id}`);
+                                }}
                               >
                                 {task.title}
                               </h3>

@@ -5,12 +5,19 @@ import { ProjectControllers } from "../Controllers/ProjectControllers";
 import { checkSchema } from "express-validator";
 import projectValidator from "../validators/projectValidator";
 import userAuth from "../Middlewares/userAuth";
+import { CommentController } from "../Controllers/CommentController";
+import { CommentRepository } from "../Repositories/CommentRepository";
+import { CommentUseCases } from "../Use-cases/CommentUseCases";
 
 const router = express.Router();
 
 const projectRepository = new ProjectRepository();
 const projectUseCases = new ProjectUseCases(projectRepository);
 const projectController = new ProjectControllers(projectUseCases);
+
+const commentRepository = new CommentRepository();
+const commentUseCases = new CommentUseCases(commentRepository);
+const commentController = new CommentController(commentUseCases);
 
 router.post(
   "/",
@@ -78,6 +85,12 @@ router.post(
   "/team/remove",
   userAuth,
   projectController.removeTeamMember.bind(projectController)
+);
+
+router.post(
+  "/comment/add",
+  userAuth,
+  commentController.addComment.bind(commentController)
 );
 
 export default router;

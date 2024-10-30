@@ -1,3 +1,5 @@
+import { IUser } from "./IUser";
+
 export interface IProject {
   _id?: string;
   name: string;
@@ -25,4 +27,12 @@ export interface Task {
   start_date: Date;
   due_date: Date;
   remarks?: string;
+  comments: Comment[];
+}
+
+export interface Comment {
+  _id?: string;
+  author: string;
+  content: string;
+  timeStamp: Date;
 }

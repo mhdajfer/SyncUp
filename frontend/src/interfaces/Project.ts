@@ -12,12 +12,12 @@ export interface Project {
   goal: string;
   developers?: User[];
   document: File | null;
-  comments?: Comment[];
   created_by: string;
 }
 
 export interface Task {
   _id?: string;
+  comments: Comment[];
   title: string;
   projectId: string;
   status: string;
@@ -30,11 +30,11 @@ export interface Task {
   remarks?: string;
 }
 
-interface Comment {
-  id: string;
-  author: string;
+export interface Comment {
+  _id?: string;
+  author: string | User;
   content: string;
-  timestamp: string;
+  timeStamp: string;
 }
 
 export enum TaskCategory {

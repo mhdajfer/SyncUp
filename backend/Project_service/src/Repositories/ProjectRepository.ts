@@ -136,7 +136,8 @@ export class ProjectRepository implements IProjectRepository {
     try {
       const taskDetails = await taskModel
         .findOne({ _id: taskId })
-        .populate("assignee");
+        .populate("assignee")
+        .populate("comments.author");
 
       return taskDetails as unknown as Task;
     } catch (error) {

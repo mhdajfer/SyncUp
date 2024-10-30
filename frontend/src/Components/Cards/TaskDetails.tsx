@@ -20,6 +20,7 @@ import Tiptap from "../RichText/TipTap";
 import { User as UserType } from "@/interfaces/User";
 import { getDevelopers } from "@/api/userService/user";
 import { TASK_CATEGORY } from "@/Consts";
+import CommentSection from "./CommentSection";
 
 export default function TaskDetails() {
   const { taskId }: { taskId: string } = useParams();
@@ -31,10 +32,12 @@ export default function TaskDetails() {
     status: "",
     desc: "",
     start_date: "",
+    category: "",
     assignee: "",
     priority: "",
     due_date: "",
     remarks: "",
+    comments: [],
   });
 
   const [isEditing, setIsEditing] = useState(false);
@@ -44,7 +47,6 @@ export default function TaskDetails() {
     setIsEditing(true);
     setEditedTask(task);
   };
-
   const handleSave = async () => {
     try {
       const response = await editTask(editedTask);
@@ -425,6 +427,13 @@ export default function TaskDetails() {
               <p className="italic">{task.remarks}</p>
             </div>
           </div>
+        )}
+        {typeof task.assignee != "string" && (
+          <CommentSection
+            initialComments={task.comments}
+            taskId={taskId}
+            author={task.assignee}
+          />
         )}
       </motion.div>
     </AnimatePresence>

@@ -51,6 +51,16 @@ const TaskSchema: Schema = new Schema({
   updatedAt: {
     type: Date,
   },
+  comments: [
+    {
+      author: { type: Types.ObjectId, required: true, ref: "User" },
+      content: { type: String, required: true },
+      timeStamp: {
+        type: Date,
+        default: Date.now,
+      },
+    },
+  ],
 });
 
 TaskSchema.pre("save", function (next) {

@@ -162,8 +162,8 @@ export default function ProjectTeam({
                           className="w-12 h-12 bg-cover  rounded-full"
                         />
                         <AvatarFallback className=" bg-green-400 rounded-full p-2">
-                          {dev.firstName[0].toUpperCase()}
-                          {dev.lastName[1].toUpperCase()}
+                          {dev.firstName && dev.firstName[0].toUpperCase()}
+                          {dev.lastName && dev.lastName[1].toUpperCase()}
                         </AvatarFallback>
                       </Avatar>
                       <div>

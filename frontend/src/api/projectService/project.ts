@@ -3,11 +3,15 @@ import { CreateProjectResponse } from "@/Components/Forms/ProjectForm";
 import { Project, Task } from "@/interfaces/Project";
 
 export const getProjects = async (
-  isForPManager = false
+  isForPManager = ""
 ): Promise<{ result: Project[] }> => {
   try {
     const response = await userInstance.get(
-      isForPManager ? "/projects/forPM" : "/projects"
+      isForPManager == "forPM"
+        ? "/projects/forPM"
+        : isForPManager == "forDev"
+        ? "/projects/forDev"
+        : "/projects"
     );
 
     return response.data as unknown as { result: Project[] };
