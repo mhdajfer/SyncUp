@@ -30,6 +30,9 @@ export function ManagerLayout({
       case "developers":
         router.push("/employee/manager/dashboard/developers");
         break;
+      case "dashboard":
+        router.push("/employee/manager/dashboard");
+        break;
       case "pManagers":
         router.push("/employee/manager/dashboard/pManagers");
         break;
@@ -43,6 +46,11 @@ export function ManagerLayout({
       </div>
 
       <nav className="mt-10">
+        <SideBarItem
+          icon={<FiUsers />}
+          label="Dashboard"
+          onClick={() => onSideBarClick("dashboard")}
+        />
         <SideBarItem
           icon={<FiUsers />}
           label="Developers"

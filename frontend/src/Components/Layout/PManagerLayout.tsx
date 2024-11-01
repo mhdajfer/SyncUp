@@ -28,28 +28,33 @@ export default function PManagerLayout({
       <nav className="mt-10">
         <SideBarItem
           icon={<FiUsers />}
+          label="Dashboard"
+          onClick={() => router.push("/employee/project_manager/dashboard")}
+        />
+        <SideBarItem
+          icon={<FiUsers />}
           label="Developers"
-          onClick={() => router.push("developers")}
+          onClick={() => router.push("/employee/project_manager/developers")}
         />
         <SideBarItem
           icon={<FiUserCheck />}
           label="Tasks"
-          onClick={() => router.push("/tasks")}
+          onClick={() => router.push("/employee/project_manager/tasks")}
         />
         <SideBarItem
           icon={<FiFolder />}
           label="Projects"
-          onClick={() => router.push("projects")}
+          onClick={() => router.push("/employee/project_manager/projects")}
         />
         <SideBarItem
           icon={<FiMessageSquare />}
           label="Chats"
-          onClick={() => router.push("/chats")}
+          onClick={() => router.push("/employee/project_manager/chats")}
         />
         <SideBarItem
           icon={<FiCalendar />}
           label="Meetings"
-          onClick={() => router.push("/meetings")}
+          onClick={() => router.push("/employee/project_manager/meetings")}
         />
       </nav>
 

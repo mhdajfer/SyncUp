@@ -21,6 +21,8 @@ import { User as UserType } from "@/interfaces/User";
 import { getDevelopers } from "@/api/userService/user";
 import { TASK_CATEGORY } from "@/Consts";
 import CommentSection from "./CommentSection";
+import { useSelector } from "react-redux";
+import { RootState } from "@/store/store";
 
 export default function TaskDetails() {
   const { taskId }: { taskId: string } = useParams();
@@ -42,6 +44,8 @@ export default function TaskDetails() {
 
   const [isEditing, setIsEditing] = useState(false);
   const [editedTask, setEditedTask] = useState<Task>(task);
+
+  const user = useSelector((state: RootState) => state.auth.user);
 
   const handleEdit = () => {
     setIsEditing(true);
@@ -428,11 +432,11 @@ export default function TaskDetails() {
             </div>
           </div>
         )}
-        {typeof task.assignee != "string" && (
+        {typeof task.assignee != "string" && user && (
           <CommentSection
             initialComments={task.comments}
             taskId={taskId}
-            author={task.assignee}
+            author={user}
           />
         )}
       </motion.div>
