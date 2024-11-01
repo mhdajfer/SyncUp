@@ -32,9 +32,8 @@ export class TenantAdminRepository implements ITenantAdminRepository {
     try {
       const user = await Tenant.findOne({ user_id: tenantAdmin._id });
       console.log(user);
-      
 
-      if (!user) throw new CustomError("No tenant admin found", 400);
+      if (!user) throw new CustomError("No tenant found", 400);
 
       return user as unknown as ITenants;
     } catch (error) {

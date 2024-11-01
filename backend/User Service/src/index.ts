@@ -19,7 +19,7 @@ app.use(express.urlencoded({ extended: true }));
 
 connectDB();
 
-connectConsumers();
+// connectConsumers();
 
 app.use("/users", userRoute);
 app.use(errorHandler);

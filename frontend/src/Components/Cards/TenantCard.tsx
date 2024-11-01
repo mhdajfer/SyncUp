@@ -62,29 +62,28 @@ export default function TenantCard() {
   });
 
   useEffect(() => {
-    getTenant();
-  }, []);
+    async function getTenant() {
+      try {
+        const response = await getTenantDetails();
+        const tenantData = response.data as ITenant;
 
-  async function getTenant() {
-    try {
-      const response = await getTenantDetails();
-      const tenantData = response.data as ITenant;
+        tenantData.register_date = new Date(
+          tenantData.register_date
+        ).toLocaleDateString();
 
-      tenantData.register_date = new Date(
-        tenantData.register_date
-      ).toLocaleDateString();
-
-      setTenant(tenantData);
-      setEditedTenant(tenantData);
-    } catch (error: unknown) {
-      if (error instanceof AxiosError && error.response) {
-        return toast.message("Create a new tenant");
+        setTenant(tenantData);
+        setEditedTenant(tenantData);
+      } catch (error: unknown) {
+        if (error instanceof AxiosError && error.response) {
+          toast.message("Create a new tenant");
+        }
+        toast.error("No Tenant found");
+        console.log("Error retrieving tenant", error);
+        router.push("tenant/create");
       }
-      toast.error("something went wrong");
-      console.log("Error retrieving tenant", error);
-      router.push("tenant/create");
     }
-  }
+    getTenant();
+  }, [router]);
 
   const handleEdit = () => {
     setIsEditing(true);

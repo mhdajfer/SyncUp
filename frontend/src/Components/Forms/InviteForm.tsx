@@ -26,8 +26,8 @@ import {
 import { toast } from "sonner";
 import { inviteUser } from "@/api/userService/user";
 import { useRouter } from "next/navigation";
-import { useSelector } from "react-redux";
-import { RootState } from "@/store/store";
+import { ITenant } from "@/interfaces/User";
+import { getTenantDetails } from "@/api/tenantService/tenant";
 
 const formSchema = z.object({
   firstName: z.string().min(2, {
@@ -50,19 +50,31 @@ export default function InviteForm() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isVisible, setIsVisible] = useState(false);
 
-  const tenantId = useSelector(
-    (state: RootState) => state.auth.user?.tenant_id
-  );
-
   const roleDescriptions = ["manager", "dev", "pManager", "tenant-admin"];
 
   useEffect(() => {
-    if (!tenantId) {
-      toast.error("Create tenant first");
-      router.back();
+    async function getTenant() {
+      try {
+        const response = await getTenantDetails();
+        const tenantData = response.data as ITenant;
+
+        tenantData.register_date = new Date(
+          tenantData.register_date
+        ).toLocaleDateString();
+
+        if (!tenantData._id) {
+          toast.error("Create tenant first");
+          router.push("/admin/dashboard/tenant/create");
+        }
+      } catch (error) {
+        toast.error("No Tenant found");
+        router.push("/admin/dashboard/tenant/create");
+      }
     }
+
+    getTenant();
     setIsVisible(true);
-  }, [router, tenantId]);
+  }, [router]);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),

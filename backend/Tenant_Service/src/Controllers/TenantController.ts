@@ -33,6 +33,8 @@ export class TenantController {
     try {
       const tenantAdmin = req.user;
 
+      console.log('user', tenantAdmin);
+
       if (!tenantAdmin) throw new CustomError("tenant admin not found", 409);
 
       const tenant = await this.tenantUseCases.getTenant(tenantAdmin);

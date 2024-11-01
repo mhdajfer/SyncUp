@@ -180,8 +180,12 @@ export class UserRepository implements IUserRepository {
   async updateUser(user: IUser): Promise<IUser> {
     try {
       console.log("inside repository", user.tenant_id);
+      delete user._id;
 
-      const response = await User.updateOne({ email: user.email }, { ...user });
+      const response = await User.updateMany(
+        { email: user.email },
+        { ...user }
+      );
 
       return response as unknown as IUser;
     } catch (error) {

@@ -28,6 +28,10 @@ export class UserUseCases implements IUserUseCases {
         adminEmail
       );
 
+      console.log(
+        "**************************************************** tenant_id updated************************************************8"
+      );
+
       if (!tenantAdmin) throw new CustomError("Tenant adimin not updated", 409);
 
       const kafkaConnection = new KafkaConnection();
@@ -45,6 +49,4 @@ export class UserUseCases implements IUserUseCases {
       throw error;
     }
   }
-
- 
 }

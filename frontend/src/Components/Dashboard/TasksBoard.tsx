@@ -184,6 +184,10 @@ export default function TaskDashboard({ newTasks }: { newTasks: Task[] }) {
     assignee: "asdfadfasdfadfa",
     priority: "high",
     due_date: "2024-11-10",
+    start_date: "2024-09-10",
+    comments: [],
+    category: "Bug",
+    remarks: "",
   };
 
   return (
