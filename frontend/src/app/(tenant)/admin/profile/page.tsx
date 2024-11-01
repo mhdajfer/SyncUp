@@ -14,29 +14,29 @@ export default function Page() {
   const [user, setUser] = useState<User>();
 
   useEffect(() => {
-    getUserData();
-  });
-
-  async function getUserData() {
-    try {
-      if (!userId) return toast.error("user not authenticated");
-
-      const response = await getUser(userId);
-
-      if (response.success) {
-        setUser(response.data);
-      } else {
-        toast.error(response.message);
-      }
-    } catch (error: unknown) {
-      if (error instanceof AxiosError) {
-        toast.error(error.response?.data.message);
-      } else {
-        toast.error("error while retrieving user");
-        console.log(error);
+    async function getUserData() {
+      try {
+        if (!userId) return toast.error("user not authenticated");
+  
+        const response = await getUser(userId);
+  
+        if (response.success) {
+          setUser(response.data);
+        } else {
+          toast.error(response.message);
+        }
+      } catch (error: unknown) {
+        if (error instanceof AxiosError) {
+          toast.error(error.response?.data.message);
+        } else {
+          toast.error("error while retrieving user");
+          console.log(error);
+        }
       }
     }
-  }
+    getUserData();
+  },[userId]);
+
 
   return <>{user && <ShowProfile initialUser={user} />}</>;
 }
