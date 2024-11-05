@@ -6,11 +6,11 @@ import cookieParser from "cookie-parser";
 import { connectDB } from "./frameworks/mongo/connect";
 import { errorHandler } from "./ErrorHandler/ErrorHandler";
 import { connectConsumers } from "./events/Consumers";
-
-const app = express();
 dotenv.config();
 
-const port = process.env.PORT ;
+const app = express();
+
+const port = process.env.PORT;
 
 app.use(cors());
 app.use(cookieParser());
@@ -19,7 +19,7 @@ app.use(express.urlencoded({ extended: true }));
 
 connectDB();
 
-connectConsumers();
+// connectConsumers();
 
 app.use("/users", userRoute);
 app.use(errorHandler);
