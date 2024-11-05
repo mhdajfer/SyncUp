@@ -62,7 +62,7 @@ export default function CommentSection({
   };
   console.log("comments", comments);
   return (
-    <Card className="w-full bg-gray-900 text-gray-100">
+    <Card className="w-full bg-gray-900 text-gray-100 border-gray-700">
       <CardHeader>
         <CardTitle className="text-xl font-semibold">Task Comments</CardTitle>
       </CardHeader>

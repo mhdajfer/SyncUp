@@ -53,6 +53,8 @@ export default function TaskDetails() {
   };
   const handleSave = async () => {
     try {
+      if (editedTask === task)
+        return toast.warning("No changes made");
       const response = await editTask(editedTask);
 
       if (response.success) {

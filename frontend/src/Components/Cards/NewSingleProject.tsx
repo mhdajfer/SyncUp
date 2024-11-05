@@ -247,6 +247,8 @@ export default function NewSingleProject({ role }: { role: string }) {
 
   const handleSaveChanges = async () => {
     try {
+      if (editedProject == project)
+        return toast.warning("No changes were made");
       const response = await editProject(editedProject);
 
       if (response.success) {
