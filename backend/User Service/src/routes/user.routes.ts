@@ -58,10 +58,10 @@ router.post(
   "/forgot-password",
   userController.verifyAndSendOtp.bind(userController)
 );
-router.patch(
+router.get(
   "/upload/image",
   userAuth,
-  userController.uploadImage.bind(userController)
+  userController.generateUploadUrl.bind(userController)
 );
 
 router.post("/google-auth", userController.googleSignup.bind(userController));

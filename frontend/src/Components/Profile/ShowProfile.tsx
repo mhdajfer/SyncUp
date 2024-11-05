@@ -9,6 +9,7 @@ import {
   CardFooter,
 } from "@/Components/ui/card";
 import { Label } from "@/Components/ui/label";
+import { getUploadUrl, uploadFileToS3 } from "@/lib/S3";
 import { Input } from "@/Components/ui/input";
 import { Button } from "@/Components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/Components/ui/avatar";
@@ -16,7 +17,7 @@ import { User } from "@/interfaces/User";
 import { AxiosError } from "axios";
 import { toast } from "sonner";
 import Cookies from "js-cookie";
-import { editProfile, uploadImage } from "@/api/userService/user";
+import { editProfile } from "@/api/userService/user";
 import { useDispatch } from "react-redux";
 import { loginSuccess } from "@/store/slices/authSlice";
 
@@ -58,15 +59,22 @@ export default function ShowProfile({ initialUser }: { initialUser: User }) {
   const handleSaveImage = async () => {
     if (!imageUploaded) return toast.warning("image not uploaded");
 
-    const response = await uploadImage(imageUploaded);
+    const response = await getUploadUrl();
 
     if (response.success) {
+      const { uploadUrl, avatarUrl } = response;
+
+      if (!avatarUrl || !uploadUrl)
+        return toast.error("didn't get urls for the image");
+
+      await uploadFileToS3(uploadUrl, imageUploaded);
+
       const accessToken = Cookies.get("accessToken");
       if (!accessToken) return toast.error("Access token not found");
-      toast.success(response.message);
+      toast.success("profile uploaded successfully");
       setUser((prevUser) => ({
         ...prevUser,
-        avatar: response.data.avatar as string,
+        avatar: avatarUrl,
       }));
       dispatch(loginSuccess({ accessToken, user }));
     } else return toast.error("Image upload failed");

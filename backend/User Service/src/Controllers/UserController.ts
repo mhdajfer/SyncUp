@@ -2,16 +2,15 @@ import { Request, Response, NextFunction } from "express";
 import { IUserUseCases } from "../interfaces/IUserUseCases";
 import { googleUser, IUser } from "../interfaces/IUser";
 import { validationResult } from "express-validator";
-import jwt, { JsonWebTokenError } from "jsonwebtoken";
+import jwt from "jsonwebtoken";
 import { createToken, verifyAccessToken } from "../Utils/Jwt";
 import { KafkaConnection } from "../Config/kafka/kafkaConnection";
 import { UserProducer } from "../events/Producers/UserProducer";
 import { CustomError } from "../ErrorHandler/CustonError";
 import { CustomRequest } from "../interfaces/CustomRequest";
 import hashPassword from "../Utils/bcrypt";
-import multer from "multer";
-import AWS, { S3 } from "aws-sdk";
 import { StatusCode } from "../interfaces/StatusCode";
+import { deleteAvatarIfExists, getUploadSignedUrl } from "../Utils/S3";
 
 export class UserController {
   private userUseCase: IUserUseCases;
@@ -507,100 +506,58 @@ export class UserController {
     }
   }
 
-  async uploadImage(req: CustomRequest, res: Response, next: NextFunction) {
+  async generateUploadUrl(
+    req: CustomRequest,
+    res: Response,
+    next: NextFunction
+  ) {
     try {
-      console.log("herererer");
-      const storage = multer.memoryStorage();
-      const upload = multer({ storage: storage }).single("image");
-      const s3 = new AWS.S3({
-        accessKeyId: process.env.AWS_ACCESS_KEY,
-        secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
-      });
+      if (!req.user?._id) {
+        return res
+          .status(StatusCode.BAD_REQUEST)
+          .json({ message: "No user found" });
+      }
 
-      upload(req, res, async (err) => {
-        if (err instanceof multer.MulterError) {
-          console.error("Multer error:", err);
-          return res
-            .status(StatusCode.BAD_REQUEST)
-            .json({ message: "File upload failed", error: err });
-        } else if (err) {
-          console.error("Unknown error:", err);
-          return res
-            .status(StatusCode.INTERNAL_SERVER_ERROR)
-            .json({ message: "Internal Server Error", error: err });
-        }
-
-        if (!req.file) {
-          return res
-            .status(StatusCode.BAD_REQUEST)
-            .json({ message: "No file uploaded" });
-        } else if (!req.user?._id) {
-          return res
-            .status(StatusCode.BAD_REQUEST)
-            .json({ message: "No user found" });
-        }
-
-        const currentUser = await this.userUseCase.getUserByEmail(
-          req.user.email
-        );
-        if (!currentUser)
-          return res
-            .status(StatusCode.UNAUTHORIZED)
-            .json({ message: "user not found", data: null, success: false });
-
-        const oldAvatarUrl = currentUser.avatar;
-
-        const params = {
-          Bucket: "syncupcloud",
-          Key: `Image-${this.generateRandomNumber()}.jpg`,
-          Body: req.file.buffer,
-          ContentType: "image/jpeg",
-        };
-
-        const uploadedImage = await s3.upload(params).promise();
-
-        const updatedUser = await this.userUseCase.updateAvatar(
-          uploadedImage.Location,
-          req.user?._id
-        );
-
-        if (oldAvatarUrl) {
-          const oldKey = oldAvatarUrl.split("/").pop() as string;
-          await this.deleteImageFromS3(oldKey);
-        }
-
-        res.status(StatusCode.OK).json({
-          success: true,
-          message: "Avatar updated successfully",
-          data: updatedUser,
+      const currentUser = await this.userUseCase.getUserByEmail(req.user.email);
+      if (!currentUser) {
+        return res.status(StatusCode.UNAUTHORIZED).json({
+          message: "User not found",
+          data: null,
+          success: false,
         });
+      }
+
+      const oldAvatarUrl = currentUser.avatar;
+      if (oldAvatarUrl) {
+        const oldKey = oldAvatarUrl.split("/").pop() as string;
+        await deleteAvatarIfExists(oldKey);
+      }
+
+      const fileName = `Image-${this.generateRandomNumber()}.jpg`;
+
+      const updatedUser = await this.userUseCase.updateAvatar(
+        `https://syncupcloud.s3.eu-north-1.amazonaws.com/${fileName}`,
+        req.user._id
+      );
+
+      const uploadUrl = await getUploadSignedUrl(fileName, "image/jpeg");
+
+      res.status(StatusCode.OK).json({
+        success: true,
+        message: "upload url configured correctly",
+        uploadUrl,
+        avatarUrl: `https://syncupcloud.s3.eu-north-1.amazonaws.com/${fileName}`,
       });
     } catch (error) {
-      console.log("error while uploading image");
+      console.log("Error while upload url:", error);
       next(error);
     }
   }
 
-  generateRandomNumber(min: number = 10000, max: number = 99999): number {
+  private generateRandomNumber(
+    min: number = 10000,
+    max: number = 99999
+  ): number {
     return Math.floor(Math.random() * (max - min + 1)) + min;
-  }
-
-  private async deleteImageFromS3(key: string) {
-    const s3 = new AWS.S3({
-      accessKeyId: process.env.AWS_ACCESS_KEY,
-      secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
-    });
-
-    try {
-      await s3
-        .deleteObject({
-          Bucket: "syncupcloud",
-          Key: key,
-        })
-        .promise();
-      console.log(`Deleted image: ${key}`);
-    } catch (error) {
-      console.error(`Failed to delete old image: ${key}`, error);
-    }
   }
 }
