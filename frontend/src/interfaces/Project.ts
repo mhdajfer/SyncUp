@@ -23,6 +23,11 @@ export interface Task {
   status: string;
   category: string;
   desc?: string;
+  log_time: {
+    start_time: string;
+    stop_time: string;
+    total_time: number;
+  };
   assignee: string | User;
   priority?: string;
   start_date: string;

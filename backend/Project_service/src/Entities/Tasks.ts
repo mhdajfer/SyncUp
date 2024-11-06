@@ -51,6 +51,14 @@ const TaskSchema: Schema = new Schema({
   updatedAt: {
     type: Date,
   },
+  log_time: {
+    start_time: Date,
+    stop_time: Date,
+    total_time: {
+      type: Number,
+      default: 0,
+    },
+  },
   comments: [
     {
       author: { type: Types.ObjectId, required: true, ref: "User" },

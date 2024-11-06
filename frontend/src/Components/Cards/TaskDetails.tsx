@@ -23,6 +23,7 @@ import { TASK_CATEGORY } from "@/Consts";
 import CommentSection from "./CommentSection";
 import { useSelector } from "react-redux";
 import { RootState } from "@/store/store";
+import LogTime from "../Log-time/LogTime";
 
 export default function TaskDetails() {
   const { taskId }: { taskId: string } = useParams();
@@ -32,6 +33,11 @@ export default function TaskDetails() {
     title: "",
     projectId: "",
     status: "",
+    log_time: {
+      start_time: "",
+      stop_time: "",
+      total_time: 0,
+    },
     desc: "",
     start_date: "",
     category: "",
@@ -53,8 +59,7 @@ export default function TaskDetails() {
   };
   const handleSave = async () => {
     try {
-      if (editedTask === task)
-        return toast.warning("No changes made");
+      if (editedTask === task) return toast.warning("No changes made");
       const response = await editTask(editedTask);
 
       if (response.success) {
@@ -69,6 +74,8 @@ export default function TaskDetails() {
       console.log(error);
     }
   };
+
+  console.log("new tasklasj;dfkaj;skldfa;dfka;s", task);
 
   const handleCancel = () => {
     setIsEditing(false);
@@ -346,7 +353,7 @@ export default function TaskDetails() {
             </div>
           </form>
         ) : (
-          <div className="space-y-4">
+          <div className="space-y-4 mb-4">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="flex items-center">
                 <User className="w-5 h-5 mr-2 text-blue-400" />
@@ -434,6 +441,7 @@ export default function TaskDetails() {
             </div>
           </div>
         )}
+        {user?.role == "dev" && <LogTime setTask={setTask} task={task} />}
         {typeof task.assignee != "string" && user && (
           <CommentSection
             initialComments={task.comments}

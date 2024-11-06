@@ -1,6 +1,8 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
+import { LogTimeDisplay } from "@/lib/date-format";
+
 import {
   DndContext,
   DragOverlay,
@@ -66,6 +68,13 @@ export function TaskCards({ task }: { task: Task }) {
                 </span>
               )}
             </div>
+          </div>
+          <div>
+            <span className="text-gray-300 text-xs">
+              {task.log_time.total_time
+                ? `log time : ${LogTimeDisplay(task.log_time.total_time)}`
+                : `Not started working yet`}
+            </span>
           </div>
         </div>
       )}
@@ -186,6 +195,11 @@ export default function TaskDashboard({ newTasks }: { newTasks: Task[] }) {
     due_date: "2024-11-10",
     start_date: "2024-09-10",
     comments: [],
+    log_time: {
+      start_time: "",
+      stop_time: "",
+      total_time: 0,
+    },
     category: "Bug",
     remarks: "",
   };

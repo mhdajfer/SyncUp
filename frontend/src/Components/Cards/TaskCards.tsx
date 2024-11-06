@@ -31,6 +31,7 @@ export default function TaskCards({ task }: { task: Task }) {
               )}
             </div>
           </div>
+          
         </div>
       )}
     </>

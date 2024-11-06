@@ -60,7 +60,6 @@ export default function CommentSection({
       } else toast.error("error while adding comment");
     }
   };
-  console.log("comments", comments);
   return (
     <Card className="w-full bg-gray-900 text-gray-100 border-gray-700">
       <CardHeader>

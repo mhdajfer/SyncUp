@@ -26,6 +26,11 @@ export interface Task {
   priority?: string;
   start_date: Date;
   due_date: Date;
+  log_time: {
+    start_time: Date;
+    stop_time: Date;
+    total_time: number;
+  };
   remarks?: string;
   comments: Comment[];
 }
