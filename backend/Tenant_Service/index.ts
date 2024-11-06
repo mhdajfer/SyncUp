@@ -6,6 +6,7 @@ import cookieParser from "cookie-parser";
 import { connectDB } from "./src/frameworks/mongo/connect";
 import { errorHandler } from "./src/ErrorHandler/ErrorHandler";
 import { connectConsumers } from "./src/events/Consumers";
+const morgan = require('morgan');
 
 const app = express();
 dotenv.config();
@@ -20,7 +21,7 @@ app.use(express.urlencoded({ extended: true }));
 connectDB();
 
 // connectConsumers();
-
+app.use(morgan('tiny'));
 app.use("/tenants", tenantAdminRoutes);
 
 app.use(errorHandler);
