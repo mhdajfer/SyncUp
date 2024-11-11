@@ -25,8 +25,10 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
     if (!isAuthenticated) {
       console.log("not authenticated");
       router.push("/login");
+    } else if (!(user?.role == "pManager")) {
+      router.back();
     } else setLoading(false);
-  }, [isAuthenticated, router, loading]);
+  }, [isAuthenticated, router, loading, user?.role]);
 
   if (!user) return toast.error("user not found");
 
