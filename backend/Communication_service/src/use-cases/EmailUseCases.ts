@@ -1,9 +1,9 @@
 import { userInfo } from "os";
 import { IConsumerRepository } from "../interfaces/IConsumerRepository";
-import { IConsumerUseCases } from "../interfaces/IConsumerUseCases";
+import { IEmailUseCases } from "../interfaces/IEmailUseCases";
 import { IUserInvite } from "../interfaces/IUser";
 
-export class ConsumeUseCaeses implements IConsumerUseCases {
+export class EmailUseCases implements IEmailUseCases {
   constructor(private consumerRepository: IConsumerRepository) {}
 
   async sendOtp(
