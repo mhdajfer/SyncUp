@@ -8,4 +8,5 @@ export interface IChat{
     users: IUser[];
     lastMessage: IMessage;
     isGroupAdmin: boolean;
+    chat: string;
 }

@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Send, Search, Plus, X } from "lucide-react";
 import { Button } from "@/Components/ui/button";
 import { Input } from "@/Components/ui/input";
@@ -13,112 +13,149 @@ import {
   DialogTrigger,
 } from "@/Components/ui/dialog";
 import { Label } from "@/Components/ui/label";
-
-type Message = {
-  id: number;
-  user: string;
-  content: string;
-  timestamp: string;
-};
-
-type Chat = {
-  id: number;
-  name: string;
-  lastMessage: string;
-  timestamp: string;
-  isGroup: boolean;
-};
-
-type User = {
-  id: number;
-  name: string;
-};
+import { Chat } from "@/interfaces/Chat";
+import { User } from "@/interfaces/User";
+import { Message } from "@/interfaces/Message";
+import { toast } from "sonner";
+import { getAllUsers } from "@/api/userService/user";
+import { useSelector } from "react-redux";
+import { RootState } from "@/store/store";
+import {
+  getChats,
+  getMessages,
+  getOneChat,
+  sendMessage,
+} from "@/api/Communication/chatApis";
+import { format } from "date-fns";
+import { AxiosError } from "axios";
+import MessageSkeleton from "../Skeleton/Skeleton";
+import SingleChat from "./SingleChat";
 
 export default function ChatUI() {
-  const [messages, setMessages] = useState<Message[]>([
-    {
-      id: 1,
-      user: "Alice",
-      content: "Hey there! How's it going?",
-      timestamp: "2:30 PM",
-    },
-    {
-      id: 2,
-      user: "Bob",
-      content: "Hi Alice! I'm doing great, thanks for asking. How about you?",
-      timestamp: "2:31 PM",
-    },
-    {
-      id: 3,
-      user: "Alice",
-      content:
-        "I'm doing well too! Just working on some new projects. Anything exciting on your end?",
-      timestamp: "2:33 PM",
-    },
-  ]);
+  const [messages, setMessages] = useState<Message[]>([]);
   const [newMessage, setNewMessage] = useState("");
-  const [chats, setChats] = useState<Chat[]>([
-    {
-      id: 1,
-      name: "Alice",
-      lastMessage: "Hey there! How's it going?",
-      timestamp: "2:30 PM",
-      isGroup: false,
-    },
-    {
-      id: 2,
-      name: "Project Team",
-      lastMessage: "Meeting at 3 PM",
-      timestamp: "1:45 PM",
-      isGroup: true,
-    },
-    {
-      id: 3,
-      name: "Bob",
-      lastMessage: "Can you send me the report?",
-      timestamp: "Yesterday",
-      isGroup: false,
-    },
-  ]);
+  const [chats, setChats] = useState<Chat[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [isCreateGroupOpen, setIsCreateGroupOpen] = useState(false);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
   const [groupName, setGroupName] = useState("");
   const [selectedParticipants, setSelectedParticipants] = useState<User[]>([]);
+  const [selectedChat, setSelectedChat] = useState<Chat | null>(null);
+  const [users, setUsers] = useState<User[]>([]);
+  const currentUser = useSelector((state: RootState) => state.auth.user);
+  const currentUserId = currentUser?._id;
 
-  const users: User[] = [
-    { id: 1, name: "Alice" },
-    { id: 2, name: "Bob" },
-    { id: 3, name: "Charlie" },
-    { id: 4, name: "David" },
-  ];
+  const getUsers = async () => {
+    try {
+      const response = await getAllUsers();
 
-  const handleSendMessage = () => {
-    if (newMessage.trim() !== "") {
-      const newMsg: Message = {
-        id: messages.length + 1,
-        user: "You",
-        content: newMessage.trim(),
-        timestamp: new Date().toLocaleTimeString([], {
-          hour: "2-digit",
-          minute: "2-digit",
-        }),
-      };
-      setMessages([...messages, newMsg]);
-      setNewMessage("");
+      if (response.success) setUsers(response.data);
+    } catch (error) {
+      toast.error("can't fetch all users");
+      console.log(error);
     }
   };
+
+  const getAllChats = async () => {
+    try {
+      const response = await getChats();
+
+      if (response.success) setChats(response.data);
+    } catch (error) {
+      toast.error("can't fetch all chats");
+      console.log(error);
+    }
+  };
+
+  // const getMessages = async () =>{
+  //   try{
+  //     const
+
+  //   }catch(error){
+  //     toast.error("can't fetch all messages");
+  //     console.log(error);
+  //   }
+  // }
+
+  useEffect(() => {
+    if (!currentUserId) toast.error("Authenticated user not found");
+    getUsers();
+    getAllChats();
+  }, [currentUserId]);
+
+  const handleOneChat = async (chat: Chat) => {
+    try {
+      if (!chat._id) return toast.error("chat not found");
+      setSelectedChat(chat);
+
+      const response = await getMessages(chat._id);
+
+      if (response.success) {
+        setMessages(response.data);
+        setTimeout(() => {
+          setIsLoading(false);
+        }, 2000);
+      }
+    } catch (error: unknown) {
+      if (error instanceof AxiosError) {
+        toast.error(error.response?.data.error);
+      } else toast.error("error while getting messages");
+    }
+  };
+
+  const handleSendMessage = async () => {
+    try {
+      if (newMessage.trim() !== "") {
+        if (!chats[0]._id) return toast.error("Chat not selected");
+
+        const newMsg: Message = {
+          sender: currentUser || "",
+          content: newMessage.trim(),
+          chat: chats[0]._id || "",
+        };
+
+        const response = await sendMessage(chats[0]._id, newMessage);
+
+        if (response.success) {
+          setMessages([...messages, newMsg]);
+          setNewMessage("");
+        } else toast.error(response.message);
+      } else toast.warning("No message to send");
+    } catch (error: unknown) {
+      if (error instanceof AxiosError) {
+        toast.error(error.response?.data.error);
+      } else toast.error("error while sending message");
+    }
+  };
+
+  // const handleCreateGroup = () => {
+  //   if (groupName.trim() !== "" && selectedParticipants.length > 0) {
+  //     const newGroup: Chat = {
+  //       id: chats.length + 1,
+  //       name: groupName,
+  //       lastMessage: "Group created",
+  //       timestamp: new Date().toLocaleTimeString([], {
+  //         hour: "2-digit",
+  //         minute: "2-digit",
+  //       }),
+  //       isGroup: true,
+  //     };
+  //     setChats([newGroup, ...chats]);
+  //     setIsCreateGroupOpen(false);
+  //     setGroupName("");
+  //     setSelectedParticipants([]);
+  //   }
+  // };
 
   const handleCreateGroup = () => {
     if (groupName.trim() !== "" && selectedParticipants.length > 0) {
       const newGroup: Chat = {
-        id: chats.length + 1,
-        name: groupName,
-        lastMessage: "Group created",
-        timestamp: new Date().toLocaleTimeString([], {
-          hour: "2-digit",
-          minute: "2-digit",
-        }),
+        _id: (chats.length + 1).toString(),
         isGroup: true,
+        users: selectedParticipants,
+        chat: groupName,
+        lastMessage: {} as Message,
+        isGroupAdmin: true,
       };
       setChats([newGroup, ...chats]);
       setIsCreateGroupOpen(false);
@@ -127,8 +164,20 @@ export default function ChatUI() {
     }
   };
 
+  const setChatName = (chat: Chat) => {
+    const otherUser = chat.users.find((user) =>
+      typeof user !== "string"
+        ? user._id !== currentUserId
+        : user !== currentUserId
+    );
+
+    if (!otherUser) return toast.error("Issue with chat name");
+
+    return typeof otherUser === "object" ? otherUser.firstName : otherUser;
+  };
+
   const filteredChats = chats.filter((chat) =>
-    chat.name.toLowerCase().includes(searchQuery.toLowerCase())
+    chat.chat.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
   return (
@@ -147,22 +196,31 @@ export default function ChatUI() {
         <ScrollArea className="flex-grow">
           {filteredChats.map((chat) => (
             <div
-              key={chat.id}
-              className="p-4 border-b border-gray-800 hover:bg-gray-800 cursor-pointer"
+              key={chat._id}
+              className={`p-4 border-b border-gray-800 hover:bg-gray-800 cursor-pointer ${
+                selectedChat == chat ? "bg-blue-600" : ""
+              }`}
+              onClick={() => {
+                handleOneChat(chat);
+              }}
             >
               <div className="flex items-center">
                 <Avatar className="mr-3">
                   <AvatarImage
-                    src={`https://api.dicebear.com/6.x/initials/svg?seed=${chat.name}`}
-                    alt={chat.name}
+                    src={`https://api.dicebear.com/6.x/initials/svg?seed=${chat.chat}`}
+                    alt={chat.chat}
                   />
-                  <AvatarFallback>{chat.name[0]}</AvatarFallback>
+                  <AvatarFallback>{chat.chat[0]}</AvatarFallback>
                 </Avatar>
                 <div className="flex-grow">
-                  <h3 className="font-semibold">{chat.name}</h3>
-                  <p className="text-sm text-gray-400">{chat.lastMessage}</p>
+                  <h3 className="font-semibold">{setChatName(chat)}</h3>
+                  <p className="text-sm text-gray-400">dummy message</p>
                 </div>
-                <span className="text-xs text-gray-500">{chat.timestamp}</span>
+                {chat.updatedAt && (
+                  <span className="text-xs text-gray-500">
+                    {format(chat.updatedAt, "PPpp")}
+                  </span>
+                )}
               </div>
             </div>
           ))}
@@ -193,7 +251,7 @@ export default function ChatUI() {
                   <div className="flex flex-wrap gap-2 mt-2">
                     {users.map((user) => (
                       <Button
-                        key={user.id}
+                        key={user._id}
                         variant={
                           selectedParticipants.includes(user)
                             ? "secondary"
@@ -203,12 +261,12 @@ export default function ChatUI() {
                         onClick={() => {
                           setSelectedParticipants((prev) =>
                             prev.includes(user)
-                              ? prev.filter((p) => p.id !== user.id)
+                              ? prev.filter((p) => p._id !== user._id)
                               : [...prev, user]
                           );
                         }}
                       >
-                        {user.name}
+                        {user.firstName}
                       </Button>
                     ))}
                   </div>
@@ -229,44 +287,19 @@ export default function ChatUI() {
         </header>
 
         <ScrollArea className="flex-grow p-4">
-          {messages.map((message) => (
-            <div
-              key={message.id}
-              className={`flex items-start mb-4 ${
-                message.user === "You" ? "justify-end" : ""
-              }`}
-            >
-              {message.user !== "You" && (
-                <Avatar className="mr-2">
-                  <AvatarImage
-                    src={`https://api.dicebear.com/6.x/initials/svg?seed=${message.user}`}
-                    alt={message.user}
-                  />
-                  <AvatarFallback>{message.user[0]}</AvatarFallback>
-                </Avatar>
-              )}
-              <div
-                className={`rounded-lg p-3 max-w-[80%] ${
-                  message.user === "You" ? "bg-blue-600" : "bg-gray-700"
-                }`}
-              >
-                <p className="font-medium mb-1">{message.user}</p>
-                <p>{message.content}</p>
-                <p className="text-xs text-gray-400 mt-1">
-                  {message.timestamp}
-                </p>
+          {isLoading ? (
+            <>
+              <MessageSkeleton />
+              <MessageSkeleton />
+              <MessageSkeleton />
+            </>
+          ) : (
+            messages.map((message) => (
+              <div key={message._id}>
+                <SingleChat currentUserId={currentUserId} message={message} />
               </div>
-              {message.user === "You" && (
-                <Avatar className="ml-2">
-                  <AvatarImage
-                    src={`https://api.dicebear.com/6.x/initials/svg?seed=${message.user}`}
-                    alt={message.user}
-                  />
-                  <AvatarFallback>{message.user[0]}</AvatarFallback>
-                </Avatar>
-              )}
-            </div>
-          ))}
+            ))
+          )}
         </ScrollArea>
 
         <footer className="p-4 bg-gray-800">

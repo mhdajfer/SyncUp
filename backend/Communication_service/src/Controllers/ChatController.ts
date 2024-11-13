@@ -3,6 +3,7 @@ import { CustomRequest } from "../interfaces/CustomRequest";
 import { CustomError } from "../ErrorHandler/CustonError";
 import { IChatUseCases } from "../interfaces/IChatUseCases";
 import { StatusCode } from "../Interfaces/StatusCode";
+import { IMessage } from "../interfaces/IMessage";
 
 export class ChatController {
   constructor(private chatUseCases: IChatUseCases) {}
@@ -26,7 +27,7 @@ export class ChatController {
     try {
       const userId1 = req.user?._id;
       const userId2 = req.body.userId;
-      console.log(userId1, userId2);
+      console.log("logging user1 and user2", userId1, userId2);
 
       if (!userId1 || !userId2)
         throw new CustomError("any of the user not found", 409);
@@ -57,6 +58,42 @@ export class ChatController {
       });
     } catch (error) {
       console.log("Error while getting all chats", error);
+      next(error);
+    }
+  }
+
+  async sendMessage(req: CustomRequest, res: Response, next: NextFunction) {
+    try {
+      const senderId = req.user?._id;
+      const { content, chatId } = req.body;
+
+      if (!senderId) throw new CustomError("User not found", 409);
+
+      const message = await this.chatUseCases.sendMessage(
+        senderId,
+        content,
+        chatId
+      );
+
+      return res
+        .status(StatusCode.CREATED)
+        .json({ success: true, data: message, message: "message sent." });
+    } catch (error) {
+      console.log("error while sending message", error);
+      next(error);
+    }
+  }
+
+  async getMessages(req: Request, res: Response, next: NextFunction) {
+    try {
+      const { chatId } = req.body;
+      const messages = await this.chatUseCases.getMessages(chatId);
+
+      return res
+        .status(StatusCode.OK)
+        .json({ success: true, message: "retrieved messages", data: messages });
+    } catch (error) {
+      console.log("error while getting messages", error);
       next(error);
     }
   }

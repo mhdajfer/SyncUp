@@ -2,6 +2,7 @@ import { CustomError } from "../ErrorHandler/CustonError";
 import { IChat } from "../interfaces/IChat";
 import { IChatRepository } from "../interfaces/IChatRepository";
 import { IChatUseCases } from "../interfaces/IChatUseCases";
+import { IMessage } from "../interfaces/IMessage";
 import { IUser } from "../interfaces/IUser";
 
 export class ChateUseCases implements IChatUseCases {
@@ -35,6 +36,34 @@ export class ChateUseCases implements IChatUseCases {
       const chats = await this.chatRepository.getChatsByUserId(userId);
 
       return chats;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async sendMessage(
+    senderId: string,
+    content: string,
+    chatId: string
+  ): Promise<IMessage> {
+    try {
+      const response = await this.chatRepository.sendMessage(
+        senderId,
+        chatId,
+        content
+      );
+
+      return response;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async getMessages(chatId: string): Promise<IMessage[]> {
+    try {
+      const messages = await this.chatRepository.getMessages(chatId);
+
+      return messages;
     } catch (error) {
       throw error;
     }

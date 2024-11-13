@@ -1,7 +1,9 @@
 import Chat from "../frameworks/models/chatModel";
+import Message from "../frameworks/models/messageModel";
 import User from "../frameworks/models/userModel";
 import { IChat } from "../interfaces/IChat";
 import { IChatRepository } from "../interfaces/IChatRepository";
+import { IMessage } from "../interfaces/IMessage";
 import { IUser } from "../interfaces/IUser";
 
 export class ChatRepository implements IChatRepository {
@@ -54,6 +56,54 @@ export class ChatRepository implements IChatRepository {
       }).populate("users", "-password");
 
       return chats as unknown as IChat[];
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async sendMessage(
+    senderId: string,
+    chatId: string,
+    content: string
+  ): Promise<IMessage> {
+    try {
+      const msgData = {
+        sender: senderId,
+        content: content,
+        chat: chatId,
+      };
+
+      console.log(msgData);
+      let createdChat = await Message.create(msgData);
+
+      const newChat = await Message.find({ _id: createdChat._id })
+        .populate("sender", "-password")
+        .populate({
+          path: "chat",
+          populate: {
+            path: "users",
+            select: "firstName lastName email avatar",
+          },
+        });
+
+      console.log(newChat);
+
+      return newChat as unknown as IMessage;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async getMessages(chatId: string): Promise<IMessage[]> {
+    try {
+      const messages = await Message.find({ chat: chatId }).populate(
+        "sender",
+        "-password"
+      );
+
+      console.log(messages);
+
+      return messages as unknown as IMessage[];
     } catch (error) {
       throw error;
     }

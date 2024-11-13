@@ -24,4 +24,16 @@ router.get(
   chatController.getAllChats.bind(chatController)
 );
 
+router.post(
+  "/sendMessage",
+  userAuth,
+  chatController.sendMessage.bind(chatController)
+);
+
+router.post(
+  "/getMessages",
+  userAuth,
+  chatController.getMessages.bind(chatController)
+);
+
 export default router;
