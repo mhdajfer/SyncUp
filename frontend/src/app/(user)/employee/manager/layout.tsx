@@ -43,7 +43,7 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
           <div className="w-fit  fixed">
             <ManagerLayout logoutSuccess={handleLogout} user={user} />
           </div>
-          <div className="ml-64 bg-[#082032] min-h-screen flex flex-col items-center justify-center w-full h-full py-10 px-4  overflow-y-scroll">
+          <div className="ml-64 bg-[#082032] min-h-screen flex flex-col items-center justify-center w-full h-full py-10 px-4  overflow-y-scroll relative">
             {children}
           </div>
         </div>
