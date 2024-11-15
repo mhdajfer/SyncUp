@@ -39,6 +39,9 @@ export function ManagerLayout({
       case "chats":
         router.push("/employee/manager/dashboard/chat");
         break;
+      case "meeting":
+        router.push("/employee/manager/dashboard/meeting");
+        break;
     }
   }
 
@@ -77,7 +80,7 @@ export function ManagerLayout({
         <SideBarItem
           icon={<FiCalendar />}
           label="Meetings"
-          onClick={() => router.push("/meetings")}
+          onClick={() => onSideBarClick("meeting")}
         />
       </nav>
 

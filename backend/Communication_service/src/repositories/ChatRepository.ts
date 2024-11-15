@@ -38,12 +38,16 @@ export class ChatRepository implements IChatRepository {
         users: [userId1, userId2],
       };
 
-      const createdChat = (await Chat.create(chatData)).populate(
-        "user",
+      const createdChat = await Chat.create(chatData);
+
+      console.log(createdChat);
+
+      const newChat = await Chat.findOne({ _id: createdChat._id }).populate(
+        "users",
         "-password"
       );
 
-      return createdChat as unknown as IChat;
+      return newChat as unknown as IChat;
     } catch (error) {
       throw error;
     }
@@ -53,7 +57,9 @@ export class ChatRepository implements IChatRepository {
     try {
       const chats = await Chat.find({
         users: { $in: [userId] },
-      }).populate("users", "-password");
+      })
+        .populate("users", "-password")
+        .populate("latestMessage");
 
       return chats as unknown as IChat[];
     } catch (error) {
@@ -75,6 +81,7 @@ export class ChatRepository implements IChatRepository {
 
       console.log(msgData);
       let createdChat = await Message.create(msgData);
+      await Chat.findByIdAndUpdate(chatId, { latestMessage: createdChat._id });
 
       const newChat = await Message.find({ _id: createdChat._id })
         .populate("sender", "-password")

@@ -6,4 +6,5 @@ export interface IMessage {
   sender: IUser | string;
   content: string;
   chat: IChat | string;
+  
 }
