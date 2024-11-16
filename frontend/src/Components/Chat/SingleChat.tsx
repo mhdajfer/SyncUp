@@ -12,7 +12,6 @@ export default function SingleChat({
   currentUserId: string | undefined;
 }) {
   const sender: User = message.sender as User;
-  console.log(message, currentUserId);
   return (
     <div
       className={`flex items-start mb-4 ${

@@ -61,6 +61,8 @@ export class ChatRepository implements IChatRepository {
         .populate("users", "-password")
         .populate("latestMessage");
 
+        console.log('all chats', chats);
+
       return chats as unknown as IChat[];
     } catch (error) {
       throw error;
@@ -79,11 +81,10 @@ export class ChatRepository implements IChatRepository {
         chat: chatId,
       };
 
-      console.log(msgData);
       let createdChat = await Message.create(msgData);
       await Chat.findByIdAndUpdate(chatId, { latestMessage: createdChat._id });
 
-      const newChat = await Message.find({ _id: createdChat._id })
+      const newChat = await Message.findOne({ _id: createdChat._id })
         .populate("sender", "-password")
         .populate({
           path: "chat",
@@ -93,7 +94,7 @@ export class ChatRepository implements IChatRepository {
           },
         });
 
-      console.log(newChat);
+      // console.log("its from repository", newChat?.chat);
 
       return newChat as unknown as IMessage;
     } catch (error) {

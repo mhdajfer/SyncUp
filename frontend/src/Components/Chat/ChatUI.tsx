@@ -1,10 +1,10 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Send } from "lucide-react";
 import { Button } from "@/Components/ui/button";
 import { Input } from "@/Components/ui/input";
 import { ScrollArea } from "@/Components/ui/scroll-area";
-
+import io, { Socket } from "socket.io-client";
 import { Chat } from "@/interfaces/Chat";
 import { User } from "@/interfaces/User";
 import { Message } from "@/interfaces/Message";
@@ -31,9 +31,22 @@ export default function ChatUI() {
   const currentUser = useSelector((state: RootState) => state.auth.user);
   const currentUserId = currentUser?._id;
 
+  const viewportRef = useRef<HTMLDivElement>(null);
+
+  const scrollToTop = () => {
+    if (viewportRef.current) {
+      viewportRef.current.scrollTo({
+        top: viewportRef.current.scrollHeight,
+        behavior: "smooth",
+      });
+    }
+  };
+
   const getUsers = async () => {
     try {
       const response = await getAllUsers();
+
+      console.log(response.data);
 
       if (response.success) setUsers(response.data);
     } catch (error) {
@@ -45,6 +58,7 @@ export default function ChatUI() {
   const getAllChats = async () => {
     try {
       const response = await getChats();
+      console.log(response.data);
 
       if (response.success) setChats(response.data);
     } catch (error) {
@@ -52,6 +66,49 @@ export default function ChatUI() {
       console.log(error);
     }
   };
+
+  const END_POINT = "http://localhost:3004";
+  const [socket, setSocket] = useState<Socket | null>(null);
+
+  useEffect(() => {
+    // Initialize socket connection with path and transports explicitly defined
+    const socketInstance = io(END_POINT, {
+      path: "/socket.io",
+      transports: ["websocket", "polling"], // Allows WebSocket and fallback to polling
+    });
+
+    setSocket(socketInstance);
+
+    toast.success(currentUserId);
+
+    socketInstance.emit("setup", currentUserId);
+
+    socketInstance.on("connect", () => {
+      console.log("Connected to server:", socketInstance.id);
+    });
+
+    socketInstance.on("connect_error", (err) => {
+      console.error("Connection error:", err);
+    });
+
+    // Clean up the socket connection on component unmount
+    return () => {
+      socketInstance.disconnect();
+    };
+  }, [currentUserId]);
+
+  useEffect(() => {
+    if (!socket) return console.log("error in socket instance");
+    socket.on("message received", (newMessage: Message) => {
+      const chat = newMessage.chat as Chat;
+      const sender = newMessage.sender as User;
+      if (!selectedChat || selectedChat._id !== chat._id) {
+        toast.success(`You have a new message from ${sender.firstName} `);
+      } else {
+        setMessages([...messages, newMessage]);
+      }
+    });
+  });
 
   useEffect(() => {
     if (!currentUserId) toast.error("Authenticated user not found");
@@ -72,9 +129,11 @@ export default function ChatUI() {
 
         const response = await sendMessage(selectedChat?._id, newMessage);
 
-        if (response.success) {
+        if (response.success && socket) {
           setMessages([...messages, newMsg]);
           setNewMessage("");
+          toast.success(response.message);
+          socket.emit("new message", response.data);
         } else toast.error(response.message);
       } else toast.warning("No message to send");
     } catch (error: unknown) {
@@ -107,6 +166,7 @@ export default function ChatUI() {
     <div className="flex h-screen  bg-gray-900 text-gray-100 w-full ms-[-1.5rem] mt-[-2.2rem] me-[-1.5rem] overflow-y-hidden">
       {/* Sidebar */}
       <ChatSidebar
+        socket={socket}
         selectedChat={selectedChat}
         setSelectedChat={setSelectedChat}
         chats={chats}
@@ -124,19 +184,23 @@ export default function ChatUI() {
 
         {selectedChat ? (
           <ScrollArea className="flex-grow p-4">
-            {isLoading ? (
-              <div className="flex flex-col space-y-8 p-10">
-                <MessageSkeleton />
-                <MessageSkeleton />
-                <MessageSkeleton />
-              </div>
-            ) : (
-              messages.map((message) => (
-                <div key={message._id}>
-                  <SingleChat currentUserId={currentUserId} message={message} />
+
+              {isLoading ? (
+                <div className="flex flex-col space-y-8 p-10">
+                  <MessageSkeleton />
+                  <MessageSkeleton />
+                  <MessageSkeleton />
                 </div>
-              ))
-            )}
+              ) : (
+                messages.map((message) => (
+                  <div key={message._id}>
+                    <SingleChat
+                      currentUserId={currentUserId}
+                      message={message}
+                    />
+                  </div>
+                ))
+              )}0
           </ScrollArea>
         ) : (
           <NoChatComponent />
@@ -158,6 +222,7 @@ export default function ChatUI() {
                 onChange={(e) => setNewMessage(e.target.value)}
                 className="flex-grow mr-2 bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400"
               />
+              <p onClick={scrollToTop}>asdfasfsaf</p>
               <Button type="submit" size="icon" variant="secondary">
                 <Send className="h-4 w-4" />
                 <span className="sr-only">Send message</span>

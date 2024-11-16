@@ -21,6 +21,7 @@ import { toast } from "sonner";
 import { AxiosError } from "axios";
 import { getMessages, getOneChat } from "@/api/Communication/chatApis";
 import { format } from "date-fns";
+import { Socket } from "socket.io-client";
 
 export default function ChatSidebar({
   setChats,
@@ -30,9 +31,11 @@ export default function ChatSidebar({
   users,
   setSelectedChat,
   selectedChat,
+  socket,
 }: {
   chats: Chat[];
   users: User[];
+  socket: Socket | null;
   selectedChat: Chat | null;
   setSelectedChat: (chat: Chat) => void;
   setChats: (chats: Chat[]) => void;
@@ -107,6 +110,8 @@ export default function ChatSidebar({
         setTimeout(() => {
           setIsLoading(false);
         }, 2000);
+
+        socket?.emit("join room", chat._id);
       }
     } catch (error: unknown) {
       if (error instanceof AxiosError) {
@@ -138,7 +143,7 @@ export default function ChatSidebar({
   });
 
   return (
-    <div>
+    <>
       <div className="w-80 border-r border-gray-800 flex flex-col h-full">
         <div className="p-4 border-b border-gray-800 flex">
           <Input
@@ -173,7 +178,7 @@ export default function ChatSidebar({
                 <ScrollArea className="h-[200px]">
                   {filteredUsers.map((user) => (
                     <div
-                      key={user._id}
+                      key={user._id || "h"}
                       className="flex items-center p-2 hover:bg-gray-700 cursor-pointer"
                       onClick={() => handleStartChat(user)}
                     >
@@ -198,7 +203,7 @@ export default function ChatSidebar({
         <ScrollArea className="flex-grow">
           {filteredChats.map((chat) => (
             <div
-              key={chat._id}
+              key={chat._id || "h"}
               className={`p-4 border-b border-gray-800 hover:bg-gray-800 cursor-pointer ${
                 selectedChat == chat ? "bg-gray-800 hover:bg-gray-800" : ""
               }`}
@@ -255,7 +260,7 @@ export default function ChatSidebar({
                   <div className="flex flex-wrap gap-2 mt-2">
                     {users.map((user) => (
                       <Button
-                        key={user._id}
+                        key={user._id || "h"}
                         variant={
                           selectedParticipants.includes(user)
                             ? "secondary"
@@ -283,6 +288,6 @@ export default function ChatSidebar({
           </Dialog>
         </div>
       </div>
-    </div>
+    </>
   );
 }
