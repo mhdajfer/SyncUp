@@ -2,8 +2,9 @@ import { Server, Socket } from "socket.io";
 import { IMessage } from "../interfaces/IMessage";
 import { IChat } from "../interfaces/IChat";
 import { IUser } from "../interfaces/IUser";
+import { ISocketManager } from "../interfaces/ISocketManager";
 
-export class SocketManager {
+export class SocketManager implements ISocketManager {
   private io: Server;
 
   constructor(io: Server) {
