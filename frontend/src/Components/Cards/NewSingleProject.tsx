@@ -147,16 +147,16 @@ export default function NewSingleProject({ role }: { role: string }) {
 
       if (newTasks.length == 0) return toast.warning("new tasks not found");
 
-      if (!validateTasks(newTasks) || !project?._id)
+      if (!validateTasks(newTasks as Task[]) || !project?._id)
         return toast.error("Invalid details provided");
 
-      const response = await addTasks(newTasks, project._id);
+      const response = await addTasks(newTasks as Task[], project._id);
 
       if (response.success) {
         toast.success(response.message);
         setIsEditing(false);
 
-        setTasks((prevTasks) => [...prevTasks, ...newTasks]);
+        setTasks((prevTasks) => [...prevTasks, ...newTasks as Task[]]);
         setTimeout(() => setNewTasks([]), 1000);
       } else {
         toast.error(response.message);

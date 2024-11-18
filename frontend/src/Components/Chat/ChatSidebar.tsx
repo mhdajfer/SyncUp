@@ -74,7 +74,7 @@ export default function ChatSidebar({
         isGroup: true,
         users: selectedParticipants,
         chat: groupName,
-        lastMessage: {} as Message,
+        latestMessage: {} as Message,
         isGroupAdmin: true,
       };
       setChats([newGroup, ...chats]);
