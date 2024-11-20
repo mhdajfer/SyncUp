@@ -29,7 +29,27 @@ export class GroupChatRepository implements IGroupChatRepository {
         chatId,
         { $push: { users: { $each: userIds } } },
         { new: true }
-      ).populate("users", "-password");
+      )
+        .populate("users", "-password")
+        .populate("groupAdmin", "-password");
+
+      return updatedChat as unknown as IChat;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async removeMember(userId: string, chatId: string): Promise<IChat> {
+    try {
+      const updatedChat = await Chat.findByIdAndUpdate(
+        chatId,
+        {
+          $pull: { users: userId },
+        },
+        { new: true }
+      )
+        .populate("users", "-password")
+        .populate("groupAdmin", "-password");
 
       return updatedChat as unknown as IChat;
     } catch (error) {

@@ -59,9 +59,10 @@ export class ChatRepository implements IChatRepository {
         users: { $in: [userId] },
       })
         .populate("users", "-password")
-        .populate("latestMessage");
+        .populate("latestMessage")
+        .populate("groupAdmin", "-password");
 
-        console.log('all chats', chats);
+      console.log("all chats", chats);
 
       return chats as unknown as IChat[];
     } catch (error) {

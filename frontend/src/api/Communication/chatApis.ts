@@ -83,3 +83,19 @@ export const addMemberToGroup = async (users: User[], chatId: string) => {
     throw error;
   }
 };
+
+export const removeMember = async (userId: string, chatId: string) => {
+  try {
+    const response = await userInstance.post(
+      "/comm/chats/group/member/remove",
+      {
+        userId,
+        chatId,
+      }
+    );
+
+    return response.data as Response & { data: Chat };
+  } catch (error) {
+    throw error;
+  }
+};

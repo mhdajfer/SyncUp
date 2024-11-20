@@ -61,4 +61,28 @@ export class GroupChatController {
       next(error);
     }
   }
+
+  async removeMember(req: Request, res: Response, next: NextFunction) {
+    try {
+      const { userId, chatId } = req.body;
+
+      if (!userId || !chatId)
+        throw new CustomError("required params not provided", 409);
+
+      const updatedChat = await this.groupChatUseCases.removeMember(
+        userId,
+        chatId
+      );
+
+
+      return res.status(StatusCode.OK).json({
+        success: true,
+        message: "user removed from group",
+        data: updatedChat,
+      });
+    } catch (error) {
+      console.log("Error while removing member from group chat", error);
+      next(error);
+    }
+  }
 }

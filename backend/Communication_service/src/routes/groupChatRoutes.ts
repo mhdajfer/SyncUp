@@ -21,4 +21,10 @@ router.post(
   groupChatController.addNewMemberToGroupChat.bind(groupChatController)
 );
 
+router.post(
+  "/member/remove",
+  userAuth,
+  groupChatController.removeMember.bind(groupChatController)
+);
+
 export default router;

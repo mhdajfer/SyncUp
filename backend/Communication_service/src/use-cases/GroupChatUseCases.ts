@@ -47,4 +47,19 @@ export class GroupChatUseCases implements IGroupChatUseCases {
       throw error;
     }
   }
+
+  async removeMember(userId: string, chatId: string): Promise<IChat> {
+    try {
+      const updatedChat = await this.groupChatRepository.removeMember(
+        userId,
+        chatId
+      );
+
+      if (!updatedChat) throw new CustomError("member not removed", 409);
+
+      return updatedChat;
+    } catch (error) {
+      throw error;
+    }
+  }
 }

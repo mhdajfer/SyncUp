@@ -31,7 +31,7 @@ import { User } from "@/interfaces/User";
 import { Label } from "../ui/label";
 import { AxiosError } from "axios";
 import { toast } from "sonner";
-import { addMemberToGroup } from "@/api/Communication/chatApis";
+import { addMemberToGroup, removeMember } from "@/api/Communication/chatApis";
 import { useSelector } from "react-redux";
 import { RootState } from "@/store/store";
 
@@ -67,6 +67,27 @@ export default function ChatHeader({
         toast.success(response.message);
         setNewMembers([]);
         setIsAddUserOpen(false);
+        setSelectedChat(response.data as Chat);
+      }
+    } catch (error: unknown) {
+      if (error instanceof AxiosError) {
+        toast.error(error.response?.data.error);
+      } else toast.error("error while getting messages");
+    }
+  };
+
+  const removeOneMember = async (user: User) => {
+    try {
+      if (!currentUserId || selectedChat.groupAdmin?._id !== currentUserId)
+        return toast.error("You are not allowed do this.!!");
+
+      if (!user._id || !selectedChat._id)
+        return toast.error("not selected a member or chat");
+
+      const response = await removeMember(user._id, selectedChat._id);
+
+      if (response.success) {
+        toast.success(response.message);
         setSelectedChat(response.data as Chat);
       }
     } catch (error: unknown) {
@@ -184,7 +205,10 @@ export default function ChatHeader({
                           align="end"
                           className="bg-gray-800 text-gray-100 border border-gray-700"
                         >
-                          <DropdownMenuItem className="hover:bg-gray-700 focus:bg-gray-700">
+                          <DropdownMenuItem
+                            className="hover:bg-gray-700 focus:bg-gray-700"
+                            onClick={() => removeOneMember(member)}
+                          >
                             <UserMinus className="mr-2 h-4 w-4" />
                             <span>Remove from group</span>
                           </DropdownMenuItem>
