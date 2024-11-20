@@ -15,5 +15,10 @@ router.post(
   userAuth,
   groupChatController.createGroupChat.bind(groupChatController)
 );
+router.post(
+  "/member/add",
+  userAuth,
+  groupChatController.addNewMemberToGroupChat.bind(groupChatController)
+);
 
 export default router;

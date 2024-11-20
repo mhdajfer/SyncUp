@@ -32,4 +32,19 @@ export class GroupChatUseCases implements IGroupChatUseCases {
       throw error;
     }
   }
+
+  async addNewMember(userIds: string[], chatId: string): Promise<IChat> {
+    try {
+      const updatedChat = await this.groupChatRepository.AddNewMember(
+        userIds,
+        chatId
+      );
+
+      if (!updatedChat) throw new CustomError("New member not added", 409);
+
+      return updatedChat;
+    } catch (error) {
+      throw error;
+    }
+  }
 }

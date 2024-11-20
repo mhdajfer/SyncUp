@@ -22,4 +22,18 @@ export class GroupChatRepository implements IGroupChatRepository {
       throw error;
     }
   }
+
+  async AddNewMember(userIds: string[], chatId: string): Promise<IChat> {
+    try {
+      const updatedChat = await Chat.findByIdAndUpdate(
+        chatId,
+        { $push: { users: { $each: userIds } } },
+        { new: true }
+      ).populate("users", "-password");
+
+      return updatedChat as unknown as IChat;
+    } catch (error) {
+      throw error;
+    }
+  }
 }

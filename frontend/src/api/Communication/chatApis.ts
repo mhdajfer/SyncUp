@@ -70,3 +70,16 @@ export const createGroup = async (groupName: string, users: User[]) => {
     throw error;
   }
 };
+
+export const addMemberToGroup = async (users: User[], chatId: string) => {
+  try {
+    const response = await userInstance.post("/comm/chats/group/member/add", {
+      users,
+      chatId,
+    });
+
+    return response.data as Response & { data: Chat };
+  } catch (error) {
+    throw error;
+  }
+};

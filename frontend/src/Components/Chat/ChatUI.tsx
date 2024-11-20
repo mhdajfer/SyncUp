@@ -5,20 +5,6 @@ import { Button } from "@/Components/ui/button";
 import { Input } from "@/Components/ui/input";
 import { ScrollArea } from "@/Components/ui/scroll-area";
 import io, { Socket } from "socket.io-client";
-import {
-  MoreVertical,
-  UserPlus,
-  UserMinus,
-  Settings,
-  LogOut,
-} from "lucide-react";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/Components/ui/dropdown-menu";
 import { Chat } from "@/interfaces/Chat";
 import { User } from "@/interfaces/User";
 import { Message } from "@/interfaces/Message";
@@ -32,6 +18,7 @@ import MessageSkeleton from "../Skeleton/Skeleton";
 import SingleChat from "./SingleChat";
 import NoChatComponent from "./NoChatComponent";
 import ChatSidebar from "./ChatSidebar";
+import ChatHeader from "./ChatHeader";
 
 export default function ChatUI() {
   const [messages, setMessages] = useState<Message[]>([]);
@@ -39,7 +26,6 @@ export default function ChatUI() {
   const [chats, setChats] = useState<Chat[]>([]);
   const [selectedChat, setSelectedChat] = useState<Chat | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
-  const [isOpen, setIsOpen] = useState(false);
 
   const [users, setUsers] = useState<User[]>([]);
 
@@ -192,49 +178,15 @@ export default function ChatUI() {
 
       {/* Chat Area */}
       <div className="flex-grow flex flex-col">
-        <header className="px-4 py-3 bg-gray-800 flex">
-          <h1 className="text-xl font-bold">Chat Interface</h1>
-          {selectedChat?.isGroup && (
-            // <button className="ms-auto me-5">
-            //   <SlOptionsVertical />
-            // </button>
-            <DropdownMenu open={isOpen} onOpenChange={setIsOpen}>
-              <DropdownMenuTrigger asChild>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="ms-auto text-gray-300 hover:text-white hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-400 rounded-full transition-colors duration-200"
-                >
-                  <MoreVertical className="h-5 w-5" />
-                  <span className="sr-only">Open menu</span>
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent
-                align="end"
-                className="w-56 bg-gray-800 text-gray-100 border border-gray-700 rounded-md shadow-lg"
-              >
-                <DropdownMenuItem className="hover:bg-gray-700 focus:bg-gray-700 focus:outline-none rounded-sm transition-colors duration-200">
-                  <UserPlus className="mr-2 h-4 w-4" />
-                  <span>Add member</span>
-                </DropdownMenuItem>
-                <DropdownMenuItem className="hover:bg-gray-700 focus:bg-gray-700 focus:outline-none rounded-sm transition-colors duration-200">
-                  <UserMinus className="mr-2 h-4 w-4" />
-                  <span>Remove member</span>
-                </DropdownMenuItem>
-                <DropdownMenuSeparator className="bg-gray-700" />
-                <DropdownMenuItem className="hover:bg-gray-700 focus:bg-gray-700 focus:outline-none rounded-sm transition-colors duration-200">
-                  <Settings className="mr-2 h-4 w-4" />
-                  <span>Group settings</span>
-                </DropdownMenuItem>
-                <DropdownMenuSeparator className="bg-gray-700" />
-                <DropdownMenuItem className="hover:bg-gray-700 focus:bg-gray-700 focus:outline-none rounded-sm text-red-400 hover:text-red-300 transition-colors duration-200">
-                  <LogOut className="mr-2 h-4 w-4" />
-                  <span>Leave group</span>
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
+        {selectedChat?.users &&
+          selectedChat?.users.every((user) => typeof user === "object") && (
+            <ChatHeader
+              groupMembers={selectedChat.users}
+              selectedChat={selectedChat}
+              users={users}
+              setSelectedChat={setSelectedChat}
+            />
           )}
-        </header>
 
         {selectedChat ? (
           <ScrollArea className="flex-grow p-4">
