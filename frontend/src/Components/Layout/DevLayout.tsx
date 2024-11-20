@@ -32,7 +32,10 @@ export default function DevLayout({
         router.push("/employee/dev/dashboard");
         break;
       case "chats":
-        router.push("/employee/dev//chat");
+        router.push("/employee/dev/chat");
+        break;
+        case "tasks":
+        router.push("/employee/dev/tasks");
         break;
       case "meeting":
         router.push("/employee/dev/meeting");

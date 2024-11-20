@@ -19,7 +19,11 @@ import { RootState } from "@/store/store";
 import { Message } from "@/interfaces/Message";
 import { toast } from "sonner";
 import { AxiosError } from "axios";
-import { getMessages, getOneChat } from "@/api/Communication/chatApis";
+import {
+  createGroup,
+  getMessages,
+  getOneChat,
+} from "@/api/Communication/chatApis";
 import { format } from "date-fns";
 import { Socket } from "socket.io-client";
 
@@ -67,20 +71,38 @@ export default function ChatSidebar({
       } else toast.error("error while getting messages");
     }
   };
-  const handleCreateGroup = () => {
+  const handleCreateGroup = async () => {
     if (groupName.trim() !== "" && selectedParticipants.length > 0) {
       const newGroup: Chat = {
         _id: (chats.length + 1).toString(),
         isGroup: true,
         users: selectedParticipants,
         chat: groupName,
-        latestMessage: {} as Message,
-        isGroupAdmin: true,
+        latestMessage: {
+          content: "Group created",
+          sender: "currentUser",
+          chat: "currentChat",
+        } as Message,
+        groupAdmin: currentUser,
       };
-      setChats([newGroup, ...chats]);
-      setIsCreateGroupOpen(false);
-      setGroupName("");
-      setSelectedParticipants([]);
+      console.log(groupName, selectedParticipants);
+
+      try {
+        const response = await createGroup(groupName, selectedParticipants);
+
+        if (response.success) {
+          toast.success(response.message);
+
+          setChats([newGroup, ...chats]);
+          setIsCreateGroupOpen(false);
+          setGroupName("");
+          setSelectedParticipants([]);
+        }
+      } catch (error: unknown) {
+        if (error instanceof AxiosError) {
+          toast.error(error.response?.data.error);
+        } else toast.error("error while getting messages");
+      }
     }
   };
 
@@ -98,6 +120,7 @@ export default function ChatSidebar({
 
   const handleOneChat = async (chat: Chat) => {
     try {
+      setIsLoading(true);
       if (!chat._id) return toast.error("chat not found");
       setSelectedChat(chat);
 
@@ -214,13 +237,17 @@ export default function ChatSidebar({
               <div className="flex items-center">
                 <Avatar className="mr-3">
                   <AvatarImage
-                    src={`https://api.dicebear.com/6.x/initials/svg?seed=${chat.chat}`}
-                    alt={chat.chat}
+                    src={`https://api.dicebear.com/6.x/initials/svg?seed=${
+                      chat.isGroup ? chat.chat : setChatName(chat)
+                    }`}
+                    alt={chat.chat[0]}
                   />
                   <AvatarFallback>{chat.chat[0]}</AvatarFallback>
                 </Avatar>
                 <div className="flex-grow">
-                  <h3 className="font-semibold">{setChatName(chat)}</h3>
+                  <h3 className="font-semibold">
+                    {chat.isGroup ? chat.chat : setChatName(chat)}
+                  </h3>
                   <p className="text-sm text-gray-400">
                     {chat.latestMessage?.content || "New Chat"}
                   </p>
@@ -261,10 +288,10 @@ export default function ChatSidebar({
                     {users.map((user) => (
                       <Button
                         key={user._id || "h"}
-                        variant={
+                        className={
                           selectedParticipants.includes(user)
-                            ? "secondary"
-                            : "outline"
+                            ? "bg-green-700 hover:bg-green-800"
+                            : "bg-blue-950 border border-gray-700 hover:bg-blue-900"
                         }
                         size="sm"
                         onClick={() => {

@@ -7,50 +7,56 @@ import { format } from "date-fns";
 export default function SingleChat({
   message,
   currentUserId,
+  isGroup,
 }: {
   message: Message;
   currentUserId: string | undefined;
+  isGroup: boolean;
 }) {
   const sender: User = message.sender as User;
+  const isCurrentUser = sender._id === currentUserId;
+
   return (
     <div
-      className={`flex items-start mb-4 ${
-        sender._id === currentUserId ? "justify-end" : ""
-      }`}
+      className={`flex items-start mb-4 ${isCurrentUser ? "justify-end" : ""}`}
     >
-      {sender._id !== currentUserId && (
+      {!isCurrentUser && (
         <Avatar className="mr-2">
           <AvatarImage
-            src={`https://api.dicebear.com/6.x/initials/svg?seed=${message.sender}`}
-            alt={"message image"}
+            src={`https://api.dicebear.com/6.x/initials/svg?seed=${sender._id}`}
+            alt={`Avatar of ${sender.firstName}`}
           />
-          <AvatarFallback>{message.content[0]}</AvatarFallback>
+          <AvatarFallback>
+            {sender.firstName ? sender.firstName[0] : "?"}
+          </AvatarFallback>
         </Avatar>
       )}
       <div
         className={`rounded-lg p-3 max-w-[80%] ${
-          sender._id === currentUserId ? "bg-blue-600" : "bg-gray-700"
+          isCurrentUser ? "bg-blue-600" : "bg-gray-700"
         }`}
       >
-        <p className="font-medium mb-1">
-          {typeof message.sender == "string"
-            ? message.sender
-            : message.sender.firstName}
-        </p>
+        {isGroup && !isCurrentUser && (
+          <p className="font-medium mb-1 text-sm text-gray-300">
+            {sender.firstName || "Unknown User"}
+          </p>
+        )}
         <p>{message.content}</p>
         {message.updatedAt && (
           <p className="text-xs text-gray-400 mt-1">
-            {format(message.updatedAt, "PPpp")}
+            {format(new Date(message.updatedAt), "PPpp")}
           </p>
         )}
       </div>
-      {message.sender === currentUserId && (
+      {isCurrentUser && (
         <Avatar className="ml-2">
           <AvatarImage
-            src={`https://api.dicebear.com/6.x/initials/svg?seed=${message.sender}`}
-            alt={message.sender}
+            src={`https://api.dicebear.com/6.x/initials/svg?seed=${sender._id}`}
+            alt={`Avatar of ${sender.firstName}`}
           />
-          <AvatarFallback>{message.content[0]}</AvatarFallback>
+          <AvatarFallback>
+            {sender.firstName ? sender.firstName[0] : "?"}
+          </AvatarFallback>
         </Avatar>
       )}
     </div>

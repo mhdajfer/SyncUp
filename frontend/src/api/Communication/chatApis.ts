@@ -1,6 +1,7 @@
 import { userInstance } from "@/axios";
 import { Chat } from "@/interfaces/Chat";
 import { Message } from "@/interfaces/Message";
+import { User } from "@/interfaces/User";
 
 interface Response {
   message: string;
@@ -52,6 +53,19 @@ export const getMessages = async (chatId: string) => {
     });
 
     return response.data as Response & { data: Message[] };
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const createGroup = async (groupName: string, users: User[]) => {
+  try {
+    const response = await userInstance.post("/comm/chats/group", {
+      groupName,
+      users,
+    });
+
+    return response.data as Response & { data: Chat };
   } catch (error) {
     throw error;
   }

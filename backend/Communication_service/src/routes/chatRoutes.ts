@@ -10,6 +10,7 @@ const chatRepository = new ChatRepository();
 const chatUseCases = new ChateUseCases(chatRepository);
 const chatController = new ChatController(chatUseCases);
 
+
 router.get("/", chatController.getAllUsers.bind(chatController));
 
 router.post(

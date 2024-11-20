@@ -1,10 +1,24 @@
 "use client";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { Send } from "lucide-react";
 import { Button } from "@/Components/ui/button";
 import { Input } from "@/Components/ui/input";
 import { ScrollArea } from "@/Components/ui/scroll-area";
 import io, { Socket } from "socket.io-client";
+import {
+  MoreVertical,
+  UserPlus,
+  UserMinus,
+  Settings,
+  LogOut,
+} from "lucide-react";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/Components/ui/dropdown-menu";
 import { Chat } from "@/interfaces/Chat";
 import { User } from "@/interfaces/User";
 import { Message } from "@/interfaces/Message";
@@ -25,22 +39,23 @@ export default function ChatUI() {
   const [chats, setChats] = useState<Chat[]>([]);
   const [selectedChat, setSelectedChat] = useState<Chat | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [isOpen, setIsOpen] = useState(false);
 
   const [users, setUsers] = useState<User[]>([]);
 
   const currentUser = useSelector((state: RootState) => state.auth.user);
   const currentUserId = currentUser?._id;
 
-  const viewportRef = useRef<HTMLDivElement>(null);
+  // const viewportRef = useRef<HTMLDivElement>(null);
 
-  const scrollToTop = () => {
-    if (viewportRef.current) {
-      viewportRef.current.scrollTo({
-        top: viewportRef.current.scrollHeight,
-        behavior: "smooth",
-      });
-    }
-  };
+  // const scrollToTop = () => {
+  //   if (viewportRef.current) {
+  //     viewportRef.current.scrollTo({
+  //       top: viewportRef.current.scrollHeight,
+  //       behavior: "smooth",
+  //     });
+  //   }
+  // };
 
   const getUsers = async () => {
     try {
@@ -71,10 +86,9 @@ export default function ChatUI() {
   const [socket, setSocket] = useState<Socket | null>(null);
 
   useEffect(() => {
-    // Initialize socket connection with path and transports explicitly defined
     const socketInstance = io(END_POINT, {
       path: "/socket.io",
-      transports: ["websocket", "polling"], // Allows WebSocket and fallback to polling
+      transports: ["websocket", "polling"],
     });
 
     setSocket(socketInstance);
@@ -91,7 +105,7 @@ export default function ChatUI() {
       console.error("Connection error:", err);
     });
 
-    // Clean up the socket connection on component unmount
+    // Clean up on component unmount
     return () => {
       socketInstance.disconnect();
     };
@@ -178,29 +192,69 @@ export default function ChatUI() {
 
       {/* Chat Area */}
       <div className="flex-grow flex flex-col">
-        <header className="px-4 py-3 bg-gray-800">
+        <header className="px-4 py-3 bg-gray-800 flex">
           <h1 className="text-xl font-bold">Chat Interface</h1>
+          {selectedChat?.isGroup && (
+            // <button className="ms-auto me-5">
+            //   <SlOptionsVertical />
+            // </button>
+            <DropdownMenu open={isOpen} onOpenChange={setIsOpen}>
+              <DropdownMenuTrigger asChild>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="ms-auto text-gray-300 hover:text-white hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-400 rounded-full transition-colors duration-200"
+                >
+                  <MoreVertical className="h-5 w-5" />
+                  <span className="sr-only">Open menu</span>
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent
+                align="end"
+                className="w-56 bg-gray-800 text-gray-100 border border-gray-700 rounded-md shadow-lg"
+              >
+                <DropdownMenuItem className="hover:bg-gray-700 focus:bg-gray-700 focus:outline-none rounded-sm transition-colors duration-200">
+                  <UserPlus className="mr-2 h-4 w-4" />
+                  <span>Add member</span>
+                </DropdownMenuItem>
+                <DropdownMenuItem className="hover:bg-gray-700 focus:bg-gray-700 focus:outline-none rounded-sm transition-colors duration-200">
+                  <UserMinus className="mr-2 h-4 w-4" />
+                  <span>Remove member</span>
+                </DropdownMenuItem>
+                <DropdownMenuSeparator className="bg-gray-700" />
+                <DropdownMenuItem className="hover:bg-gray-700 focus:bg-gray-700 focus:outline-none rounded-sm transition-colors duration-200">
+                  <Settings className="mr-2 h-4 w-4" />
+                  <span>Group settings</span>
+                </DropdownMenuItem>
+                <DropdownMenuSeparator className="bg-gray-700" />
+                <DropdownMenuItem className="hover:bg-gray-700 focus:bg-gray-700 focus:outline-none rounded-sm text-red-400 hover:text-red-300 transition-colors duration-200">
+                  <LogOut className="mr-2 h-4 w-4" />
+                  <span>Leave group</span>
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          )}
         </header>
 
         {selectedChat ? (
           <ScrollArea className="flex-grow p-4">
-
-              {isLoading ? (
-                <div className="flex flex-col space-y-8 p-10">
-                  <MessageSkeleton />
-                  <MessageSkeleton />
-                  <MessageSkeleton />
+            {isLoading ? (
+              <div className="flex flex-col space-y-8 p-10">
+                <MessageSkeleton />
+                <MessageSkeleton />
+                <MessageSkeleton />
+              </div>
+            ) : (
+              messages.map((message) => (
+                <div key={message._id}>
+                  <SingleChat
+                    currentUserId={currentUserId}
+                    message={message}
+                    isGroup={selectedChat.isGroup}
+                  />
                 </div>
-              ) : (
-                messages.map((message) => (
-                  <div key={message._id}>
-                    <SingleChat
-                      currentUserId={currentUserId}
-                      message={message}
-                    />
-                  </div>
-                ))
-              )}0
+              ))
+            )}
           </ScrollArea>
         ) : (
           <NoChatComponent />
@@ -222,7 +276,6 @@ export default function ChatUI() {
                 onChange={(e) => setNewMessage(e.target.value)}
                 className="flex-grow mr-2 bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400"
               />
-              <p onClick={scrollToTop}>asdfasfsaf</p>
               <Button type="submit" size="icon" variant="secondary">
                 <Send className="h-4 w-4" />
                 <span className="sr-only">Send message</span>

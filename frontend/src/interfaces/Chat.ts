@@ -7,7 +7,7 @@ export interface Chat {
   users: User[] | string[];
   chat: string | string;
   latestMessage: Message;
-  isGroupAdmin: boolean;
+  groupAdmin: User | null;
   createdAt?: string;
   updatedAt?: string;
 }

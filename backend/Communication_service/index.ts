@@ -3,7 +3,7 @@ import dotenv from "dotenv";
 import { connectConsumers } from "./src/events/Consumers";
 const morgan = require("morgan");
 import { connectDB } from "./src/frameworks/mongo/connect";
-import chatRoutes from "./src/routes/chatRoutes";
+import CommunicationRoutes from "./src/routes/index";
 import { Server } from "socket.io";
 import { createServer } from "http";
 import { SocketManager } from "./src/Utils/SocketManager";
@@ -31,7 +31,7 @@ app.use(express.urlencoded({ extended: true }));
 
 connectDB();
 
-app.use("/chats", chatRoutes);
+app.use("/chats", CommunicationRoutes);
 
 app.use(errorHandler);
 
