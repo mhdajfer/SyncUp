@@ -33,7 +33,7 @@ export class TenantController {
     try {
       const tenantAdmin = req.user;
 
-      console.log('user', tenantAdmin);
+      console.log("user", tenantAdmin);
 
       if (!tenantAdmin) throw new CustomError("tenant admin not found", 409);
 
@@ -46,6 +46,23 @@ export class TenantController {
       });
     } catch (error) {
       console.log("controller************");
+      next(error);
+    }
+  }
+
+  async getAllTenants(req: Request, res: Response, next: NextFunction) {
+    try {
+      const tenants = await this.tenantUseCases.getAllTenants();
+
+      return res
+        .status(StatusCode.OK)
+        .json({
+          success: true,
+          message: "Tenants retrieved successfully",
+          data: tenants,
+        });
+    } catch (error) {
+      console.log("Error while getting all tenants", error);
       next(error);
     }
   }

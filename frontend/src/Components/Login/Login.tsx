@@ -57,6 +57,10 @@ export default function Login() {
           break;
         case "tenant-admin":
           router.push("/admin/dashboard");
+          break;
+        case "sAdmin":
+          router.push("/super-admin/dashboard");
+          break;
       }
     } catch (error: unknown) {
       if (error instanceof AxiosError) {

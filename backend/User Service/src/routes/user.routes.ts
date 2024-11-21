@@ -14,6 +14,12 @@ const userRepository: IUserRepository = new UserRepository();
 const userUseCase: IUserUseCases = new UserUseCases(userRepository);
 const userController = new UserController(userUseCase);
 
+router.get(
+  "/allTenants",
+  userAuth,
+  userController.getAllTenantAdmins.bind(userController)
+);
+
 router.post(
   "/",
   checkSchema(signupValidator()),

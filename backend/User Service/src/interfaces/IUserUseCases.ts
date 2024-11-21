@@ -10,6 +10,7 @@ export interface IUserUseCases {
   updateUser(user: IUser): Promise<IUser>;
   getUserByEmail(email: string): Promise<IUser | null>;
   getUserById(userId: string): Promise<IUser | null>;
+  getAllTenantAdmins(): Promise<IUser[]>;
   login(
     username: string,
     password: string,

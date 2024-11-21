@@ -16,4 +16,5 @@ export interface IUserRepository {
   createNewOtp(email: string): Promise<null | number>;
   updateVerify(email: string): Promise<Boolean>;
   updateAvatar(imageUrl: string, userId: string): Promise<IUser>;
+  getAllTenantAdmins(): Promise<IUser[]>;
 }

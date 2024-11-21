@@ -26,3 +26,13 @@ export const editTenantDetails = async (tenantData: ITenant) => {
     throw error;
   }
 };
+
+export const getAllTenants = async () => {
+  try {
+    const response = await userInstance.get("/tenants/all");
+
+    return response.data as Response & { data: ITenant[] };
+  } catch (error) {
+    throw error;
+  }
+};

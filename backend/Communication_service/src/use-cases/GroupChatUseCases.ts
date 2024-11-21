@@ -19,7 +19,7 @@ export class GroupChatUseCases implements IGroupChatUseCases {
         );
 
       if (!groupName || !admin)
-        throw new CustomError("Provided group name and admin details", 409);
+        throw new CustomError("not Provided group name and admin details", 409);
 
       const GroupChat = await this.groupChatRepository.createGroupChat(
         groupName,

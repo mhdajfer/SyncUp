@@ -54,4 +54,17 @@ export class TenantAdminRepository implements ITenantAdminRepository {
       throw error;
     }
   }
+
+  async getAllTenants(): Promise<ITenants[]> {
+    try {
+
+      const tenants = await Tenant.find();
+
+
+      return tenants as ITenants[];
+      
+    } catch (error) {
+      throw error;
+    }
+  }
 }

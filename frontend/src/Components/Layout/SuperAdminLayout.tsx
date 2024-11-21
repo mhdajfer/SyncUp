@@ -7,7 +7,7 @@ import { CiLogout } from "react-icons/ci";
 import { User } from "@/interfaces/User";
 import { Avatar, AvatarFallback, AvatarImage } from "@radix-ui/react-avatar";
 
-export function TenantAdminLayout({
+export function SuperAdminLayout({
   logoutSuccess,
   user,
 }: {
@@ -19,22 +19,18 @@ export function TenantAdminLayout({
   function onSideBarClick(val: string) {
     switch (val) {
       case "subscriptions":
-        router.push("/admin/subscriptions");
+        router.push("/super-admin/subscriptions");
         break;
-      case "users":
-        router.push("/admin/users");
+      case "tenants":
+        router.push("/super-admin/tenants");
         break;
-      case "tenant":
-        router.push("/admin/tenant");
-        break;
-        case "chat":
-        router.push("/admin/chat");
+      case "chat":
+        router.push("/super-admin/chat");
         break;
     }
   }
 
   console.log(user);
-  
 
   return (
     <div className="h-screen w-64 bg-gray-900 text-gray-200 relative">
@@ -50,17 +46,12 @@ export function TenantAdminLayout({
         />
         <SideBarItem
           icon={<FiUser />}
-          label="Users"
-          onClick={() => onSideBarClick("users")}
+          label="Tenants"
+          onClick={() => onSideBarClick("tenants")}
         />
         <SideBarItem
           icon={<FiFolder />}
-          label="Tenant"
-          onClick={() => onSideBarClick("tenant")}
-        />
-        <SideBarItem
-          icon={<FiFolder />}
-          label="Chat"
+          label="chat"
           onClick={() => onSideBarClick("chat")}
         />
       </nav>
@@ -69,7 +60,11 @@ export function TenantAdminLayout({
         <div className="flex">
           <div>
             <Avatar className=" cursor-pointer ">
-              <AvatarImage src={user.avatar} alt="Profile picture" className="w-12 h-12 bg-cover  rounded-full"/>
+              <AvatarImage
+                src={user.avatar}
+                alt="Profile picture"
+                className="w-12 h-12 bg-cover  rounded-full"
+              />
               <AvatarFallback className=" bg-green-400 rounded-full p-2">
                 {user.firstName[0].toUpperCase()}
                 {user.lastName[0].toUpperCase()}
@@ -78,7 +73,7 @@ export function TenantAdminLayout({
           </div>
           <div
             className="ml-3 cursor-pointer"
-            onClick={() => router.push("/admin/profile")}
+            onClick={() => router.push("/super-admin/profile")}
           >
             <p className="text-sm font-medium hover:underline">
               {user.firstName}
@@ -115,4 +110,4 @@ const SideBarItem: FC<SideBarItemProps> = ({ icon, label, onClick }) => (
   </div>
 );
 
-export default TenantAdminLayout;
+export default SuperAdminLayout;

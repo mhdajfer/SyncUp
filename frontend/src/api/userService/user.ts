@@ -112,6 +112,15 @@ export const verifyRefreshToken = async () => {
   }
 };
 
+export const getAllTenantAdmins = async () => {
+  try {
+    const response = await userInstance.get("/users/allTenants");
+
+    return response.data as Response & { data: User[] };
+  } catch (error) {
+    throw error;
+  }
+};
 export const getAllUsers = async () => {
   try {
     const response = await userInstance.get("/users");
@@ -196,7 +205,6 @@ export const verifyAndSendOtp = async (email: string) => {
     throw error;
   }
 };
-
 
 export const googleSignup = async ({
   name,

@@ -28,4 +28,10 @@ router.get("/", userAuth, tenantController.getTenant.bind(tenantController));
 
 router.put("/", userAuth, tenantController.editTenant.bind(tenantController));
 
+router.get(
+  "/all",
+  userAuth,
+  tenantController.getAllTenants.bind(tenantController)
+);
+
 export default router;

@@ -20,7 +20,7 @@ const userSchema = new Schema({
   phoneNumber: { type: Number },
   role: {
     type: String,
-    enum: ["manager", "dev", "pManager", "tenant-admin"],
+    enum: ["manager", "dev", "pManager", "tenant-admin", "sAdmin"],
     default: "tenant-admin",
   },
   tenant_id: {

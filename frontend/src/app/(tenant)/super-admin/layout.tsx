@@ -5,8 +5,8 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { toast } from "sonner";
-import TenantAdminLayout from "@/Components/Layout/TenantAdminLayout";
 import Loading from "@/Components/Loading/Loading";
+import SuperAdminLayout from "@/Components/Layout/SuperAdminLayout";
 
 const Layout = ({ children }: { children: React.ReactNode }) => {
   const [loading, setLoading] = useState(true);
@@ -20,7 +20,7 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
   }
 
   useEffect(() => {
-    if (user?.role != "tenant-admin") {
+    if (user?.role != "sAdmin") {
       console.log("not authenticated");
       router.push("/login");
       setTimeout(() => {
@@ -36,7 +36,7 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
         <div className="flex ">
           <div className="w-fit  fixed">
             {user && (
-              <TenantAdminLayout user={user} logoutSuccess={handleLogout} />
+              < SuperAdminLayout user={user} logoutSuccess={handleLogout} />
             )}
           </div>
           <div className="ml-64 bg-[#082032] min-h-screen flex flex-col items-center justify-center w-full h-full py-10 px-4  overflow-y-scroll">

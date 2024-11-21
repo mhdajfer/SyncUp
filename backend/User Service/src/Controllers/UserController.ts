@@ -360,6 +360,22 @@ export class UserController {
     }
   }
 
+  async getAllTenantAdmins(req: Request, res: Response, next: NextFunction) {
+    try {
+
+      const users = await this.userUseCase.getAllTenantAdmins();
+
+      return res.status(StatusCode.OK).json({
+        success: true,
+        message: "users retrieved successfully",
+        data: users,
+      });
+    } catch (error) {
+      console.log("Error while retrieving tenant admins ", error);
+      next(error);
+    }
+  }
+
   async editProfile(req: Request, res: Response, next: NextFunction) {
     try {
       const id = req.params.id;

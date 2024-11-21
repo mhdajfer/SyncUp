@@ -124,6 +124,18 @@ export class UserUseCases implements IUserUseCases {
     }
   }
 
+  async getAllTenantAdmins(): Promise<IUser[]> {
+    try {
+
+      
+      const users = await this.userRepository.getAllTenantAdmins();
+
+      return users;
+    } catch (error) {
+      throw error;
+    }
+  }
+
   async getUserById(userId: string): Promise<IUser | null> {
     try {
       return await this.userRepository.findUserById(userId);

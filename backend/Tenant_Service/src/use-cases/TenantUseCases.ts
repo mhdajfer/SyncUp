@@ -52,4 +52,14 @@ export class TenantAdminUseCases implements ITenantAdminUseCases {
       throw error;
     }
   }
+
+  async getAllTenants(): Promise<ITenants[]> {
+    try {
+      const tenants = await this.tenantAdminRepository.getAllTenants();
+
+      return tenants;
+    } catch (error) {
+      throw error;
+    }
+  }
 }

@@ -1,5 +1,5 @@
 "use client";
-import { getAllUsers } from "@/api/userService/user";
+import { getAllTenantAdmins } from "@/api/userService/user";
 import ChatUI from "@/Components/Chat/ChatUI";
 import { User } from "@/interfaces/User";
 import { useEffect, useState } from "react";
@@ -9,7 +9,7 @@ export default function Page() {
   const [users, setUsers] = useState<User[]>([]);
   const getUsers = async () => {
     try {
-      const response = await getAllUsers();
+      const response = await getAllTenantAdmins();
 
       console.log(response.data);
 

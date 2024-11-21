@@ -192,6 +192,17 @@ export class UserRepository implements IUserRepository {
       throw error;
     }
   }
+
+  async getAllTenantAdmins(): Promise<IUser[]> {
+    try {
+      console.log("users");
+      const users = await User.find({ role: "tenant-admin" });
+
+      return users as unknown as IUser[];
+    } catch (error) {
+      throw error;
+    }
+  }
   async findUser(email: string): Promise<IUser | null> {
     try {
       const user = await User.findOne({ email: email });

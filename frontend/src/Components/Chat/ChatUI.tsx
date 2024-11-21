@@ -9,7 +9,6 @@ import { Chat } from "@/interfaces/Chat";
 import { User } from "@/interfaces/User";
 import { Message } from "@/interfaces/Message";
 import { toast } from "sonner";
-import { getAllUsers } from "@/api/userService/user";
 import { useSelector } from "react-redux";
 import { RootState } from "@/store/store";
 import { getChats, sendMessage } from "@/api/Communication/chatApis";
@@ -20,14 +19,12 @@ import NoChatComponent from "./NoChatComponent";
 import ChatSidebar from "./ChatSidebar";
 import ChatHeader from "./ChatHeader";
 
-export default function ChatUI() {
+export default function ChatUI({ users }: { users: User[] }) {
   const [messages, setMessages] = useState<Message[]>([]);
   const [newMessage, setNewMessage] = useState("");
   const [chats, setChats] = useState<Chat[]>([]);
   const [selectedChat, setSelectedChat] = useState<Chat | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
-
-  const [users, setUsers] = useState<User[]>([]);
 
   const currentUser = useSelector((state: RootState) => state.auth.user);
   const currentUserId = currentUser?._id;
@@ -42,19 +39,6 @@ export default function ChatUI() {
   //     });
   //   }
   // };
-
-  const getUsers = async () => {
-    try {
-      const response = await getAllUsers();
-
-      console.log(response.data);
-
-      if (response.success) setUsers(response.data);
-    } catch (error) {
-      toast.error("can't fetch all users");
-      console.log(error);
-    }
-  };
 
   const getAllChats = async () => {
     try {
@@ -112,7 +96,6 @@ export default function ChatUI() {
 
   useEffect(() => {
     if (!currentUserId) toast.error("Authenticated user not found");
-    getUsers();
     getAllChats();
   }, [currentUserId]);
 

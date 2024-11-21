@@ -10,7 +10,8 @@ export class GroupChatRepository implements IGroupChatRepository {
     admin: IUser
   ): Promise<IChat> {
     try {
-      const newGroupChat = await Chat.create({
+      users = [...users, admin];
+      let newGroupChat = await Chat.create({
         isGroup: true,
         chat: groupName,
         users,
