@@ -19,6 +19,29 @@ export default function DevLayout({
   user: User;
 }) {
   const router = useRouter();
+
+  function onSideBarClick(val: string) {
+    switch (val) {
+      case "projects":
+        router.push("/employee/dev/projects");
+        break;
+      case "developers":
+        router.push("/employee/dev/developers");
+        break;
+      case "dashboard":
+        router.push("/employee/dev/dashboard");
+        break;
+      case "chats":
+        router.push("/employee/dev/chat");
+        break;
+        case "tasks":
+        router.push("/employee/dev/tasks");
+        break;
+      case "meeting":
+        router.push("/employee/dev/meeting");
+        break;
+    }
+  }
   return (
     <div className="h-screen w-64 bg-gray-900 text-gray-200 relative">
       <div className="flex items-center justify-center h-20 border-b border-gray-700">
@@ -29,27 +52,27 @@ export default function DevLayout({
         <SideBarItem
           icon={<FiUsers />}
           label="Dashboard"
-          onClick={() => router.push("dashboard")}
+          onClick={() => onSideBarClick("dashboard")}
         />
         <SideBarItem
           icon={<FiUsers />}
           label="Developers"
-          onClick={() => router.push("developers")}
+          onClick={() => onSideBarClick("developers")}
         />
         <SideBarItem
           icon={<FiUserCheck />}
           label="Tasks"
-          onClick={() => router.push("tasks")}
+          onClick={() => onSideBarClick("tasks")}
         />
         <SideBarItem
           icon={<FiFolder />}
           label="Projects"
-          onClick={() => router.push("projects")}
+          onClick={() => onSideBarClick("projects")}
         />
         <SideBarItem
           icon={<FiMessageSquare />}
           label="Chats"
-          onClick={() => router.push("/chats")}
+          onClick={() => onSideBarClick("chats")}
         />
         <SideBarItem
           icon={<FiCalendar />}

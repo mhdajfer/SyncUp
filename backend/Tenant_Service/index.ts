@@ -20,7 +20,7 @@ app.use(express.urlencoded({ extended: true }));
 
 connectDB();
 
-// connectConsumers();
+connectConsumers();
 app.use(morgan('tiny'));
 app.use("/tenants", tenantAdminRoutes);
 

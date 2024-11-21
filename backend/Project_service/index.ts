@@ -4,7 +4,7 @@ import projectRoutes from "./src/Routes/project-routes";
 import { errorHandler } from "./src/ErrorHandler/ErrorHandler";
 import { connectDB } from "./src/Frameworks/mongo/connect";
 import { connectConsumers } from "./src/events/Consumers";
-const morgan = require('morgan');
+const morgan = require("morgan");
 import dotenv from "dotenv";
 
 dotenv.config();
@@ -20,7 +20,7 @@ app.use(express.urlencoded({ extended: true }));
 connectDB();
 
 // connectConsumers();
-app.use(morgan('tiny'));
+app.use(morgan("tiny"));
 app.use("/projects", projectRoutes);
 app.use(errorHandler);
 

@@ -1,6 +1,6 @@
 import { IUserInvite } from "./IUser";
 
-export interface IConsumerUseCases {
+export interface IEmailUseCases {
   sendOtp(
     email: string,
     taskName: string,

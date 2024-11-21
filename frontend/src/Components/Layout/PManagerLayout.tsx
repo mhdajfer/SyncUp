@@ -49,7 +49,7 @@ export default function PManagerLayout({
         <SideBarItem
           icon={<FiMessageSquare />}
           label="Chats"
-          onClick={() => router.push("/employee/project_manager/chats")}
+          onClick={() => router.push("/employee/project_manager/chat")}
         />
         <SideBarItem
           icon={<FiCalendar />}

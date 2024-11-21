@@ -2,16 +2,25 @@ import { Consumer } from "kafkajs";
 import { IUserConsumer } from "../../interfaces/IUserConsumer";
 import { ConsumerRepository } from "../../repositories/ConsumerRepository";
 import { IConsumerRepository } from "../../interfaces/IConsumerRepository";
-import { IConsumerUseCases } from "../../interfaces/IConsumerUseCases";
-import { ConsumeUseCaeses } from "../../use-cases/ConsumeUseCaeses";
+import { IEmailUseCases } from "../../interfaces/IEmailUseCases";
+import { EmailUseCases } from "../../use-cases/EmailUseCases";
 import { IUser, IUserInvite } from "../../interfaces/IUser";
+import { IUserUseCases } from "../../interfaces/IUserUseCases";
+import { IUserRepository } from "../../interfaces/IUserRepository";
+import { UserRepository } from "../../repositories/UserRepository";
+import { UserUseCases } from "../../use-cases/UserUseCases";
 
 export class UserConsumer implements IUserConsumer {
   private consumerRepository: IConsumerRepository;
-  private consumerUseCases: IConsumerUseCases;
+  private consumerUseCases: IEmailUseCases;
+  private userUseCases: IUserUseCases;
+  private userRepository: IUserRepository;
   constructor(private consumer: Consumer) {
     this.consumerRepository = new ConsumerRepository();
-    this.consumerUseCases = new ConsumeUseCaeses(this.consumerRepository);
+    this.consumerUseCases = new EmailUseCases(this.consumerRepository);
+
+    this.userRepository = new UserRepository();
+    this.userUseCases = new UserUseCases(this.userRepository);
   }
 
   async consumeMessages() {
@@ -35,13 +44,27 @@ export class UserConsumer implements IUserConsumer {
     }
   }
 
-  async handleConsume(data: {
-    eventType: string;
-    data: IUser;
-    invitee: IUserInvite;
-    otp: number;
-    token: string;
-  }) {
+  async handleConsume(
+    data:
+      | string
+      | {
+          eventType: string;
+          data: IUser;
+          invitee: IUserInvite;
+          otp: number;
+          token: string;
+        }
+  ) {
+    if (typeof data === "string") {
+      data = JSON.parse(data) as {
+        eventType: string;
+        data: IUser;
+        invitee: IUserInvite;
+        otp: number;
+        token: string;
+      };
+    }
+
     switch (data.eventType) {
       case "create":
         console.log("its create", data);
@@ -56,6 +79,23 @@ export class UserConsumer implements IUserConsumer {
       case "invite":
         console.log("its invite**", data);
         this.consumerUseCases.sendInvite(data.invitee, data.token);
+        break;
+      case "user-registered-success":
+        console.log(
+          "*****user verified in user service & creating user in tenant service**********",
+          data
+        );
+
+        await this.userUseCases.createUser(data.data);
+        break;
+      case "user-updated":
+        console.log("*****user updating in user service**********", data);
+
+        console.log("original data*************", data);
+
+        await this.userUseCases.updateUser(
+          JSON.parse(data.data as unknown as string) as IUser
+        );
         break;
     }
   }

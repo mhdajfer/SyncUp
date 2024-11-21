@@ -1,16 +1,18 @@
-import mongoose from "mongoose";
+import { Document, ObjectId } from "mongoose";
 
 export interface IUser {
-  _id: mongoose.Types.ObjectId;
+  _id?: string;
   firstName: string;
   lastName: string;
   email: string;
   password: string;
   isBlocked?: boolean;
+  avatar?: string;
   age: number;
-  phoneNumber: number;
+  phoneNumber?: number;
   isVerified?: boolean;
   isDeleted?: boolean;
+  tenant_id?: string;
   role?: string;
   iat?: number;
   exp?: number;
@@ -23,4 +25,11 @@ export interface IUserInvite {
   email: string;
   role: string;
   phoneNumber: number;
+  tenant_id?: string;
+}
+
+export interface googleUser {
+  name: string;
+  image: string;
+  email: string;
 }

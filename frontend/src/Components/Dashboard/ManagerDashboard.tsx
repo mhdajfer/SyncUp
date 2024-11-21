@@ -94,6 +94,11 @@ const dummyTasks: Task[] = [
     assignee: "dev1",
     start_date: "2024-03-01",
     due_date: "2024-03-15",
+    log_time: {
+      start_time: "",
+      stop_time: "",
+      total_time: 0
+    }
   },
   {
     _id: "task2",
@@ -105,6 +110,11 @@ const dummyTasks: Task[] = [
     assignee: "dev2",
     start_date: "2024-03-10",
     due_date: "2024-03-25",
+    log_time: {
+      start_time: "",
+      stop_time: "",
+      total_time: 0
+    }
   },
   {
     _id: "task3",
@@ -116,6 +126,11 @@ const dummyTasks: Task[] = [
     assignee: "dev3",
     start_date: "2024-03-20",
     due_date: "2024-04-05",
+    log_time: {
+      start_time: "",
+      stop_time: "",
+      total_time: 0
+    }
   },
   {
     _id: "task4",
@@ -127,6 +142,11 @@ const dummyTasks: Task[] = [
     assignee: "dev1",
     start_date: "2024-03-15",
     due_date: "2024-04-15",
+    log_time: {
+      start_time: "",
+      stop_time: "",
+      total_time: 0
+    }
   },
   {
     _id: "task5",
@@ -138,6 +158,11 @@ const dummyTasks: Task[] = [
     assignee: "dev2",
     start_date: "2024-04-01",
     due_date: "2024-04-30",
+    log_time: {
+      start_time: "",
+      stop_time: "",
+      total_time: 0
+    }
   },
   {
     _id: "task6",
@@ -149,6 +174,11 @@ const dummyTasks: Task[] = [
     assignee: "dev3",
     start_date: "2024-04-10",
     due_date: "2024-04-20",
+    log_time: {
+      start_time: "",
+      stop_time: "",
+      total_time: 0
+    }
   },
 ];
 
