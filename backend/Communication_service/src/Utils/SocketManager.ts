@@ -19,6 +19,11 @@ export class SocketManager implements ISocketManager {
         console.log("User disconnected:", socket.id);
       });
 
+      socket.on("registerUser", ({ userId, socketId }) => {
+        console.log(`Registering user: ${userId}, Socket ID: ${socketId}`);
+        socket.join(userId); // Use userId as the room name for flexibility
+      });
+
       socket.on("setup", (id: string) => {
         socket.join(id);
         console.log("User connected to room:", id);
@@ -27,6 +32,23 @@ export class SocketManager implements ISocketManager {
       socket.on("join room", (roomId: string) => {
         socket.join(roomId);
         console.log("User joined room:", roomId);
+      });
+      socket.on("initiateCall", ({ userId, signalData, myId }) => {
+        console.log("video call initiated***********************", userId);
+        socket.to(userId).emit("incomingCall", { signalData, from: myId });
+      });
+
+      socket.on("answerCall", (data) => {
+        socket.to(data.to).emit("callAccepted", data.signal);
+      });
+
+      socket.on("endCall", ({ to }) => {
+        socket.to(to).emit("callEnded");
+      });
+
+      // Handle disconnection
+      socket.on("disconnect", () => {
+        console.log("User disconnected:", socket.id);
       });
 
       socket.on("new message", (newMessage: IMessage) => {
