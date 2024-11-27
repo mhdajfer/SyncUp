@@ -218,6 +218,7 @@ export class UserController {
         email: userDetails.email,
         password: userDetails.email.slice(0, 5) + 123,
         avatar: userDetails.image,
+        subscriptionStatus: false,
       };
 
       console.log("userdata", userData);
@@ -362,7 +363,6 @@ export class UserController {
 
   async getAllTenantAdmins(req: Request, res: Response, next: NextFunction) {
     try {
-
       const users = await this.userUseCase.getAllTenantAdmins();
 
       return res.status(StatusCode.OK).json({
@@ -566,6 +566,137 @@ export class UserController {
       });
     } catch (error) {
       console.log("Error while upload url:", error);
+      next(error);
+    }
+  }
+
+  async activateSubscription(
+    req: CustomRequest,
+    res: Response,
+    next: NextFunction
+  ) {
+    try {
+      const user = req.user;
+      const { amount } = req.body;
+
+      const updatedUser = await this.userUseCase.activateSubscription(
+        user?._id || "",
+        amount
+      );
+
+      return res.status(StatusCode.OK).json({
+        success: true,
+        message: "Updated subscription",
+        data: updatedUser,
+      });
+    } catch (error) {
+      console.log("Error while activating subscription ");
+      next(error);
+    }
+  }
+
+  async deactivateSubscription(
+    req: CustomRequest,
+    res: Response,
+    next: NextFunction
+  ) {
+    try {
+      const user = req.user;
+
+      if (!user?._id) {
+        return res
+          .status(StatusCode.BAD_REQUEST)
+          .json({ message: "No user found" });
+      }
+
+      const updatedUser = await this.userUseCase.deactivateSubscription(
+        user._id
+      );
+
+      return res.status(StatusCode.OK).json({
+        success: true,
+        message: "removed subscription",
+        data: updatedUser,
+      });
+    } catch (error) {
+      console.log("Error while deactivating subscription ");
+      next(error);
+    }
+  }
+
+  async getSubscriptionHistory(
+    req: CustomRequest,
+    res: Response,
+    next: NextFunction
+  ) {
+    try {
+      const tenantId = req.user?.tenant_id;
+
+      if (!tenantId) throw new CustomError("no tenant_id provided", 409);
+
+      const historyList = await this.userUseCase.getSubscriptionHistory(
+        tenantId
+      );
+
+      return res.status(StatusCode.OK).json({
+        success: true,
+        message: "subscription history retrieved successfully",
+        data: historyList,
+      });
+    } catch (error) {
+      console.log("Error while getting subscription history");
+      next(error);
+    }
+  }
+
+  async getFullSubHistory(
+    req: CustomRequest,
+    res: Response,
+    next: NextFunction
+  ) {
+    try {
+      const historyList = await this.userUseCase.getFullSubHistory();
+
+      return res.status(StatusCode.OK).json({
+        success: true,
+        message: "subscription history retrieved successfully",
+        data: historyList,
+      });
+    } catch (error) {
+      console.log("Error while getting subscription history");
+      next(error);
+    }
+  }
+
+  async getSubscriptionPlans(req: Request, res: Response, next: NextFunction) {
+    try {
+      const subscriptionPlans = await this.userUseCase.getSubscriptionPlans();
+
+
+      return res.status(StatusCode.OK).json({
+        success: true,
+        message: "plans retrieved successfully",
+        data: subscriptionPlans,
+      });
+    } catch (error) {
+      console.log("Error while getting subscription plans");
+      next(error);
+    }
+  }
+
+  async editSubscriptionPlan(req: Request, res: Response, next: NextFunction) {
+    try {
+      const { newPlan } = req.body;
+
+      const updatedPlan = await this.userUseCase.editSubscriptionPlan(newPlan);
+
+      console.log("new plan updated", updatedPlan);
+
+      return res
+        .status(StatusCode.OK)
+        .json({ success: true, message: "updated Plan", data: updatedPlan });
+    } catch (error) {
+      console.log("Error while editing subscription");
       next(error);
     }
   }

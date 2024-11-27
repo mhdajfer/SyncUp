@@ -6,6 +6,8 @@ const userSchema = new Schema({
   _id: { type: ObjectId, default: () => new Types.ObjectId() },
   firstName: { type: String, required: true, trim: true },
   lastName: { type: String, required: true, trim: true },
+  subscriptionStatus: { type: Boolean, required: true, default: false },
+  subscriptionAmount: { type: Number },
   email: {
     type: String,
     required: true,

@@ -8,9 +8,6 @@ export const userInstance = axios.create({
   baseURL: BASIC_URL,
 });
 
-export const adminInstance = axios.create({
-  baseURL: BASIC_URL,
-});
 
 userInstance.interceptors.request.use(
   (config) => {

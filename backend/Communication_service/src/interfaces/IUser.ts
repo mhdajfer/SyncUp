@@ -15,6 +15,8 @@ export interface IUser {
   tenant_id?: string;
   role?: string;
   iat?: number;
+  subscriptionStatus: boolean;
+  subscriptionAmount?: number;
   exp?: number;
   __v?: number;
 }

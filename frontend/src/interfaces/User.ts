@@ -7,6 +7,8 @@ export interface User {
   email: string;
   password: string;
   isBlocked?: boolean;
+  subscriptionStatus: boolean;
+  subscriptionAmount?: number;
   age: number;
   phoneNumber?: number;
   role?: string;

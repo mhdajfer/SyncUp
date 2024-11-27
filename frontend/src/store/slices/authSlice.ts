@@ -33,9 +33,14 @@ const authSlice = createSlice({
       Cookies.remove("accessToken");
       localStorage.removeItem("refreshToken");
     },
+    updateUserDetails(state, action: PayloadAction<User>) {
+      if (state.user) {
+        state.user = { ...state.user, ...action.payload };
+      }
+    },
   },
 });
 
-export const { loginSuccess, logoutSuccess } = authSlice.actions;
+export const { loginSuccess, logoutSuccess, updateUserDetails } = authSlice.actions;
 
 export default authSlice.reducer;

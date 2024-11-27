@@ -8,12 +8,14 @@ import { checkSchema } from "express-validator";
 import signupValidator from "../validators/signupValidator";
 import userAuth from "../Middlewares/userAuth";
 import authRefresh from "../Middlewares/authRefresh";
+import { PaymentController } from "../Controllers/PaymentController";
 const router = express.Router();
 
 const userRepository: IUserRepository = new UserRepository();
 const userUseCase: IUserUseCases = new UserUseCases(userRepository);
 const userController = new UserController(userUseCase);
 
+const paymentController = new PaymentController();
 router.get(
   "/allTenants",
   userAuth,
@@ -71,5 +73,45 @@ router.get(
 );
 
 router.post("/google-auth", userController.googleSignup.bind(userController));
+router.post(
+  "/create-intent",
+  paymentController.createPaymentIntent.bind(paymentController)
+);
+
+router.post(
+  "/update-subscription",
+  userAuth,
+  userController.activateSubscription.bind(userController)
+);
+
+router.post(
+  "/remove-subscription",
+  userAuth,
+  userController.deactivateSubscription.bind(userController)
+);
+
+router.post(
+  "/history-subscription",
+  userAuth,
+  userController.getSubscriptionHistory.bind(userController)
+);
+
+router.post(
+  "/history-subscription/sAdmin",
+  userAuth,
+  userController.getFullSubHistory.bind(userController)
+);
+
+router.post(
+  "/plan",
+  userAuth,
+  userController.getSubscriptionPlans.bind(userController)
+);
+
+router.post(
+  "/plan/edit",
+  userAuth,
+  userController.editSubscriptionPlan.bind(userController)
+);
 
 export default router;

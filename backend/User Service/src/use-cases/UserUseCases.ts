@@ -8,6 +8,8 @@ import {
 } from "../Utils/Jwt";
 import bcrypt from "bcrypt";
 import { CustomError } from "../ErrorHandler/CustonError";
+import { ISubscription } from "../interfaces/ISubscription";
+import { ISubscriptionPlan } from "../interfaces/ISubscriptionPlan";
 
 export class UserUseCases implements IUserUseCases {
   private userRepository: IUserRepository;
@@ -126,8 +128,6 @@ export class UserUseCases implements IUserUseCases {
 
   async getAllTenantAdmins(): Promise<IUser[]> {
     try {
-
-      
       const users = await this.userRepository.getAllTenantAdmins();
 
       return users;
@@ -223,5 +223,81 @@ export class UserUseCases implements IUserUseCases {
       console.log("error while updating avatar");
       throw error;
     }
+  }
+
+  async activateSubscription(userId: string, amount: number): Promise<IUser> {
+    try {
+      if (!userId || !amount)
+        throw new CustomError("required params missing", 409);
+
+      const updatedUser = await this.userRepository.activateSubscription(
+        userId,
+        amount
+      );
+
+      return updatedUser;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async deactivateSubscription(userId: string): Promise<IUser> {
+    try {
+      if (!userId) throw new CustomError("user missing", 409);
+
+      const updatedUser = await this.userRepository.deactivateSubscription(
+        userId
+      );
+
+      return updatedUser;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async getSubscriptionHistory(tenantId: string): Promise<ISubscription[]> {
+    try {
+      if (!tenantId) throw new CustomError("tenantId is required", 409);
+
+      const historyList = await this.userRepository.getSubscriptionHistory(
+        tenantId
+      );
+
+      return historyList;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async getFullSubHistory(): Promise<ISubscription[]> {
+    try {
+      const fullHistory = await this.userRepository.getFullSubHistory();
+
+      return fullHistory;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async getSubscriptionPlans(): Promise<ISubscriptionPlan> {
+    try {
+      const subscribePlans = await this.userRepository.getSubscriptionPlans();
+
+      return subscribePlans;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async editSubscriptionPlan(newPlan: ISubscriptionPlan): Promise<ISubscriptionPlan> {
+      try {
+        
+        const updatedPlan = await this.userRepository.editSubscriptionPlan(newPlan);
+
+
+        return updatedPlan;
+      } catch (error) {
+        throw error;
+      }
   }
 }

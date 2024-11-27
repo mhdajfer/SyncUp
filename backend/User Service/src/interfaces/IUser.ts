@@ -9,6 +9,8 @@ export interface IUser {
   isBlocked?: boolean;
   avatar?: string;
   age: number;
+  subscriptionStatus: boolean;
+  subscriptionAmount?: number;
   phoneNumber?: number;
   isVerified?: boolean;
   isDeleted?: boolean;

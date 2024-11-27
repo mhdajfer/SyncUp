@@ -1,3 +1,5 @@
+import { ISubscription } from "./ISubscription";
+import { ISubscriptionPlan } from "./ISubscriptionPlan";
 import { IUser, IUserInvite } from "./IUser";
 
 export interface IUserUseCases {
@@ -23,5 +25,11 @@ export interface IUserUseCases {
   createNewOtp(
     email: string
   ): Promise<{ isOtpSend: Boolean; user: IUser; otp: number }>;
+  activateSubscription(userId: string, amount: number): Promise<IUser>;
+  deactivateSubscription(userId: string): Promise<IUser>;
   updateAvatar(imageUrl: string, userId: string): Promise<IUser>;
+  getSubscriptionHistory(tenantId: string): Promise<ISubscription[]>;
+  getFullSubHistory(): Promise<ISubscription[]>;
+  getSubscriptionPlans(): Promise<ISubscriptionPlan>;
+  editSubscriptionPlan(newPlan: ISubscriptionPlan): Promise<ISubscriptionPlan>;
 }

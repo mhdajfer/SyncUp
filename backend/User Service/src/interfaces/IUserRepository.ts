@@ -1,4 +1,6 @@
 import { IUser, IUserInvite } from "../interfaces/IUser";
+import { ISubscription } from "./ISubscription";
+import { ISubscriptionPlan } from "./ISubscriptionPlan";
 
 export interface IUserRepository {
   inviteUser(invitee: IUserInvite): Promise<IUserInvite>;
@@ -17,4 +19,10 @@ export interface IUserRepository {
   updateVerify(email: string): Promise<Boolean>;
   updateAvatar(imageUrl: string, userId: string): Promise<IUser>;
   getAllTenantAdmins(): Promise<IUser[]>;
+  activateSubscription(userId: string, amount: number): Promise<IUser>;
+  deactivateSubscription(userId: string): Promise<IUser>;
+  getSubscriptionHistory(tenantId: string): Promise<ISubscription[]>;
+  getFullSubHistory(): Promise<ISubscription[]>;
+  getSubscriptionPlans(): Promise<ISubscriptionPlan>;
+  editSubscriptionPlan(newPlan: ISubscriptionPlan): Promise<ISubscriptionPlan>;
 }

@@ -1,5 +1,7 @@
 import { userInstance } from "@/axios";
 import { UserDetails } from "@/Components/Forms/ProjectForm";
+import { Subscription } from "@/interfaces/Subscription";
+import { SubscriptionPlan } from "@/interfaces/SubscriptionPlan";
 import { ICreateTenant, ITenant, User } from "@/interfaces/User";
 import Cookies from "js-cookie";
 
@@ -227,6 +229,88 @@ export const googleSignup = async ({
       refreshToken: string;
       accessToken: string;
       success: boolean;
+    };
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const updateSubscription = async (amount: number) => {
+  try {
+    const response = await userInstance.post("users/update-subscription", {
+      amount,
+    });
+
+    return response.data as { success: boolean; message: string; data: User };
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const disableSubscription = async () => {
+  try {
+    const response = await userInstance.post("users/remove-subscription");
+
+    return response.data as { success: boolean; message: string; data: User };
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const getSubscriptionHistory = async () => {
+  try {
+    const response = await userInstance.post("users/history-subscription");
+
+    return response.data as {
+      success: boolean;
+      message: string;
+      data: Subscription[];
+    };
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const getFullSubHistory = async () => {
+  try {
+    const response = await userInstance.post(
+      "users/history-subscription/sAdmin"
+    );
+
+    return response.data as {
+      success: boolean;
+      message: string;
+      data: Subscription[];
+    };
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const getSubscriptionPlan = async () => {
+  try {
+    const response = await userInstance.post("users/plan");
+
+    return response.data as {
+      success: boolean;
+      message: string;
+      data: SubscriptionPlan;
+    };
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const editSubscriptionPlan = async (
+  newPlan: Partial<SubscriptionPlan>
+) => {
+  try {
+    const response = await userInstance.post("users/plan/edit", { newPlan });
+
+    return response.data as {
+      success: boolean;
+      message: string;
+      data: SubscriptionPlan;
     };
   } catch (error) {
     throw error;

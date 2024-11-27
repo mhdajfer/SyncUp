@@ -5,6 +5,10 @@ import { ObjectId } from "mongodb";
 import Otp from "../frameworks/models/otpModel";
 import { CustomError } from "../ErrorHandler/CustonError";
 import Invitee from "../frameworks/models/inviteeModel";
+import { ISubscription } from "../interfaces/ISubscription";
+import SubscriptionModel from "../frameworks/models/subscriptionModel";
+import { ISubscriptionPlan } from "../interfaces/ISubscriptionPlan";
+import SubscriptionPlanModel from "../frameworks/models/subscriptionPlanModel";
 
 export class UserRepository implements IUserRepository {
   async inviteUser(invitee: IUserInvite): Promise<IUserInvite> {
@@ -235,6 +239,129 @@ export class UserRepository implements IUserRepository {
       );
 
       return user as unknown as IUser;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async activateSubscription(userId: string, amount: number): Promise<IUser> {
+    try {
+      const loggedInUser = await User.findOne({ _id: userId });
+      if (!loggedInUser?.tenant_id)
+        throw new CustomError("tenant id not provided", 409);
+
+      const updateFields = {
+        subscriptionStatus: true,
+        subscriptionAmount: amount,
+      };
+
+      await User.updateMany(
+        { tenant_id: loggedInUser?.tenant_id },
+        { $set: updateFields }
+      );
+
+      const updatedUser = await User.findOne({ _id: userId });
+
+      const subscriptionData: ISubscription = {
+        action: "subscribe",
+        amount: amount,
+        date: new Date(Date.now()).toISOString(),
+        orgName: updatedUser?.tenant_id || "",
+        userId: updatedUser?._id?.toString() || "",
+        status: "active",
+      };
+
+      await SubscriptionModel.create(subscriptionData);
+
+      return updatedUser as unknown as IUser;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async deactivateSubscription(userId: string): Promise<IUser> {
+    try {
+      const loggedInUser = await User.findOne({ _id: userId });
+      if (!loggedInUser?.tenant_id)
+        throw new CustomError("tenant id not provided", 409);
+
+      const updateFields = {
+        subscriptionStatus: false,
+        subscriptionAmount: null,
+      };
+
+      await User.updateMany(
+        { tenant_id: loggedInUser?.tenant_id },
+        { $set: updateFields }
+      );
+
+      const updatedUser = await User.findOne({ _id: userId });
+
+      const subscriptionData: ISubscription = {
+        action: "cancel",
+        amount: 0,
+        date: new Date(Date.now()).toISOString(),
+        orgName: updatedUser?.tenant_id || "",
+        userId: updatedUser?._id?.toString() || "",
+        status: "inactive",
+      };
+
+      await SubscriptionModel.create(subscriptionData);
+
+      return updatedUser as unknown as IUser;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async getSubscriptionHistory(tenantId: string): Promise<ISubscription[]> {
+    try {
+      const subscriptionHistory = await SubscriptionModel.find({
+        orgName: tenantId,
+      }).sort({ createdAt: -1 });
+
+      console.log(tenantId, subscriptionHistory.length);
+
+      return subscriptionHistory as unknown as ISubscription[];
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async getFullSubHistory(): Promise<ISubscription[]> {
+    try {
+      const subHistory = await SubscriptionModel.find().sort({
+        createdAt: -1,
+      });
+
+      return subHistory as unknown as ISubscription[];
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async getSubscriptionPlans(): Promise<ISubscriptionPlan> {
+    try {
+      const subscriptionPlans = await SubscriptionPlanModel.findOne();
+
+      return subscriptionPlans as unknown as ISubscriptionPlan;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async editSubscriptionPlan(
+    newPlan: ISubscriptionPlan
+  ): Promise<ISubscriptionPlan> {
+    try {
+      const updatedPlan = await SubscriptionPlanModel.findOneAndUpdate(
+        {},
+        { $set: newPlan },
+        { returnDocument: "after" }
+      );
+
+
+      return updatedPlan as unknown as ISubscriptionPlan;
     } catch (error) {
       throw error;
     }

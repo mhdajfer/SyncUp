@@ -11,6 +11,8 @@ export interface IUser {
   phoneNumber: number;
   isVerified?: boolean;
   isDeleted?: boolean;
+  subscriptionStatus: boolean;
+  subscriptionAmount?: number;
   tenant_id: string;
   role?: string;
   iat?: number;

@@ -6,6 +6,8 @@ export interface IUser extends Document {
   lastName: string;
   email: string;
   password: string;
+  subscriptionStatus: boolean;
+  subscriptionAmount?: number;
   isBlocked?: boolean;
   age: number;
   tenant_id: string;

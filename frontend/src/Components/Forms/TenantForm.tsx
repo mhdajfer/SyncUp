@@ -2,6 +2,7 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
+import { X } from "lucide-react";
 import * as z from "zod";
 import { Button } from "@/Components/ui/button";
 import {
@@ -120,8 +121,6 @@ export default function TenantForm() {
         domain: values.domain,
       };
 
-      
-
       const response = await createTenant(tenantData);
 
       if (response.success) toast.success(response.message);
@@ -136,7 +135,11 @@ export default function TenantForm() {
 
   return (
     <div className="space-y-2 py-10 fixed inset-0 flex flex-col items-center justify-center bg-black bg-opacity-50 backdrop-blur-sm overflow-auto">
-      <Card className=" max-w-2xl mt-36 mx-auto">
+      <Card className="relative max-w-2xl mt-36 mx-auto">
+      <X
+        className=" h-4 w-4 absolute top-1 right-1  hover:text-gray-600 cursor-pointer hover:font-xl"
+        onClick={() => router.back()}
+      />
         <CardHeader>
           <CardTitle>Tenant Registration</CardTitle>
           <CardDescription>Register a new tenant in the system</CardDescription>
