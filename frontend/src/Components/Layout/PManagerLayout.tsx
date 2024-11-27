@@ -54,7 +54,7 @@ export default function PManagerLayout({
         <SideBarItem
           icon={<FiCalendar />}
           label="Meetings"
-          onClick={() => router.push("/employee/project_manager/meetings")}
+          onClick={() => router.push("/employee/project_manager/meeting")}
         />
       </nav>
 
