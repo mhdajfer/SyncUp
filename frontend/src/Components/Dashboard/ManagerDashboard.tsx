@@ -4,199 +4,80 @@ import { Progress } from "@/Components/ui/progress";
 import { Badge } from "@/Components/ui/badge";
 import { PieChart, Pie, Cell, ResponsiveContainer } from "recharts";
 import { Project, Task } from "@/interfaces/Project";
-
-const dummyProjects = [
-  {
-    _id: "1",
-    name: "E-commerce Platform Development",
-    description:
-      "Develop a scalable e-commerce platform with multi-vendor support and real-time inventory tracking.",
-    managerId: "user1",
-    start_date: "2024-01-15",
-    due_date: "2024-06-30",
-    status: "In Progress",
-    budget: 50000,
-    goal: "Launch a competitive online shopping experience",
-    developers: [],
-    document: null,
-    created_by: "admin",
-  },
-  {
-    _id: "2",
-    name: "Social Media Analytics Tool",
-    description:
-      "Build an analytics tool for monitoring and analyzing social media trends.",
-    managerId: "user2",
-    start_date: "2024-02-01",
-    due_date: "2024-07-01",
-    status: "Not Started",
-    budget: 40000,
-    goal: "Provide insights into social media engagement for brands",
-    developers: [],
-    document: null,
-    created_by: "admin",
-  },
-  {
-    _id: "3",
-    name: "Healthcare Management System",
-    description:
-      "Develop a platform to manage patient records and streamline hospital operations.",
-    managerId: "user3",
-    start_date: "2023-11-10",
-    due_date: "2024-05-15",
-    status: "In Progress",
-    budget: 70000,
-    goal: "Enhance patient care by providing real-time data",
-    developers: [],
-    document: null,
-    created_by: "admin",
-  },
-  {
-    _id: "4",
-    name: "CRM for Small Businesses",
-    description:
-      "Create a simple and intuitive CRM system for small businesses to manage customer relationships.",
-    managerId: "user4",
-    start_date: "2024-03-10",
-    due_date: "2024-08-20",
-    status: "Not Started",
-    budget: 30000,
-    goal: "Increase small businesses' customer retention",
-    developers: [],
-    document: null,
-    created_by: "admin",
-  },
-  {
-    _id: "5",
-    name: "Educational App for Kids",
-    description:
-      "Build an interactive educational app with gamified content for children.",
-    managerId: "user5",
-    start_date: "2023-12-01",
-    due_date: "2024-04-01",
-    status: "Completed",
-    budget: 25000,
-    goal: "Provide engaging educational content for children",
-    developers: [],
-    document: null,
-    created_by: "admin",
-  },
-];
-
-const dummyTasks: Task[] = [
-  {
-    _id: "task1",
-    comments: [],
-    title: "Design UI mockups",
-    projectId: "1",
-    status: "Completed",
-    category: "Planning",
-    assignee: "dev1",
-    start_date: "2024-03-01",
-    due_date: "2024-03-15",
-    log_time: {
-      start_time: "",
-      stop_time: "",
-      total_time: 0
-    }
-  },
-  {
-    _id: "task2",
-    comments: [],
-    title: "Implement authentication",
-    projectId: "1",
-    status: "In Progress",
-    category: "Feature",
-    assignee: "dev2",
-    start_date: "2024-03-10",
-    due_date: "2024-03-25",
-    log_time: {
-      start_time: "",
-      stop_time: "",
-      total_time: 0
-    }
-  },
-  {
-    _id: "task3",
-    comments: [],
-    title: "Set up CI/CD pipeline",
-    projectId: "1",
-    status: "To Do",
-    category: "Planning",
-    assignee: "dev3",
-    start_date: "2024-03-20",
-    due_date: "2024-04-05",
-    log_time: {
-      start_time: "",
-      stop_time: "",
-      total_time: 0
-    }
-  },
-  {
-    _id: "task4",
-    comments: [],
-    title: "Develop main dashboard",
-    projectId: "1",
-    status: "In Progress",
-    category: "Feature",
-    assignee: "dev1",
-    start_date: "2024-03-15",
-    due_date: "2024-04-15",
-    log_time: {
-      start_time: "",
-      stop_time: "",
-      total_time: 0
-    }
-  },
-  {
-    _id: "task5",
-    comments: [],
-    title: "Write unit tests",
-    projectId: "1",
-    status: "To Do",
-    category: "Testing",
-    assignee: "dev2",
-    start_date: "2024-04-01",
-    due_date: "2024-04-30",
-    log_time: {
-      start_time: "",
-      stop_time: "",
-      total_time: 0
-    }
-  },
-  {
-    _id: "task6",
-    comments: [],
-    title: "Fix responsive layout issues",
-    projectId: "1",
-    status: "To Do",
-    category: "Bug",
-    assignee: "dev3",
-    start_date: "2024-04-10",
-    due_date: "2024-04-20",
-    log_time: {
-      start_time: "",
-      stop_time: "",
-      total_time: 0
-    }
-  },
-];
+import { Button } from "../ui/button";
+import ExcelJS from "exceljs";
+import { saveAs } from "file-saver";
 
 const COLORS = ["#0088FE", "#00C49F", "#FFBB28"];
 
 export default function ManagerDashboard({
-  tasks = dummyTasks,
-  projects = dummyProjects,
+  projects,
+  tasks,
 }: {
   tasks: Task[];
   projects: Project[];
 }) {
-  console.log(tasks);
+  const exportToExcel = async () => {
+    const workbook = new ExcelJS.Workbook();
 
+    // Create "Tasks" sheet
+    const taskSheet = workbook.addWorksheet("Tasks");
+    taskSheet.columns = [
+      { header: "Task ID", key: "_id", width: 15 },
+      { header: "Title", key: "title", width: 20 },
+      { header: "Project ID", key: "projectId", width: 15 },
+      { header: "Status", key: "status", width: 15 },
+      { header: "Category", key: "category", width: 15 },
+      { header: "Start Date", key: "start_date", width: 15 },
+      { header: "Due Date", key: "due_date", width: 15 },
+      { header: "Assignee", key: "assignee", width: 20 },
+      { header: "Total Logged Hours", key: "total_time", width: 20 },
+    ];
+
+    // Add tasks data
+    taskSheet.addRows(
+      tasks.map((task) => ({
+        ...task,
+        total_time: task.log_time?.total_time || 0,
+      }))
+    );
+
+    // Create "Projects" sheet
+    const projectSheet = workbook.addWorksheet("Projects");
+    projectSheet.columns = [
+      { header: "Project ID", key: "_id", width: 15 },
+      { header: "Name", key: "name", width: 20 },
+      { header: "Description", key: "description", width: 30 },
+      { header: "Manager ID", key: "managerId", width: 20 },
+      { header: "Start Date", key: "start_date", width: 15 },
+      { header: "Due Date", key: "due_date", width: 15 },
+      { header: "Status", key: "status", width: 15 },
+      { header: "Budget", key: "budget", width: 15 },
+      { header: "Goal", key: "goal", width: 30 },
+    ];
+
+    // Add projects data
+    projectSheet.addRows(projects);
+
+    // Generate file and trigger download
+    const buffer = await workbook.xlsx.writeBuffer();
+    const blob = new Blob([buffer], {
+      type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+    });
+    saveAs(blob, "tasks_and_projects.xlsx");
+  };
   return (
-    <div className="container mx-auto p-4 bg-gray-900 text-gray-100 min-h-screen">
+    <div className="relative container mx-auto p-4 bg-gray-900 text-gray-100 min-h-screen">
       <h1 className="text-2xl font-bold mb-6">Manager Dashboard</h1>
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-20">
+      <div className="absolute right-10 flex space-x-4 mt-4">
+        <Button
+          onClick={exportToExcel}
+          className="bg-violet-800 hover:bg-violet-900 cursor-pointer  text-neutral-200 hover:text-white"
+        >
+          Download as Excel
+        </Button>
+      </div>
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-28">
         <ProjectOverview projects={projects} />
         <TaskProgress tasks={tasks} />
       </div>
