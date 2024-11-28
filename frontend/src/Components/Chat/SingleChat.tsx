@@ -21,9 +21,12 @@ export default function SingleChat({
       className={`flex items-start mb-4 ${isCurrentUser ? "justify-end" : ""}`}
     >
       {!isCurrentUser && (
-        <Avatar className="mr-2">
+        <Avatar
+          className="mr-2 w-10 border border-gray-500 flex justify-center items-center rounded-full 
+        overflow-hidden "
+        >
           <AvatarImage
-            src={`https://api.dicebear.com/6.x/initials/svg?seed=${sender._id}`}
+            src={sender.avatar}
             alt={`Avatar of ${sender.firstName}`}
           />
           <AvatarFallback>

@@ -118,6 +118,18 @@ export default function ChatSidebar({
     return typeof otherUser === "object" ? otherUser.firstName : otherUser;
   };
 
+  const setChatImage = (chat: Chat) => {
+    const otherUser = chat.users.find((user) =>
+      typeof user !== "string"
+        ? user._id !== currentUserId
+        : user !== currentUserId
+    );
+
+    if (!otherUser) return toast.error("Issue with chat name");
+
+    return typeof otherUser === "object" ? otherUser.avatar : otherUser;
+  };
+
   const handleOneChat = async (chat: Chat) => {
     try {
       setIsLoading(true);
@@ -205,10 +217,10 @@ export default function ChatSidebar({
                       className="flex items-center p-2 hover:bg-gray-700 cursor-pointer"
                       onClick={() => handleStartChat(user)}
                     >
-                      <Avatar className="mr-2">
+                      <Avatar className="mr-2 bg-violet-900">
                         <AvatarImage
-                          src={`https://api.dicebear.com/6.x/initials/svg?seed=${user.avatar}`}
-                          alt={user.avatar}
+                          src={user.avatar}
+                          alt={user.firstName[0]}
                         />
                         <AvatarFallback>{user.firstName[0]}</AvatarFallback>
                       </Avatar>
@@ -237,9 +249,11 @@ export default function ChatSidebar({
               <div className="flex items-center">
                 <Avatar className="mr-3">
                   <AvatarImage
-                    src={`https://api.dicebear.com/6.x/initials/svg?seed=${
-                      chat.isGroup ? chat.chat : setChatName(chat)
-                    }`}
+                    src={
+                      chat.isGroup
+                        ? `https://api.dicebear.com/6.x/initials/svg?seed=${chat.chat}`
+                        : (setChatImage(chat) as string)
+                    }
                     alt={chat.chat[0]}
                   />
                   <AvatarFallback>{chat.chat[0]}</AvatarFallback>
@@ -264,7 +278,10 @@ export default function ChatSidebar({
         <div className="p-4 border-t border-gray-800">
           <Dialog open={isCreateGroupOpen} onOpenChange={setIsCreateGroupOpen}>
             <DialogTrigger asChild>
-              <Button className="w-full" variant="outline">
+              <Button
+                className="w-full bg-violet-950 border-gray-700 text-neutral-400 hover:bg-violet-950 hover:text-white cursor-pointer "
+                variant="outline"
+              >
                 <Plus className="mr-2 h-4 w-4" /> Create Group
               </Button>
             </DialogTrigger>
