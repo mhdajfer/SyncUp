@@ -2,20 +2,25 @@
 import { getAllUsers } from "@/api/userService/user";
 import UserTableWithSearch from "@/Components/Tables/UserTableWrapper";
 import { User } from "@/interfaces/User";
+import { RootState } from "@/store/store";
 
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+import { useSelector } from "react-redux";
 import { toast } from "sonner";
 
 export default function Page() {
   const router = useRouter();
+  const currentUserId = useSelector((state: RootState) => state.auth.user?._id);
   const [userList, setUserList] = useState<User[]>([]);
 
   useEffect(() => {
     async function getData() {
       try {
         const usersList = await getAllUsers();
-        setUserList(usersList.data);
+        setUserList(
+          usersList.data.filter((user) => user._id !== currentUserId)
+        );
       } catch (error: unknown) {
         console.log(error);
 

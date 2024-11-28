@@ -111,7 +111,7 @@ export function UsersTable01({
                     {user.status ? user.status : "Active"}
                   </TableCell>
                   <TableCell className="">
-                    <div className="flex space-x-2 justify-center">
+                    <div className="flex justify-center">
                       <Button
                         className={`min-w-20 ${
                           user.isBlocked ? "bg-green-700" : "bg-green-800"
@@ -119,9 +119,6 @@ export function UsersTable01({
                         onClick={() => handleBlock(user._id)}
                       >
                         {user.isBlocked ? "Unblock" : "Block"}
-                      </Button>
-                      <Button className="bg-red-500 text-white hover:bg-red-900">
-                        Delete
                       </Button>
                     </div>
                   </TableCell>
