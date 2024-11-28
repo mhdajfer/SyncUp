@@ -76,6 +76,7 @@ export default function SignupForm({
       const response = await createUser({
         userData: {
           firstName,
+          subscriptionStatus: false,
           lastName,
           email,
           phoneNumber,

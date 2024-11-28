@@ -75,6 +75,7 @@ export default function UserForm({ role }: { role: string }) {
         userData: {
           firstName,
           lastName,
+          subscriptionStatus: false,
           age,
           email,
           password,

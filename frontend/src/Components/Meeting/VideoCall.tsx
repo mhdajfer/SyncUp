@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import { io, Socket } from "socket.io-client";
 import SimplePeer, { SignalData } from "simple-peer";
 import { toast } from "sonner";
@@ -39,6 +39,16 @@ export function VideoCall() {
     signalData: {} as SignalData,
   });
 
+  const destroyConnection = useCallback(() => {
+    if (connectionRef.current) {
+      connectionRef.current.destroy();
+    }
+    if (stream) {
+      stream.getTracks().forEach((track) => track.stop());
+    }
+    window.location.reload();
+  }, [stream]);
+
   useEffect(() => {
     socket.emit("registerUser", {
       userId: currentUserId,
@@ -52,7 +62,7 @@ export function VideoCall() {
       socket.off("incomingCall", handleIncomingCall);
       socket.off("callEnded", destroyConnection);
     };
-  }, [currentUserId]);
+  }, [currentUserId, destroyConnection]);
 
   const handleIncomingCall = ({
     from,
@@ -120,16 +130,6 @@ export function VideoCall() {
   const endCall = () => {
     socket.emit("endCall", { to: incominCallInfo.from });
     destroyConnection();
-  };
-
-  const destroyConnection = () => {
-    if (connectionRef.current) {
-      connectionRef.current.destroy();
-    }
-    if (stream) {
-      stream.getTracks().forEach((track) => track.stop());
-    }
-    window.location.reload();
   };
 
   const requestMediaStream = async () => {

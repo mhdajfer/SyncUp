@@ -1,5 +1,4 @@
 import { userInstance } from "@/axios";
-import { UserDetails } from "@/Components/Forms/ProjectForm";
 import { Subscription } from "@/interfaces/Subscription";
 import { SubscriptionPlan } from "@/interfaces/SubscriptionPlan";
 import { ICreateTenant, ITenant, User } from "@/interfaces/User";
@@ -34,7 +33,7 @@ export const getProjectManagers = async () => {
   try {
     const response = await userInstance.get("/users/pmanagers");
 
-    return response.data as { success: boolean; data: UserDetails[] };
+    return response.data as { success: boolean; data: User[] };
   } catch (error) {
     throw error;
   }

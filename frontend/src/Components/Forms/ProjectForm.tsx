@@ -83,7 +83,7 @@ export default function ProjectForm() {
   useEffect(() => {
     async function getData() {
       const response = await getProjectManagers();
-      setManagerList(response.data);
+      setManagerList(response.data as UserDetails[]);
       console.log("pmanagers", response.data);
     }
     getData();
