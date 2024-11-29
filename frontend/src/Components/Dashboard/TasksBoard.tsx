@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, {  useEffect, useState } from "react";
 import { LogTimeDisplay } from "@/lib/date-format";
 
 import {
@@ -43,7 +43,7 @@ export function TaskCards({ task }: { task: Task }) {
         <div className="bg-gray-900 p-4 rounded-md shadow w-full h-full">
           <h3
             className="text-lg font-semibold text-gray-100 mb-2 hover:underline cursor-pointer hover:text-gray-200"
-            onClick={() => router.push(`tasks/${task._id}`)}
+            onClick={() => router.push(`dashboard/${task._id}`)}
           >
             {task.title}
           </h3>
@@ -207,6 +207,7 @@ export default function TaskDashboard({ newTasks }: { newTasks: Task[] }) {
   return (
     <div className="p-4 bg-gray-800 text-white rounded-md m-3">
       <h1 className="text-2xl font-bold mb-6">Task Dashboard</h1>
+
       <DndContext
         sensors={sensors}
         collisionDetection={closestCorners}

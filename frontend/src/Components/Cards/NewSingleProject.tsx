@@ -40,6 +40,8 @@ import { format } from "date-fns";
 import Tiptap from "../RichText/TipTap";
 import ProjectTeam from "./ProjectTeam";
 import { TASK_CATEGORY } from "@/Consts";
+import TableRowSkeleton from "../Skeleton/TableRowSkeleton";
+import { Skeleton } from "../ui/skeleton";
 
 interface newTask {
   title: string;
@@ -59,7 +61,7 @@ export default function NewSingleProject({ role }: { role: string }) {
   const router = useRouter();
   const { projectId }: { projectId: string } = useParams();
   const [project, setProject] = useState<Project | null>(null);
-  //   const [newComment, setNewComment] = useState("");
+  const [isLoading, setIsLoading] = useState(true);
   const [managers, setManagers] = useState<IUser[]>([]);
   const [isOpen, setIsOpen] = useState(false);
   const [newTasks, setNewTasks] = useState<newTask[]>([]);
@@ -118,6 +120,9 @@ export default function NewSingleProject({ role }: { role: string }) {
     }
     getProjectandDeveloper();
     getTasks();
+    setTimeout(() => {
+      setIsLoading(false);
+    }, 2000);
   }, [projectId]);
 
   const fetchManagers = async () => {
@@ -156,7 +161,7 @@ export default function NewSingleProject({ role }: { role: string }) {
         toast.success(response.message);
         setIsEditing(false);
 
-        setTasks((prevTasks) => [...prevTasks, ...newTasks as Task[]]);
+        setTasks((prevTasks) => [...prevTasks, ...(newTasks as Task[])]);
         setTimeout(() => setNewTasks([]), 1000);
       } else {
         toast.error(response.message);
@@ -305,52 +310,56 @@ export default function NewSingleProject({ role }: { role: string }) {
                     onClick={handleClose}
                   />
                   <CardHeader className="border-b border-gray-700">
-                    <CardTitle className="flex items-center justify-between">
-                      {isEditing ? (
-                        <Input
-                          name="name"
-                          value={editedProject?.name || ""}
-                          onChange={handleInputChange}
-                          className="text-2xl font-bold text-gray-100"
-                        />
-                      ) : (
-                        <span className="text-2xl font-bold">
-                          {project?.name}
-                        </span>
-                      )}
-                      {isEditing ? (
-                        <Select
-                          onValueChange={(value) =>
-                            setEditedProject({
-                              ...editedProject,
-                              status: value,
-                            })
-                          }
-                          value={project?.status}
-                        >
-                          <SelectTrigger className="w-full bg-gray-700 text-white">
-                            <SelectValue placeholder="Select a manager" />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value={"in progress"}>
-                              In Progress
-                            </SelectItem>
-                            <SelectItem value={"completed"}>
-                              Completed
-                            </SelectItem>
-                            <SelectItem value={"pending"}>Pending</SelectItem>
-                          </SelectContent>
-                        </Select>
-                      ) : (
-                        <Badge
-                          className={`${getStatusColor(
-                            project?.status || "pending"
-                          )} text-white`}
-                        >
-                          {project?.status}
-                        </Badge>
-                      )}
-                    </CardTitle>
+                    {isLoading ? (
+                      <TableRowSkeleton />
+                    ) : (
+                      <CardTitle className="flex items-center justify-between">
+                        {isEditing ? (
+                          <Input
+                            name="name"
+                            value={editedProject?.name || ""}
+                            onChange={handleInputChange}
+                            className="text-2xl font-bold text-gray-100"
+                          />
+                        ) : (
+                          <span className="text-2xl font-bold">
+                            {project?.name}
+                          </span>
+                        )}
+                        {isEditing ? (
+                          <Select
+                            onValueChange={(value) =>
+                              setEditedProject({
+                                ...editedProject,
+                                status: value,
+                              })
+                            }
+                            value={project?.status}
+                          >
+                            <SelectTrigger className="w-full bg-gray-700 text-white">
+                              <SelectValue placeholder="Select a manager" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value={"in progress"}>
+                                In Progress
+                              </SelectItem>
+                              <SelectItem value={"completed"}>
+                                Completed
+                              </SelectItem>
+                              <SelectItem value={"pending"}>Pending</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        ) : (
+                          <Badge
+                            className={`${getStatusColor(
+                              project?.status || "pending"
+                            )} text-white`}
+                          >
+                            {project?.status}
+                          </Badge>
+                        )}
+                      </CardTitle>
+                    )}
                   </CardHeader>
                   <CardContent className="space-y-6 mt-6 max-h-[70vh] overflow-y-auto custom-scrollbar">
                     {isEditing ? (
@@ -360,111 +369,120 @@ export default function NewSingleProject({ role }: { role: string }) {
                         onChange={handleInputChange}
                         className="w-full bg-gray-700 text-gray-100 border-gray-600 focus:border-blue-500"
                       />
+                    ) : isLoading ? (
+                      <Skeleton className=" h-4 w-full bg-gray-700" />
                     ) : (
                       <p className="text-gray-300">{project?.description}</p>
                     )}
 
-                    <div className="grid grid-cols-2 gap-4 text-sm">
-                      <div className="flex items-center">
-                        <CalendarIcon className="w-5 h-5 mr-2 text-gray-400" />
-                        <span>
-                          Start:{" "}
-                          {isEditing ? (
-                            <Input
-                              type="date"
-                              name="start_date"
-                              value={editedProject?.start_date || ""}
-                              onChange={handleInputChange}
-                              className="bg-gray-700 text-gray-100"
-                            />
-                          ) : project ? (
-                            formatDate(project?.start_date)
-                          ) : (
-                            ""
-                          )}
-                        </span>
+                    {isLoading ? (
+                      <div>
+                        <TableRowSkeleton />
+                        <TableRowSkeleton />
                       </div>
-                      <div className="flex items-center">
-                        <CalendarIcon className="w-5 h-5 mr-2 text-gray-400" />
-                        <span>
-                          Due:{" "}
-                          {isEditing ? (
-                            <Input
-                              type="date"
-                              name="due_date"
-                              value={editedProject?.due_date || ""}
-                              onChange={handleInputChange}
-                              className="bg-gray-700 text-gray-100"
-                            />
-                          ) : project ? (
-                            formatDate(project?.due_date)
-                          ) : (
-                            ""
-                          )}
-                        </span>
-                      </div>
-                      <div className="flex items-center">
-                        <DollarSignIcon className="w-5 h-5 mr-2 text-gray-400" />
-                        <span>
-                          Budget:{" "}
-                          {isEditing ? (
-                            <Input
-                              type="number"
-                              name="budget"
-                              value={editedProject?.budget || ""}
-                              onChange={handleInputChange}
-                              className="bg-gray-700 text-gray-100"
-                            />
-                          ) : (
-                            `$${project?.budget.toLocaleString()}`
-                          )}
-                        </span>
-                      </div>
-                      <div className="flex items-center">
-                        <UserIcon className="w-5 h-5 mr-2 text-gray-400" />
-                        {!isEditing ? (
+                    ) : (
+                      <div className="grid grid-cols-2 gap-4 text-sm">
+                        <div className="flex items-center">
+                          <CalendarIcon className="w-5 h-5 mr-2 text-gray-400" />
                           <span>
-                            Manager:{" "}
-                            {typeof project?.managerId === "string" ? (
-                              <span>{project.managerId}</span>
+                            Start:{" "}
+                            {isEditing ? (
+                              <Input
+                                type="date"
+                                name="start_date"
+                                value={editedProject?.start_date || ""}
+                                onChange={handleInputChange}
+                                className="bg-gray-700 text-gray-100"
+                              />
+                            ) : project ? (
+                              formatDate(project?.start_date)
                             ) : (
-                              <span>
-                                {project?.managerId.firstName}{" "}
-                                {project?.managerId.lastName}
-                              </span>
+                              ""
                             )}
                           </span>
-                        ) : (
-                          <Select
-                            onValueChange={(value) =>
-                              setEditedProject({
-                                ...editedProject,
-                                managerId: value,
-                              })
-                            }
-                            value={
-                              typeof editedProject?.managerId === "string"
-                                ? editedProject.managerId
-                                : editedProject.managerId._id
-                            }
-                          >
-                            <SelectTrigger className="w-full bg-gray-700 text-white">
-                              <SelectValue placeholder="Select a manager" />
-                            </SelectTrigger>
-                            <SelectContent>
-                              {managers.map((manager) => (
-                                <SelectItem
-                                  key={manager?._id}
-                                  value={manager?._id || ""}
-                                >
-                                  {manager.firstName}
-                                </SelectItem>
-                              ))}
-                            </SelectContent>
-                          </Select>
-                        )}
+                        </div>
+                        <div className="flex items-center">
+                          <CalendarIcon className="w-5 h-5 mr-2 text-gray-400" />
+                          <span>
+                            Due:{" "}
+                            {isEditing ? (
+                              <Input
+                                type="date"
+                                name="due_date"
+                                value={editedProject?.due_date || ""}
+                                onChange={handleInputChange}
+                                className="bg-gray-700 text-gray-100"
+                              />
+                            ) : project ? (
+                              formatDate(project?.due_date)
+                            ) : (
+                              ""
+                            )}
+                          </span>
+                        </div>
+                        <div className="flex items-center">
+                          <DollarSignIcon className="w-5 h-5 mr-2 text-gray-400" />
+                          <span>
+                            Budget:{" "}
+                            {isEditing ? (
+                              <Input
+                                type="number"
+                                name="budget"
+                                value={editedProject?.budget || ""}
+                                onChange={handleInputChange}
+                                className="bg-gray-700 text-gray-100"
+                              />
+                            ) : (
+                              `$${project?.budget.toLocaleString()}`
+                            )}
+                          </span>
+                        </div>
+                        <div className="flex items-center">
+                          <UserIcon className="w-5 h-5 mr-2 text-gray-400" />
+                          {!isEditing ? (
+                            <span>
+                              Manager:{" "}
+                              {typeof project?.managerId === "string" ? (
+                                <span>{project.managerId}</span>
+                              ) : (
+                                <span>
+                                  {project?.managerId.firstName}{" "}
+                                  {project?.managerId.lastName}
+                                </span>
+                              )}
+                            </span>
+                          ) : (
+                            <Select
+                              onValueChange={(value) =>
+                                setEditedProject({
+                                  ...editedProject,
+                                  managerId: value,
+                                })
+                              }
+                              value={
+                                typeof editedProject?.managerId === "string"
+                                  ? editedProject.managerId
+                                  : editedProject.managerId._id
+                              }
+                            >
+                              <SelectTrigger className="w-full bg-gray-700 text-white">
+                                <SelectValue placeholder="Select a manager" />
+                              </SelectTrigger>
+                              <SelectContent>
+                                {managers.map((manager) => (
+                                  <SelectItem
+                                    key={manager?._id}
+                                    value={manager?._id || ""}
+                                  >
+                                    {manager.firstName}
+                                  </SelectItem>
+                                ))}
+                              </SelectContent>
+                            </Select>
+                          )}
+                        </div>
                       </div>
-                    </div>
+                    )}
 
                     <div>
                       <h3 className="text-lg font-semibold mb-2">Goal</h3>
@@ -475,6 +493,8 @@ export default function NewSingleProject({ role }: { role: string }) {
                           onChange={handleInputChange}
                           className="w-full bg-gray-700 text-gray-100 border-gray-600 focus:border-blue-500"
                         />
+                      ) : isLoading ? (
+                        <Skeleton className=" h-4 w-full bg-gray-700" />
                       ) : (
                         <p className="text-gray-300">{project?.goal}</p>
                       )}
@@ -493,6 +513,7 @@ export default function NewSingleProject({ role }: { role: string }) {
 
                     {project && project.developers && (
                       <ProjectTeam
+                        isLoading={isLoading}
                         role={role}
                         developers={developers}
                         project={project}
@@ -505,49 +526,61 @@ export default function NewSingleProject({ role }: { role: string }) {
                         <h2 className="text-md font-bold text-gray-100 mb-6">
                           Task List
                         </h2>
-                        <div className=" grid grid-cols-2 gap-5">
-                          {tasks?.map((task, index) => (
-                            <div
-                              key={index}
-                              className="bg-gray-900 p-4 rounded-md shadow w-full h-full"
-                            >
-                              <h3
-                                className={`first-letter:text-lg font-semibold text-gray-100 mb-2 ${
-                                  role === "pManager"
-                                    ? "hover:underline cursor-pointer"
-                                    : ""
-                                }  hover:text-gray-200`}
-                                onClick={() => {
-                                  if (role == "pManager")
-                                    router.push(`${projectId}/${task._id}`);
-                                }}
+                        <div
+                          className={` grid ${
+                            !isLoading && "grid-cols-2"
+                          }  gap-5`}
+                        >
+                          {isLoading ? (
+                            <div className="flex flex-grow space-x-16 w-full">
+                              <Skeleton className="h-12 w-1/2 bg-gray-700" />
+                              <Skeleton className="h-12 w-1/2 bg-gray-700" />
+                              <Skeleton className="h-12 w-1/2 bg-gray-700" />
+                            </div>
+                          ) : (
+                            tasks?.map((task, index) => (
+                              <div
+                                key={index}
+                                className="bg-gray-900 p-4 rounded-md shadow w-full h-full"
                               >
-                                {task.title}
-                              </h3>
-                              <div className="flex flex-wrap gap-4">
-                                <div className="flex items-center text-gray-300">
-                                  <CalendarDays className="w-4 h-4 mr-2" />
-                                  <span>
-                                    {format(
-                                      new Date(task.due_date),
-                                      "MMMM dd, yyyy"
-                                    )}
-                                  </span>
-                                </div>
-                                <div className="flex items-center text-gray-300">
-                                  <User className="w-4 h-4 mr-2" />
-                                  {typeof task.assignee === "string" ? (
-                                    <span>{task.assignee}</span>
-                                  ) : (
+                                <h3
+                                  className={`first-letter:text-lg font-semibold text-gray-100 mb-2 ${
+                                    role === "pManager"
+                                      ? "hover:underline cursor-pointer"
+                                      : ""
+                                  }  hover:text-gray-200`}
+                                  onClick={() => {
+                                    if (role == "pManager")
+                                      router.push(`${projectId}/${task._id}`);
+                                  }}
+                                >
+                                  {task.title}
+                                </h3>
+                                <div className="flex flex-wrap gap-4">
+                                  <div className="flex items-center text-gray-300">
+                                    <CalendarDays className="w-4 h-4 mr-2" />
                                     <span>
-                                      {task.assignee.firstName}{" "}
-                                      {task.assignee.lastName}
+                                      {format(
+                                        new Date(task.due_date),
+                                        "MMMM dd, yyyy"
+                                      )}
                                     </span>
-                                  )}
+                                  </div>
+                                  <div className="flex items-center text-gray-300">
+                                    <User className="w-4 h-4 mr-2" />
+                                    {typeof task.assignee === "string" ? (
+                                      <span>{task.assignee}</span>
+                                    ) : (
+                                      <span>
+                                        {task.assignee.firstName}{" "}
+                                        {task.assignee.lastName}
+                                      </span>
+                                    )}
+                                  </div>
                                 </div>
                               </div>
-                            </div>
-                          ))}
+                            ))
+                          )}
                         </div>
                       </div>
                     ) : (

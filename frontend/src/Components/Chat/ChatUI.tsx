@@ -13,7 +13,7 @@ import { useSelector } from "react-redux";
 import { RootState } from "@/store/store";
 import { getChats, sendMessage } from "@/api/Communication/chatApis";
 import { AxiosError } from "axios";
-import MessageSkeleton from "../Skeleton/Skeleton";
+import MessageSkeleton from "../Skeleton/MessageSkeleton";
 import SingleChat from "./SingleChat";
 import NoChatComponent from "./NoChatComponent";
 import ChatSidebar from "./ChatSidebar";
@@ -62,8 +62,6 @@ export default function ChatUI({ users }: { users: User[] }) {
     });
 
     setSocket(socketInstance);
-
-    toast.success(currentUserId);
 
     socketInstance.emit("setup", currentUserId);
 
@@ -126,24 +124,6 @@ export default function ChatUI({ users }: { users: User[] }) {
     }
   };
 
-  // const handleCreateGroup = () => {
-  //   if (groupName.trim() !== "" && selectedParticipants.length > 0) {
-  //     const newGroup: Chat = {
-  //       id: chats.length + 1,
-  //       name: groupName,
-  //       lastMessage: "Group created",
-  //       timestamp: new Date().toLocaleTimeString([], {
-  //         hour: "2-digit",
-  //         minute: "2-digit",
-  //       }),
-  //       isGroup: true,
-  //     };
-  //     setChats([newGroup, ...chats]);
-  //     setIsCreateGroupOpen(false);
-  //     setGroupName("");
-  //     setSelectedParticipants([]);
-  //   }
-  // };
 
   return (
     <div className="flex h-screen  bg-gray-900 text-gray-100 w-full ms-[-1.5rem] mt-[-2.2rem] me-[-1.5rem] overflow-y-hidden">

@@ -14,6 +14,7 @@ import { toast } from "sonner";
 import { blockUser } from "@/api/userService/user";
 import { AxiosError } from "axios";
 import NoData from "../NoData/NoData";
+import TableRowSkeleton from "../Skeleton/TableRowSkeleton";
 
 export function UsersTable01({
   usersList,
@@ -25,9 +26,13 @@ export function UsersTable01({
   const [page, setPage] = useState(1);
   const rowsPerPage = 4;
   const [users, setUsers] = useState<User[]>([]);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
 
   useEffect(() => {
     setUsers(usersList);
+    setTimeout(() => {
+      setIsLoading(false);
+    }, 2000);
   }, [usersList]);
 
   const totalPages = Math.ceil(users.length / rowsPerPage);
@@ -92,38 +97,48 @@ export function UsersTable01({
               </TableRow>
             </TableHeader>
             <TableBody>
-              {paginatedUsers.map((user, index) => (
-                <TableRow
-                  key={index}
-                  className=" border-none hover:bg-slate-800 cursor-text"
-                >
-                  <TableCell className="font-small ">
-                    {(page - 1) * rowsPerPage + index + 1}
-                  </TableCell>
-                  <TableCell>{user.firstName}</TableCell>
-                  <TableCell>{user.email}</TableCell>
-                  <TableCell>{user.role}</TableCell>
-                  <TableCell
-                    className={`${
-                      user.status ? "text-yellow-600 " : "text-lime-200"
-                    } text-xs font-sans`}
+              {isLoading ? (
+                <div className="my-10">
+                  <TableRowSkeleton />
+                  <TableRowSkeleton />
+                  <TableRowSkeleton />
+                  <TableRowSkeleton />
+                  <TableRowSkeleton />
+                </div>
+              ) : (
+                paginatedUsers.map((user, index) => (
+                  <TableRow
+                    key={index}
+                    className=" border-none hover:bg-slate-800 cursor-text"
                   >
-                    {user.status ? user.status : "Active"}
-                  </TableCell>
-                  <TableCell className="">
-                    <div className="flex justify-center">
-                      <Button
-                        className={`min-w-20 ${
-                          user.isBlocked ? "bg-green-700" : "bg-green-800"
-                        } text-white hover:bg-green-600`}
-                        onClick={() => handleBlock(user._id)}
-                      >
-                        {user.isBlocked ? "Unblock" : "Block"}
-                      </Button>
-                    </div>
-                  </TableCell>
-                </TableRow>
-              ))}
+                    <TableCell className="font-small ">
+                      {(page - 1) * rowsPerPage + index + 1}
+                    </TableCell>
+                    <TableCell>{user.firstName}</TableCell>
+                    <TableCell>{user.email}</TableCell>
+                    <TableCell>{user.role}</TableCell>
+                    <TableCell
+                      className={`${
+                        user.status ? "text-yellow-600 " : "text-lime-200"
+                      } text-xs font-sans`}
+                    >
+                      {user.status ? user.status : "Active"}
+                    </TableCell>
+                    <TableCell className="">
+                      <div className="flex justify-center">
+                        <Button
+                          className={`min-w-20 ${
+                            user.isBlocked ? "bg-green-700" : "bg-green-800"
+                          } text-white hover:bg-green-600`}
+                          onClick={() => handleBlock(user._id)}
+                        >
+                          {user.isBlocked ? "Unblock" : "Block"}
+                        </Button>
+                      </div>
+                    </TableCell>
+                  </TableRow>
+                ))
+              )}
             </TableBody>
           </Table>
 
@@ -150,7 +165,7 @@ export function UsersTable01({
           </div>
         </div>
       ) : (
-        <NoData />
+        !isLoading && <NoData />
       )}
     </div>
   );

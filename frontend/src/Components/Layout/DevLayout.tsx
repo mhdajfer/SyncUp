@@ -1,6 +1,5 @@
 import {
   FiUsers,
-  FiUserCheck,
   FiFolder,
   FiMessageSquare,
   FiCalendar,
@@ -34,9 +33,7 @@ export default function DevLayout({
       case "chats":
         router.push("/employee/dev/chat");
         break;
-        case "tasks":
-        router.push("/employee/dev/tasks");
-        break;
+
       case "meeting":
         router.push("/employee/dev/meeting");
         break;
@@ -58,11 +55,6 @@ export default function DevLayout({
           icon={<FiUsers />}
           label="Developers"
           onClick={() => onSideBarClick("developers")}
-        />
-        <SideBarItem
-          icon={<FiUserCheck />}
-          label="Tasks"
-          onClick={() => onSideBarClick("tasks")}
         />
         <SideBarItem
           icon={<FiFolder />}

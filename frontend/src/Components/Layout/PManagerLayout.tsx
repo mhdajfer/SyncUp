@@ -1,10 +1,4 @@
-import {
-  FiUsers,
-  FiUserCheck,
-  FiFolder,
-  FiMessageSquare,
-  FiCalendar,
-} from "react-icons/fi";
+import { FiUsers, FiFolder, FiMessageSquare, FiCalendar } from "react-icons/fi";
 import { useRouter } from "next/navigation";
 import { FC } from "react";
 import { CiLogout } from "react-icons/ci";
@@ -36,11 +30,7 @@ export default function PManagerLayout({
           label="Developers"
           onClick={() => router.push("/employee/project_manager/developers")}
         />
-        <SideBarItem
-          icon={<FiUserCheck />}
-          label="Tasks"
-          onClick={() => router.push("/employee/project_manager/tasks")}
-        />
+
         <SideBarItem
           icon={<FiFolder />}
           label="Projects"

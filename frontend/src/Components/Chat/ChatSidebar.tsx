@@ -12,7 +12,7 @@ import { Label } from "../ui/label";
 import { ScrollArea } from "../ui/scroll-area";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { Chat } from "@/interfaces/Chat";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { User } from "@/interfaces/User";
 import { useSelector } from "react-redux";
 import { RootState } from "@/store/store";
@@ -26,6 +26,7 @@ import {
 } from "@/api/Communication/chatApis";
 import { format } from "date-fns";
 import { Socket } from "socket.io-client";
+import MessageSkeleton from "../Skeleton/MessageSkeleton";
 
 export default function ChatSidebar({
   setChats,
@@ -51,6 +52,7 @@ export default function ChatSidebar({
   const [isCreateGroupOpen, setIsCreateGroupOpen] = useState(false);
   const [isAddUserOpen, setIsAddUserOpen] = useState(false);
   const [groupName, setGroupName] = useState("");
+  const [isChatLoading, setIsChatLoading] = useState<boolean>(true);
   const [selectedParticipants, setSelectedParticipants] = useState<User[]>([]);
 
   const currentUser = useSelector((state: RootState) => state.auth.user);
@@ -136,8 +138,6 @@ export default function ChatSidebar({
       if (!chat._id) return toast.error("chat not found");
       setSelectedChat(chat);
 
-      console.log(selectedChat);
-
       const response = await getMessages(chat._id);
 
       if (response.success) {
@@ -176,6 +176,12 @@ export default function ChatSidebar({
       typeof otherUser === "object" ? otherUser.firstName : otherUser;
     return otherUserName.toLowerCase().includes(searchQuery.toLowerCase());
   });
+
+  useEffect(() => {
+    setTimeout(() => {
+      setIsChatLoading(false);
+    }, 1000);
+  }, [setIsLoading]);
 
   return (
     <>
@@ -236,44 +242,54 @@ export default function ChatSidebar({
           </Dialog>
         </div>
         <ScrollArea className="flex-grow">
-          {filteredChats.map((chat) => (
-            <div
-              key={chat._id || "h"}
-              className={`p-4 border-b border-gray-800 hover:bg-gray-800 cursor-pointer ${
-                selectedChat == chat ? "bg-gray-800 hover:bg-gray-800" : ""
-              }`}
-              onClick={() => {
-                handleOneChat(chat);
-              }}
-            >
-              <div className="flex items-center">
-                <Avatar className="mr-3">
-                  <AvatarImage
-                    src={
-                      chat.isGroup
-                        ? `https://api.dicebear.com/6.x/initials/svg?seed=${chat.chat}`
-                        : (setChatImage(chat) as string)
-                    }
-                    alt={chat.chat[0]}
-                  />
-                  <AvatarFallback>{chat.chat[0]}</AvatarFallback>
-                </Avatar>
-                <div className="flex-grow">
-                  <h3 className="font-semibold">
-                    {chat.isGroup ? chat.chat : setChatName(chat)}
-                  </h3>
-                  <p className="text-sm text-gray-400">
-                    {chat.latestMessage?.content || "New Chat"}
-                  </p>
-                </div>
-                {chat.updatedAt && (
-                  <span className="text-xs text-gray-500">
-                    {format(chat.updatedAt, "PPpp")}
-                  </span>
-                )}
-              </div>
+          {isChatLoading ? (
+            <div className="mx-1 mt-5 ms-5">
+              <MessageSkeleton />
+              <MessageSkeleton />
+              <MessageSkeleton />
+              <MessageSkeleton />
+              <MessageSkeleton />
             </div>
-          ))}
+          ) : (
+            filteredChats.map((chat) => (
+              <div
+                key={chat._id || "h"}
+                className={`p-4 border-b border-gray-800 hover:bg-gray-800 cursor-pointer ${
+                  selectedChat == chat ? "bg-gray-800 hover:bg-gray-800" : ""
+                }`}
+                onClick={() => {
+                  handleOneChat(chat);
+                }}
+              >
+                <div className="flex items-center">
+                  <Avatar className="mr-3">
+                    <AvatarImage
+                      src={
+                        chat.isGroup
+                          ? `https://api.dicebear.com/6.x/initials/svg?seed=${chat.chat}`
+                          : (setChatImage(chat) as string)
+                      }
+                      alt={chat.chat[0]}
+                    />
+                    <AvatarFallback>{chat.chat[0]}</AvatarFallback>
+                  </Avatar>
+                  <div className="flex-grow">
+                    <h3 className="font-semibold">
+                      {chat.isGroup ? chat.chat : setChatName(chat)}
+                    </h3>
+                    <p className="text-sm text-gray-400">
+                      {chat.latestMessage?.content || "New Chat"}
+                    </p>
+                  </div>
+                  {chat.updatedAt && (
+                    <span className="text-xs text-gray-500">
+                      {format(chat.updatedAt, "PPpp")}
+                    </span>
+                  )}
+                </div>
+              </div>
+            ))
+          )}
         </ScrollArea>
         <div className="p-4 border-t border-gray-800">
           <Dialog open={isCreateGroupOpen} onOpenChange={setIsCreateGroupOpen}>

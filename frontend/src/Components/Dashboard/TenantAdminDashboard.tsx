@@ -1,8 +1,8 @@
 export default function TenantAdminDashboard() {
   return (
     <>
-      <div className=" bg-yellow-400">
-        <h1>Dashboard</h1>
+      <div className=" text-neutral-600 text-2xl font-bold">
+        <h1>Welcome back, Admin.</h1>
       </div>
     </>
   );

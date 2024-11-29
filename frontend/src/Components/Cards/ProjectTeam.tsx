@@ -28,14 +28,17 @@ import {
 import { toast } from "sonner";
 import { addTeamMember, removeTeamMember } from "@/api/projectService/project";
 import { AxiosError } from "axios";
+import { Skeleton } from "../ui/skeleton";
 
 export default function ProjectTeam({
   project,
   developers,
   setProject,
   role = "noDev",
+  isLoading,
 }: {
   project: Project;
+  isLoading: boolean;
   role?: string;
   developers: User[];
   setProject: (project: Project) => void;
@@ -152,8 +155,18 @@ export default function ProjectTeam({
             <Users className="w-5 h-5 mr-2" />
             Project Team
           </h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-            {project.developers &&
+          <div
+            className={`grid grid-cols-1 ${
+              !isLoading && "md:grid-cols-2"
+            } gap-3`}
+          >
+            {isLoading ? (
+              <div className="flex flex-grow space-x-6 w-full">
+                <Skeleton className="h-6 w-1/2 bg-gray-700" />
+                <Skeleton className="h-6 w-1/2 bg-gray-700" />
+              </div>
+            ) : (
+              project.developers &&
               project.developers.length > 0 &&
               project.developers.map((dev) => (
                 <Card key={dev._id} className="bg-gray-700 border-gray-600">
@@ -191,7 +204,8 @@ export default function ProjectTeam({
                     </Button>
                   </CardContent>
                 </Card>
-              ))}
+              ))
+            )}
           </div>
         </div>
       </CardContent>

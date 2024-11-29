@@ -1,5 +1,6 @@
 import { CurrentSubscriptions } from "@/Components/Cards/subscriptions/CurrentSubscription";
 import { SubscriptionHistory } from "@/Components/Cards/subscriptions/SubscriptionHistory";
+import MessageSkeleton from "@/Components/Skeleton/MessageSkeleton";
 import { Suspense } from "react";
 
 export default function page() {
@@ -10,19 +11,16 @@ export default function page() {
           Subscription Management
         </h1>
         <div className="flex flex-col space-y-10">
-          <Suspense
-            fallback={
-              <div className="text-gray-400">
-                Loading current subscriptions...
-              </div>
-            }
-          >
+          <Suspense fallback={<MessageSkeleton />}>
             <CurrentSubscriptions role="admin" />
           </Suspense>
           <Suspense
             fallback={
-              <div className="text-gray-400">
-                Loading subscription history...
+              <div>
+                <MessageSkeleton />
+                <MessageSkeleton />
+                <MessageSkeleton />
+                <MessageSkeleton />
               </div>
             }
           >
