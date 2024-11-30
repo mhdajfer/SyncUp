@@ -2,7 +2,7 @@
 
 import { FC } from "react";
 import { useRouter } from "next/navigation";
-import { FiUsers, FiFolder, FiUser } from "react-icons/fi";
+import { FiUsers, FiFolder, FiUser, FiCalendar } from "react-icons/fi";
 import { CiLogout } from "react-icons/ci";
 import { User } from "@/interfaces/User";
 import { Avatar, AvatarFallback, AvatarImage } from "@radix-ui/react-avatar";
@@ -29,6 +29,9 @@ export function TenantAdminLayout({
         break;
         case "chat":
         router.push("/admin/chat");
+        break;
+        case "meeting":
+        router.push("/admin/meeting");
         break;
     }
   }
@@ -62,6 +65,11 @@ export function TenantAdminLayout({
           icon={<FiFolder />}
           label="Chat"
           onClick={() => onSideBarClick("chat")}
+        />
+        <SideBarItem
+          icon={<FiCalendar />}
+          label="Meetings"
+          onClick={() => onSideBarClick("meeting")}
         />
       </nav>
 
