@@ -15,6 +15,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { userInstance } from "@/axios";
 import { AxiosError } from "axios";
 import { SignIn } from "@/lib/auth.action";
+import { motion } from "framer-motion";
 
 const userSchema = z
   .object({
@@ -33,7 +34,6 @@ const userSchema = z
       .string()
       .trim()
       .min(10, "Phone number must be at least 6 characters long"),
-
     password: z
       .string()
       .trim()
@@ -97,65 +97,96 @@ export default function SignupForm({
         response.message.includes("not verified")
       ) {
         console.log(`already signed up but: ${response.message}`);
-
         toast.error(`${response.message}`);
         await userInstance.post("/users/otp/new", { email });
         setOtpPopup(true);
       } else {
         toast.error(`${response.message}`);
       }
-
-      console.log(firstName, lastName, email, phoneNumber, password, age);
     } catch (error) {
       if (error instanceof ZodError) {
         console.log(error.errors);
       } else if (error instanceof AxiosError) {
-        toast.warning("User al");
+        toast.warning("User already exists");
       } else toast.error("user not created, something went wrong");
     }
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gray-900 py-20">
-      <div className=" max-w-lg w-[500px] bg-gradient-to-br from-[#111827] to-[#1F2937] shadow-lg rounded-lg p-8 text-white">
-        <h2 className="text-3xl font-semibold text-center mb-4">Signup</h2>
-        <p className="text-center mb-6 text-gray-400">
-          Just some details to get you in.!
+    <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-black via-purple-900 to-indigo-900">
+      {/* Animated background */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute -top-1/2 -left-1/2 w-full h-full bg-gradient-to-br from-purple-500/10 to-transparent rounded-full blur-3xl animate-pulse"></div>
+        <div className="absolute -bottom-1/2 -right-1/2 w-full h-full bg-gradient-to-tl from-indigo-500/10 to-transparent rounded-full blur-3xl animate-pulse delay-1000"></div>
+      </div>
+
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
+        className="relative max-w-lg w-[500px] bg-gradient-to-br from-gray-900/90 to-black/90 backdrop-blur-xl shadow-2xl rounded-2xl p-8 text-white border border-gray-800 my-10"
+      >
+        <div className="absolute top-5 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
+          <div className="w-20 h-20 bg-gradient-to-br from-purple-600 to-indigo-600 rounded-full flex items-center justify-center shadow-xl">
+            <svg
+              className="w-10 h-10 text-white"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth="2"
+                d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"
+              />
+            </svg>
+          </div>
+        </div>
+
+        <h2 className="text-3xl font-bold text-center mb-2 mt-6 bg-gradient-to-r from-purple-400 to-indigo-400 text-transparent bg-clip-text">
+          Join SyncUp
+        </h2>
+        <p className="text-center mb-8 text-gray-400">
+          Begin your journey with us!
         </p>
+
         <form
           onSubmit={handleSubmit(onSubmit)}
-          className="space-y-4"
+          className="space-y-6"
           noValidate
         >
-          <div className="flex space-x-4">
-            <div className="w-1/2">
-              <Label htmlFor="firstName">First Name</Label>
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <Label htmlFor="firstName" className="text-gray-300">
+                First Name
+              </Label>
               <Input
                 type="text"
                 id="firstName"
-                placeholder="First Name"
                 {...register("firstName")}
-                className="mt-1"
-                required
+                className="mt-1 bg-gray-800/50 border-gray-700 focus:border-purple-500 focus:ring-purple-500"
+                placeholder="John"
               />
               {errors.firstName && (
-                <p className="text-red-700 text-xs mt-1 bg-red-100 bg-opacity-70 py-1 px-2 rounded-md w-full">
-                  {errors.firstName.message || ""}
+                <p className="text-red-400 text-xs mt-1">
+                  {errors.firstName.message}
                 </p>
               )}
             </div>
-            <div className="w-1/2">
-              <Label htmlFor="lastName">Last Name</Label>
+            <div>
+              <Label htmlFor="lastName" className="text-gray-300">
+                Last Name
+              </Label>
               <Input
                 type="text"
                 id="lastName"
-                placeholder="Last Name"
                 {...register("lastName")}
-                className="mt-1"
-                required
+                className="mt-1 bg-gray-800/50 border-gray-700 focus:border-purple-500 focus:ring-purple-500"
+                placeholder="Doe"
               />
               {errors.lastName && (
-                <p className="text-red-700 text-xs mt-1 bg-red-100 bg-opacity-70 py-1 px-2 rounded-md">
+                <p className="text-red-400 text-xs mt-1">
                   {errors.lastName.message}
                 </p>
               )}
@@ -163,63 +194,54 @@ export default function SignupForm({
           </div>
 
           <div>
-            <Label htmlFor="email">Email</Label>
+            <Label htmlFor="email" className="text-gray-300">
+              Email
+            </Label>
             <Input
               type="email"
               id="email"
-              placeholder="Email"
               {...register("email")}
-              className="mt-1"
-              required
+              className="mt-1 bg-gray-800/50 border-gray-700 focus:border-purple-500 focus:ring-purple-500"
+              placeholder="john@example.com"
             />
             {errors.email && (
-              <p className="text-red-700 text-xs mt-1 bg-red-100 bg-opacity-70 py-1 px-2 rounded-md">
+              <p className="text-red-400 text-xs mt-1">
                 {errors.email.message}
               </p>
             )}
           </div>
 
-          <div>
-            <Label htmlFor="role">Role</Label>
-            <Input
-              type="text"
-              id="role"
-              name="role"
-              placeholder="Role"
-              defaultValue={role}
-              className="mt-1"
-              required
-            />
-          </div>
-          <div className="flex space-x-6">
-            <div className="w-1/2">
-              <Label htmlFor="role">Age</Label>
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <Label htmlFor="age" className="text-gray-300">
+                Age
+              </Label>
               <Input
                 type="number"
                 id="age"
-                placeholder="Age"
                 {...register("age")}
-                className="mt-1"
-                required
+                className="mt-1 bg-gray-800/50 border-gray-700 focus:border-purple-500 focus:ring-purple-500"
+                placeholder="25"
               />
               {errors.age && (
-                <p className="text-red-700 text-xs mt-1 bg-red-100 bg-opacity-70 py-1 px-2 rounded-md">
+                <p className="text-red-400 text-xs mt-1">
                   {errors.age.message}
                 </p>
               )}
             </div>
-            <div className="w-1/2">
-              <Label htmlFor="role">Phone no.</Label>
+            <div>
+              <Label htmlFor="phoneNumber" className="text-gray-300">
+                Phone Number
+              </Label>
               <Input
-                type="number"
+                type="tel"
                 id="phoneNumber"
-                placeholder="Phone Number"
                 {...register("phoneNumber")}
-                className="mt-1"
-                required
+                className="mt-1 bg-gray-800/50 border-gray-700 focus:border-purple-500 focus:ring-purple-500"
+                placeholder="+1234567890"
               />
               {errors.phoneNumber && (
-                <p className="text-red-700 text-xs mt-1 bg-red-100 bg-opacity-70 py-1 px-2 rounded-md">
+                <p className="text-red-400 text-xs mt-1">
                   {errors.phoneNumber.message}
                 </p>
               )}
@@ -227,34 +249,36 @@ export default function SignupForm({
           </div>
 
           <div>
-            <Label htmlFor="password">Password</Label>
+            <Label htmlFor="password" className="text-gray-300">
+              Password
+            </Label>
             <Input
               type="password"
               id="password"
-              placeholder="Password"
               {...register("password")}
-              className="mt-1"
-              required
+              className="mt-1 bg-gray-800/50 border-gray-700 focus:border-purple-500 focus:ring-purple-500"
+              placeholder="••••••••"
             />
             {errors.password && (
-              <p className="text-red-700 text-xs mt-1 bg-red-100 bg-opacity-70 py-1 px-2 rounded-md">
+              <p className="text-red-400 text-xs mt-1">
                 {errors.password.message}
               </p>
             )}
           </div>
 
           <div>
-            <Label htmlFor="confirmPassword">Confirm Password</Label>
+            <Label htmlFor="confirmPassword" className="text-gray-300">
+              Confirm Password
+            </Label>
             <Input
               type="password"
               id="confirmPassword"
-              placeholder="Confirm Password"
               {...register("confirmPassword")}
-              className="mt-1"
-              required
+              className="mt-1 bg-gray-800/50 border-gray-700 focus:border-purple-500 focus:ring-purple-500"
+              placeholder="••••••••"
             />
             {errors.confirmPassword && (
-              <p className="text-red-700 text-xs mt-1 bg-red-100 bg-opacity-70 py-1 px-2 rounded-md">
+              <p className="text-red-400 text-xs mt-1">
                 {errors.confirmPassword.message}
               </p>
             )}
@@ -262,36 +286,49 @@ export default function SignupForm({
 
           <Button
             type="submit"
-            className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500"
+            className="w-full bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 transform hover:scale-[1.02] transition-all duration-200"
           >
-            Signup
+            Create Account
           </Button>
         </form>
 
-        <div className="flex items-center justify-between mt-6">
-          <span className="border-b w-1/5 lg:w-1/4"></span>
-          <p className="text-sm text-gray-400">Or signup with</p>
-          <span className="border-b w-1/5 lg:w-1/4"></span>
+        <div className="relative flex items-center justify-center mt-8">
+          <div className="absolute inset-0 flex items-center">
+            <div className="w-full border-t border-gray-700"></div>
+          </div>
+          <div className="relative bg-transparent px-4">
+            <span className="text-sm text-gray-400">Or continue with</span>
+          </div>
         </div>
 
-        <div className="flex justify-center space-x-4 mt-4">
-          <Button variant="ghost" onClick={() => SignIn()}>
-            <FcGoogle />
+        <div className="mt-6 grid grid-cols-2 gap-4">
+          <Button
+            type="button"
+            onClick={() => SignIn()}
+            className="w-full flex items-center justify-center gap-2 bg-white/10 hover:bg-white/20 text-white transition-all duration-200"
+          >
+            <FcGoogle className="w-5 h-5" />
+            Google
           </Button>
-          <Button variant="ghost">
-            <FaGithub />
+          <Button
+            type="button"
+            className="w-full flex items-center justify-center gap-2 bg-white/10 hover:bg-white/20 text-white transition-all duration-200"
+          >
+            <FaGithub className="w-5 h-5" />
+            GitHub
           </Button>
         </div>
 
-        <div className="text-center mt-6">
+        <p className="mt-8 text-center text-sm text-gray-400">
+          Already have an account?{" "}
           <Link
             href="/login"
-            className="text-sm text-gray-400 hover:text-gray-200"
+            className="font-semibold text-purple-400 hover:text-purple-300 transition-colors"
           >
-            Already Registered? Login
+            Sign in
           </Link>
-        </div>
-      </div>
+        </p>
+      </motion.div>
     </div>
   );
 }
