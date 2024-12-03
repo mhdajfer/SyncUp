@@ -12,15 +12,15 @@ import { ISubscription } from "../interfaces/ISubscription";
 import { ISubscriptionPlan } from "../interfaces/ISubscriptionPlan";
 
 export class UserUseCases implements IUserUseCases {
-  private userRepository: IUserRepository;
+  private _userRepository: IUserRepository;
 
   constructor(userRepository: IUserRepository) {
-    this.userRepository = userRepository;
+    this._userRepository = userRepository;
   }
 
   async inviteUser(invitee: IUserInvite): Promise<IUserInvite> {
     try {
-      const user = await this.userRepository.inviteUser(invitee);
+      const user = await this._userRepository.inviteUser(invitee);
 
       return user;
     } catch (error) {
@@ -32,10 +32,10 @@ export class UserUseCases implements IUserUseCases {
     email: string
   ): Promise<{ isOtpSend: Boolean; user: IUser; otp: number }> {
     try {
-      const otp = await this.userRepository.createNewOtp(email);
+      const otp = await this._userRepository.createNewOtp(email);
 
       if (!otp) throw new Error(`error while creating new otp`);
-      const user = await this.userRepository.findUser(email);
+      const user = await this._userRepository.findUser(email);
 
       if (user) return { isOtpSend: true, user, otp };
       else throw new Error(`error while retrieving user`);
@@ -45,9 +45,9 @@ export class UserUseCases implements IUserUseCases {
   }
   async verifyOtp(email: string, otp: number): Promise<Boolean> {
     try {
-      await this.userRepository.verifyOtp(email, otp);
+      await this._userRepository.verifyOtp(email, otp);
 
-      const isUserVerified = this.userRepository.updateVerify(email);
+      const isUserVerified = this._userRepository.updateVerify(email);
 
       return isUserVerified;
     } catch (error) {
@@ -56,7 +56,7 @@ export class UserUseCases implements IUserUseCases {
   }
   async blockUser(userId: string): Promise<IUser> {
     try {
-      const devList = await this.userRepository.blockUser(userId);
+      const devList = await this._userRepository.blockUser(userId);
 
       return devList as IUser;
     } catch (error) {
@@ -65,7 +65,7 @@ export class UserUseCases implements IUserUseCases {
   }
   async getDevList(tenantId: string): Promise<IUser[] | null> {
     try {
-      const devList = await this.userRepository.findDevList(tenantId);
+      const devList = await this._userRepository.findDevList(tenantId);
 
       return devList as IUser[];
     } catch (error) {
@@ -74,7 +74,7 @@ export class UserUseCases implements IUserUseCases {
   }
   async getManagerList(tenantId: string): Promise<IUser[] | null> {
     try {
-      const managerList = await this.userRepository.findManagerList(tenantId);
+      const managerList = await this._userRepository.findManagerList(tenantId);
 
       return managerList as IUser[] | null;
     } catch (error) {
@@ -88,7 +88,7 @@ export class UserUseCases implements IUserUseCases {
     useCase = "normal"
   ): Promise<{ user: IUser; accessToken: string; refreshToken: string }> {
     try {
-      const user: IUser | null = await this.userRepository.findUser(username);
+      const user: IUser | null = await this._userRepository.findUser(username);
       if (!user) throw new CustomError(`User ${username} not exist`, 400);
       console.log(user);
 
@@ -128,7 +128,7 @@ export class UserUseCases implements IUserUseCases {
 
   async getAllTenantAdmins(): Promise<IUser[]> {
     try {
-      const users = await this.userRepository.getAllTenantAdmins();
+      const users = await this._userRepository.getAllTenantAdmins();
 
       return users;
     } catch (error) {
@@ -138,7 +138,7 @@ export class UserUseCases implements IUserUseCases {
 
   async getUserById(userId: string): Promise<IUser | null> {
     try {
-      return await this.userRepository.findUserById(userId);
+      return await this._userRepository.findUserById(userId);
     } catch (error: any) {
       throw error;
     }
@@ -146,7 +146,7 @@ export class UserUseCases implements IUserUseCases {
 
   async getUserByEmail(email: string): Promise<IUser | null> {
     try {
-      const user = await this.userRepository.findUser(email);
+      const user = await this._userRepository.findUser(email);
 
       return user;
     } catch (error: any) {
@@ -157,7 +157,7 @@ export class UserUseCases implements IUserUseCases {
   async createUser(user: IUser): Promise<number | null> {
     try {
       //checking duplicates
-      const existUser: IUser | null = await this.userRepository.findUser(
+      const existUser: IUser | null = await this._userRepository.findUser(
         user.email
       );
       console.log("existing user", existUser);
@@ -166,7 +166,7 @@ export class UserUseCases implements IUserUseCases {
         throw new CustomError("User already exists", 409);
       else if (existUser && !existUser.isVerified) return null;
 
-      return await this.userRepository.createUser(user);
+      return await this._userRepository.createUser(user);
     } catch (error: any) {
       throw error;
     }
@@ -175,21 +175,21 @@ export class UserUseCases implements IUserUseCases {
   async createUserInvite(user: IUser): Promise<IUser | null> {
     try {
       //checking duplicates
-      const existUser: IUser | null = await this.userRepository.findUser(
+      const existUser: IUser | null = await this._userRepository.findUser(
         user.email
       );
       console.log("existing user", existUser);
 
       if (existUser) {
         throw new CustomError("User already exists", 409);
-      } else return await this.userRepository.createUserInvite(user);
+      } else return await this._userRepository.createUserInvite(user);
     } catch (error: any) {
       throw error;
     }
   }
   async getUsers(tenantId: string) {
     try {
-      return await this.userRepository.getAllUsers(tenantId);
+      return await this._userRepository.getAllUsers(tenantId);
     } catch (error: any) {
       throw error;
     }
@@ -197,7 +197,7 @@ export class UserUseCases implements IUserUseCases {
 
   async editProfile(user: IUser): Promise<IUser> {
     try {
-      const data = await this.userRepository.editProfile(user);
+      const data = await this._userRepository.editProfile(user);
 
       if (!data) throw new CustomError("profile not modified", 409);
 
@@ -208,7 +208,7 @@ export class UserUseCases implements IUserUseCases {
   }
   async updateUser(user: IUser) {
     try {
-      return await this.userRepository.updateUser(user);
+      return await this._userRepository.updateUser(user);
     } catch (error: any) {
       throw new Error(error);
     }
@@ -216,7 +216,7 @@ export class UserUseCases implements IUserUseCases {
 
   async updateAvatar(imageUrl: string, userId: string): Promise<IUser> {
     try {
-      const user = await this.userRepository.updateAvatar(imageUrl, userId);
+      const user = await this._userRepository.updateAvatar(imageUrl, userId);
 
       return user;
     } catch (error) {
@@ -230,7 +230,7 @@ export class UserUseCases implements IUserUseCases {
       if (!userId || !amount)
         throw new CustomError("required params missing", 409);
 
-      const updatedUser = await this.userRepository.activateSubscription(
+      const updatedUser = await this._userRepository.activateSubscription(
         userId,
         amount
       );
@@ -245,7 +245,7 @@ export class UserUseCases implements IUserUseCases {
     try {
       if (!userId) throw new CustomError("user missing", 409);
 
-      const updatedUser = await this.userRepository.deactivateSubscription(
+      const updatedUser = await this._userRepository.deactivateSubscription(
         userId
       );
 
@@ -259,7 +259,7 @@ export class UserUseCases implements IUserUseCases {
     try {
       if (!tenantId) throw new CustomError("tenantId is required", 409);
 
-      const historyList = await this.userRepository.getSubscriptionHistory(
+      const historyList = await this._userRepository.getSubscriptionHistory(
         tenantId
       );
 
@@ -271,7 +271,7 @@ export class UserUseCases implements IUserUseCases {
 
   async getFullSubHistory(): Promise<ISubscription[]> {
     try {
-      const fullHistory = await this.userRepository.getFullSubHistory();
+      const fullHistory = await this._userRepository.getFullSubHistory();
 
       return fullHistory;
     } catch (error) {
@@ -281,7 +281,7 @@ export class UserUseCases implements IUserUseCases {
 
   async getSubscriptionPlans(): Promise<ISubscriptionPlan> {
     try {
-      const subscribePlans = await this.userRepository.getSubscriptionPlans();
+      const subscribePlans = await this._userRepository.getSubscriptionPlans();
 
       return subscribePlans;
     } catch (error) {
@@ -289,15 +289,17 @@ export class UserUseCases implements IUserUseCases {
     }
   }
 
-  async editSubscriptionPlan(newPlan: ISubscriptionPlan): Promise<ISubscriptionPlan> {
-      try {
-        
-        const updatedPlan = await this.userRepository.editSubscriptionPlan(newPlan);
+  async editSubscriptionPlan(
+    newPlan: ISubscriptionPlan
+  ): Promise<ISubscriptionPlan> {
+    try {
+      const updatedPlan = await this._userRepository.editSubscriptionPlan(
+        newPlan
+      );
 
-
-        return updatedPlan;
-      } catch (error) {
-        throw error;
-      }
+      return updatedPlan;
+    } catch (error) {
+      throw error;
+    }
   }
 }

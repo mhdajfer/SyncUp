@@ -5,8 +5,8 @@ import { Task } from "../Interfaces/IProject";
 import { CommentRepository } from "../Repositories/CommentRepository";
 
 export class CommentUseCases implements ICommentUseCase {
-  constructor(private commentRepository: ICommentRepository) {
-    this.commentRepository = commentRepository;
+  constructor(private _commentRepository: ICommentRepository) {
+    this._commentRepository = _commentRepository;
   }
   async submitComment(
     message: string,
@@ -15,7 +15,7 @@ export class CommentUseCases implements ICommentUseCase {
   ): Promise<Task> {
     try {
       console.log(message, taskId, authorId);
-      const task = await this.commentRepository.submitComment(
+      const task = await this._commentRepository.submitComment(
         message,
         taskId,
         authorId

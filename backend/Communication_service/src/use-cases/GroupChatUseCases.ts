@@ -5,7 +5,7 @@ import { IGroupChatUseCases } from "../interfaces/IGroupChatUseCases";
 import { IUser } from "../interfaces/IUser";
 
 export class GroupChatUseCases implements IGroupChatUseCases {
-  constructor(private groupChatRepository: IGroupChatRepository) {}
+  constructor(private _groupChatRepository: IGroupChatRepository) {}
   async createGroupChat(
     groupName: string,
     users: IUser[],
@@ -21,7 +21,7 @@ export class GroupChatUseCases implements IGroupChatUseCases {
       if (!groupName || !admin)
         throw new CustomError("not Provided group name and admin details", 409);
 
-      const GroupChat = await this.groupChatRepository.createGroupChat(
+      const GroupChat = await this._groupChatRepository.createGroupChat(
         groupName,
         users,
         admin
@@ -35,7 +35,7 @@ export class GroupChatUseCases implements IGroupChatUseCases {
 
   async addNewMember(userIds: string[], chatId: string): Promise<IChat> {
     try {
-      const updatedChat = await this.groupChatRepository.AddNewMember(
+      const updatedChat = await this._groupChatRepository.AddNewMember(
         userIds,
         chatId
       );
@@ -50,7 +50,7 @@ export class GroupChatUseCases implements IGroupChatUseCases {
 
   async removeMember(userId: string, chatId: string): Promise<IChat> {
     try {
-      const updatedChat = await this.groupChatRepository.removeMember(
+      const updatedChat = await this._groupChatRepository.removeMember(
         userId,
         chatId
       );

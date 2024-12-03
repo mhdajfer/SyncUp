@@ -7,7 +7,7 @@ import { NextFunction, Request, Response } from "express";
 import { StatusCode } from "../interfaces/StatusCode";
 
 export class TenantController {
-  constructor(private tenantUseCases: ITenantAdminUseCases) {}
+  constructor(private _tenantUseCases: ITenantAdminUseCases) {}
 
   async createTenant(req: CustomRequest, res: Response, next: NextFunction) {
     try {
@@ -17,7 +17,7 @@ export class TenantController {
 
       if (!tenant) throw new CustomError("NO tenant admin details", 409);
 
-      const newTenant = await this.tenantUseCases.createTenant(data, tenant);
+      const newTenant = await this._tenantUseCases.createTenant(data, tenant);
 
       console.log(newTenant);
 
@@ -37,7 +37,7 @@ export class TenantController {
 
       if (!tenantAdmin) throw new CustomError("tenant admin not found", 409);
 
-      const tenant = await this.tenantUseCases.getTenant(tenantAdmin);
+      const tenant = await this._tenantUseCases.getTenant(tenantAdmin);
 
       return res.status(StatusCode.OK).json({
         success: true,
@@ -52,7 +52,7 @@ export class TenantController {
 
   async getAllTenants(req: Request, res: Response, next: NextFunction) {
     try {
-      const tenants = await this.tenantUseCases.getAllTenants();
+      const tenants = await this._tenantUseCases.getAllTenants();
 
       return res
         .status(StatusCode.OK)
@@ -73,7 +73,7 @@ export class TenantController {
 
       console.log(tenantData);
 
-      const data = await this.tenantUseCases.editTenant(tenantData);
+      const data = await this._tenantUseCases.editTenant(tenantData);
 
       return res
         .status(StatusCode.OK)

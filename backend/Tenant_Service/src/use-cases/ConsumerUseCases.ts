@@ -3,10 +3,10 @@ import { IConsumerUseCases } from "../interfaces/IConsumerUseCases";
 import { IUser } from "../interfaces/IUser";
 
 export class ConsumerUseCases implements IConsumerUseCases {
-  constructor(private consumerRepository: IConsumerRepository) {}
+  constructor(private _consumerRepository: IConsumerRepository) {}
   async createUser(data: IUser): Promise<IUser> {
     try {
-      const user = await this.consumerRepository.createUser(data);
+      const user = await this._consumerRepository.createUser(data);
 
       return user;
     } catch (error) {
@@ -16,7 +16,7 @@ export class ConsumerUseCases implements IConsumerUseCases {
 
   async updateUser(user: IUser) {
     try {
-      return await this.consumerRepository.updateUser(user);
+      return await this._consumerRepository.updateUser(user);
     } catch (error: any) {
       throw new Error(error);
     }

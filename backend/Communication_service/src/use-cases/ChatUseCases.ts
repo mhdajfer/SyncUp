@@ -6,11 +6,11 @@ import { IMessage } from "../interfaces/IMessage";
 import { IUser } from "../interfaces/IUser";
 
 export class ChateUseCases implements IChatUseCases {
-  constructor(private chatRepository: IChatRepository) {}
+  constructor(private _chatRepository: IChatRepository) {}
 
   async getAllUsers(): Promise<IUser[]> {
     try {
-      const users = await this.chatRepository.getAllUsers();
+      const users = await this._chatRepository.getAllUsers();
 
       return users;
     } catch (error) {
@@ -19,11 +19,11 @@ export class ChateUseCases implements IChatUseCases {
   }
   async getChat(userId1: string, userId2: string): Promise<IChat> {
     try {
-      let chat = await this.chatRepository.getChat(userId1, userId2);
+      let chat = await this._chatRepository.getChat(userId1, userId2);
 
-      if (!chat) await this.chatRepository.createChat(userId1, userId2);
+      if (!chat) await this._chatRepository.createChat(userId1, userId2);
 
-      chat = await this.chatRepository.getChat(userId1, userId2);
+      chat = await this._chatRepository.getChat(userId1, userId2);
 
       return chat;
     } catch (error) {
@@ -33,7 +33,7 @@ export class ChateUseCases implements IChatUseCases {
 
   async getAllChats(userId: string): Promise<IChat[]> {
     try {
-      const chats = await this.chatRepository.getChatsByUserId(userId);
+      const chats = await this._chatRepository.getChatsByUserId(userId);
 
       return chats;
     } catch (error) {
@@ -47,7 +47,7 @@ export class ChateUseCases implements IChatUseCases {
     chatId: string
   ): Promise<IMessage> {
     try {
-      const response = await this.chatRepository.sendMessage(
+      const response = await this._chatRepository.sendMessage(
         senderId,
         chatId,
         content
@@ -61,7 +61,7 @@ export class ChateUseCases implements IChatUseCases {
 
   async getMessages(chatId: string): Promise<IMessage[]> {
     try {
-      const messages = await this.chatRepository.getMessages(chatId);
+      const messages = await this._chatRepository.getMessages(chatId);
 
       return messages;
     } catch (error) {

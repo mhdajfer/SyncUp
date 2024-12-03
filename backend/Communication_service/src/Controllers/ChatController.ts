@@ -6,11 +6,11 @@ import { StatusCode } from "../Interfaces/StatusCode";
 import { IMessage } from "../interfaces/IMessage";
 
 export class ChatController {
-  constructor(private chatUseCases: IChatUseCases) {}
+  constructor(private _chatUseCases: IChatUseCases) {}
 
   async getAllUsers(req: Request, res: Response, next: NextFunction) {
     try {
-      const users = await this.chatUseCases.getAllUsers();
+      const users = await this._chatUseCases.getAllUsers();
 
       return res.status(StatusCode.OK).json({
         success: true,
@@ -32,7 +32,7 @@ export class ChatController {
       if (!userId1 || !userId2)
         throw new CustomError("any of the user not found", 409);
 
-      const chat = await this.chatUseCases.getChat(userId1, userId2);
+      const chat = await this._chatUseCases.getChat(userId1, userId2);
 
       return res.status(StatusCode.OK).json({
         success: true,
@@ -49,7 +49,7 @@ export class ChatController {
     try {
       if (!req.user?._id) throw new CustomError("user not found", 400);
 
-      const chats = await this.chatUseCases.getAllChats(req.user?._id);
+      const chats = await this._chatUseCases.getAllChats(req.user?._id);
 
       return res.status(StatusCode.OK).json({
         success: true,
@@ -69,7 +69,7 @@ export class ChatController {
 
       if (!senderId) throw new CustomError("User not found", 409);
 
-      const message = await this.chatUseCases.sendMessage(
+      const message = await this._chatUseCases.sendMessage(
         senderId,
         content,
         chatId
@@ -87,7 +87,7 @@ export class ChatController {
   async getMessages(req: Request, res: Response, next: NextFunction) {
     try {
       const { chatId } = req.body;
-      const messages = await this.chatUseCases.getMessages(chatId);
+      const messages = await this._chatUseCases.getMessages(chatId);
 
       return res
         .status(StatusCode.OK)

@@ -5,24 +5,27 @@ import { IUser } from "../interfaces/IUser";
 import { ISocketManager } from "../interfaces/ISocketManager";
 
 export class SocketManager implements ISocketManager {
-  private io: Server;
+  private _io: Server;
 
-  constructor(io: Server) {
-    this.io = io;
+  constructor(_io: Server) {
+    this._io = _io;
   }
 
   public initialize(): void {
-    this.io.on("connection", (socket: Socket) => {
+    this._io.on("connection", (socket: Socket) => {
       console.log("Socket connected:", socket.id);
 
       socket.on("disconnect", () => {
         console.log("User disconnected:", socket.id);
       });
 
-      socket.on("registerUser", ({ userId, socketId }) => {
-        console.log(`Registering user: ${userId}, Socket ID: ${socketId}`);
-        socket.join(userId); // Use userId as the room name for flexibility
-      });
+      socket.on(
+        "registerUser",
+        ({ userId, socketId }: { userId: string; socketId: string }) => {
+          console.log(`Registering user: ${userId}, Socket ID: ${socketId}`);
+          socket.join(userId);
+        }
+      );
 
       socket.on("setup", (id: string) => {
         socket.join(id);
@@ -33,16 +36,27 @@ export class SocketManager implements ISocketManager {
         socket.join(roomId);
         console.log("User joined room:", roomId);
       });
-      socket.on("initiateCall", ({ userId, signalData, myId }) => {
-        console.log("video call initiated***********************", userId);
-        socket.to(userId).emit("incomingCall", { signalData, from: myId });
-      });
+      socket.on(
+        "initiateCall",
+        ({
+          userId,
+          signalData,
+          myId,
+        }: {
+          userId: string;
+          myId: string;
+          signalData: any;
+        }) => {
+          console.log("video call initiated***********************", userId);
+          socket.to(userId).emit("incomingCall", { signalData, from: myId });
+        }
+      );
 
-      socket.on("answerCall", (data) => {
+      socket.on("answerCall", (data: any) => {
         socket.to(data.to).emit("callAccepted", data.signal);
       });
 
-      socket.on("endCall", ({ to }) => {
+      socket.on("endCall", ({ to }: { to: any }) => {
         socket.to(to).emit("callEnded");
       });
 

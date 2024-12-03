@@ -7,7 +7,7 @@ import { CustomError } from "../ErrorHandler/CustonError";
 import { StatusCode } from "../Interfaces/StatusCode";
 
 export class ProjectControllers {
-  constructor(private projectUseCases: IProjectUseCases) {}
+  constructor(private _projectUseCases: IProjectUseCases) {}
 
   async createProject(req: CustomRequest, res: Response, next: NextFunction) {
     try {
@@ -24,7 +24,7 @@ export class ProjectControllers {
 
       if (!authUser?._id) throw new CustomError("Manager not found", 409);
 
-      const result = await this.projectUseCases.createProject({
+      const result = await this._projectUseCases.createProject({
         ...projectDetails,
         created_by: authUser._id,
       });
@@ -50,7 +50,7 @@ export class ProjectControllers {
 
       if (!authUser?._id) throw new CustomError("Manager not found", 409);
 
-      const result = await this.projectUseCases.getProjectList(authUser._id);
+      const result = await this._projectUseCases.getProjectList(authUser._id);
 
       console.log("result is :**********", result, authUser._id);
 
@@ -74,7 +74,7 @@ export class ProjectControllers {
 
       if (!authUser?._id) throw new CustomError("Manager not found", 409);
 
-      const result = await this.projectUseCases.getAssignedProjects(
+      const result = await this._projectUseCases.getAssignedProjects(
         authUser._id
       );
 
@@ -100,7 +100,7 @@ export class ProjectControllers {
 
       if (!authUser?._id) throw new CustomError("Manager not found", 409);
 
-      const result = await this.projectUseCases.getAssignedProjectsForDev(
+      const result = await this._projectUseCases.getAssignedProjectsForDev(
         authUser._id
       );
 
@@ -119,7 +119,7 @@ export class ProjectControllers {
     try {
       const { projectId } = req.body;
 
-      const project = await this.projectUseCases.getOneProject(projectId);
+      const project = await this._projectUseCases.getOneProject(projectId);
       console.log(project);
       return res.status(StatusCode.OK).json({
         success: true,
@@ -137,7 +137,7 @@ export class ProjectControllers {
 
       console.log("got the req to edit project", data);
 
-      const response = await this.projectUseCases.editProject(data);
+      const response = await this._projectUseCases.editProject(data);
 
       return res.status(StatusCode.OK).json({
         success: true,
@@ -169,7 +169,7 @@ export class ProjectControllers {
           data: null,
         });
 
-      const project = await this.projectUseCases.addTasks(tasksWithProjectId);
+      const project = await this._projectUseCases.addTasks(tasksWithProjectId);
 
       return res.status(StatusCode.OK).json({
         success: true,
@@ -187,7 +187,7 @@ export class ProjectControllers {
 
       console.log(projectId);
 
-      const tasks = await this.projectUseCases.getTasks(projectId);
+      const tasks = await this._projectUseCases.getTasks(projectId);
 
       return res.status(StatusCode.OK).json({
         success: true,
@@ -204,7 +204,7 @@ export class ProjectControllers {
       const { taskId } = req.body;
       console.log("got the req inside getTask", taskId);
 
-      const taskDetails = await this.projectUseCases.getOneTask(taskId);
+      const taskDetails = await this._projectUseCases.getOneTask(taskId);
 
       console.log(taskDetails);
 
@@ -224,7 +224,7 @@ export class ProjectControllers {
 
       console.log("got req in editTask", data);
 
-      const updatedTask = await this.projectUseCases.editTask(data);
+      const updatedTask = await this._projectUseCases.editTask(data);
 
       console.log(updatedTask);
 
@@ -246,7 +246,7 @@ export class ProjectControllers {
           .status(StatusCode.UNAUTHORIZED)
           .json({ success: false, message: "User not found" });
 
-      const tasks = await this.projectUseCases.getDevTasks(user._id);
+      const tasks = await this._projectUseCases.getDevTasks(user._id);
 
       return res.status(StatusCode.OK).json({
         success: true,
@@ -263,7 +263,7 @@ export class ProjectControllers {
     try {
       const { userId, projectId } = req.body;
 
-      const project = await this.projectUseCases.addTeamMember(
+      const project = await this._projectUseCases.addTeamMember(
         userId,
         projectId
       );
@@ -285,7 +285,7 @@ export class ProjectControllers {
     try {
       const { userId, projectId } = req.body;
 
-      const project = await this.projectUseCases.removeTeamMember(
+      const project = await this._projectUseCases.removeTeamMember(
         userId,
         projectId
       );

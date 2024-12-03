@@ -5,12 +5,12 @@ import { IProjectUseCases } from "../Interfaces/IProjectUseCases";
 import { IUser } from "../Interfaces/IUser";
 
 export class ProjectUseCases implements IProjectUseCases {
-  constructor(private projectRepository: IProjectRepository) {
-    this.projectRepository = projectRepository;
+  constructor(private _projectRepository: IProjectRepository) {
+    this._projectRepository = _projectRepository;
   }
   async getProjectList(managerId: string): Promise<IProject[]> {
     try {
-      const data = await this.projectRepository.getAllProjects(managerId);
+      const data = await this._projectRepository.getAllProjects(managerId);
 
       return data;
     } catch (error) {
@@ -20,7 +20,7 @@ export class ProjectUseCases implements IProjectUseCases {
 
   async getAssignedProjects(managerId: string): Promise<IProject[]> {
     try {
-      const data = await this.projectRepository.getAssignedProjects(managerId);
+      const data = await this._projectRepository.getAssignedProjects(managerId);
 
       return data;
     } catch (error) {
@@ -30,7 +30,7 @@ export class ProjectUseCases implements IProjectUseCases {
 
   async getAssignedProjectsForDev(devId: string): Promise<IProject[]> {
     try {
-      const data = await this.projectRepository.getAssignedProjectsForDev(
+      const data = await this._projectRepository.getAssignedProjectsForDev(
         devId
       );
 
@@ -41,7 +41,7 @@ export class ProjectUseCases implements IProjectUseCases {
   }
   async createProject(input: IProject): Promise<IProject> {
     try {
-      const data = await this.projectRepository.createProject(input);
+      const data = await this._projectRepository.createProject(input);
 
       if (!data) throw new Error(`Project not found`);
 
@@ -52,7 +52,7 @@ export class ProjectUseCases implements IProjectUseCases {
   }
   async getOneProject(projectId: string): Promise<IProject> {
     try {
-      const project = await this.projectRepository.getOneProject(projectId);
+      const project = await this._projectRepository.getOneProject(projectId);
 
       return project;
       return project;
@@ -63,7 +63,7 @@ export class ProjectUseCases implements IProjectUseCases {
 
   async updateUser(user: IUser) {
     try {
-      return await this.projectRepository.updateUser(user);
+      return await this._projectRepository.updateUser(user);
     } catch (error: any) {
       throw error;
     }
@@ -71,7 +71,7 @@ export class ProjectUseCases implements IProjectUseCases {
 
   async createUser(data: IUser): Promise<IUser> {
     try {
-      const user = await this.projectRepository.createUser(data);
+      const user = await this._projectRepository.createUser(data);
 
       return user;
     } catch (error) {
@@ -81,7 +81,7 @@ export class ProjectUseCases implements IProjectUseCases {
 
   async editProject(data: IProject): Promise<IProject> {
     try {
-      const projectData = await this.projectRepository.editProject(data);
+      const projectData = await this._projectRepository.editProject(data);
 
       return projectData;
     } catch (error) {
@@ -91,7 +91,7 @@ export class ProjectUseCases implements IProjectUseCases {
 
   async addTasks(data: Task[]): Promise<Task> {
     try {
-      const project = await this.projectRepository.addTasks(data);
+      const project = await this._projectRepository.addTasks(data);
 
       if (!project) throw new CustomError("project not found", 409);
 
@@ -103,7 +103,7 @@ export class ProjectUseCases implements IProjectUseCases {
 
   async getTasks(projectId: string): Promise<Task[]> {
     try {
-      const tasks = await this.projectRepository.getTasks(projectId);
+      const tasks = await this._projectRepository.getTasks(projectId);
 
       if (!tasks) throw new CustomError("tasks not found", 409);
 
@@ -115,7 +115,7 @@ export class ProjectUseCases implements IProjectUseCases {
 
   async getOneTask(taskId: string): Promise<Task> {
     try {
-      const taskDetails = await this.projectRepository.getOneTask(taskId);
+      const taskDetails = await this._projectRepository.getOneTask(taskId);
 
       if (!taskDetails) throw new CustomError("taskDetails not found", 409);
 
@@ -127,7 +127,7 @@ export class ProjectUseCases implements IProjectUseCases {
 
   async editTask(data: Task): Promise<Task> {
     try {
-      const updatedTask = await this.projectRepository.editTask(data);
+      const updatedTask = await this._projectRepository.editTask(data);
 
       if (!updatedTask) throw new CustomError("Task not found", 409);
 
@@ -139,7 +139,7 @@ export class ProjectUseCases implements IProjectUseCases {
 
   async getDevTasks(assignee: string): Promise<Task[]> {
     try {
-      const tasks = await this.projectRepository.getDevTasks(assignee);
+      const tasks = await this._projectRepository.getDevTasks(assignee);
 
       return tasks;
     } catch (error) {
@@ -149,7 +149,7 @@ export class ProjectUseCases implements IProjectUseCases {
 
   async addTeamMember(userId: string, projectId: string): Promise<IProject> {
     try {
-      const project = await this.projectRepository.addTeamMember(
+      const project = await this._projectRepository.addTeamMember(
         userId,
         projectId
       );
@@ -164,7 +164,7 @@ export class ProjectUseCases implements IProjectUseCases {
 
   async removeTeamMember(userId: string, projectId: string): Promise<IProject> {
     try {
-      const project = await this.projectRepository.removeTeamMember(
+      const project = await this._projectRepository.removeTeamMember(
         userId,
         projectId
       );

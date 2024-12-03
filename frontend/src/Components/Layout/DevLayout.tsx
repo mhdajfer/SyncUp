@@ -69,7 +69,7 @@ export default function DevLayout({
         <SideBarItem
           icon={<FiCalendar />}
           label="Meetings"
-          onClick={() => router.push("/meetings")}
+          onClick={() => onSideBarClick("meeting")}
         />
       </nav>
 

@@ -15,6 +15,9 @@ export class UserRepository implements IUserRepository {
         { ...user }
       );
 
+      const updatedUser = await User.findOne({ email: user.email });
+
+      console.log("the updated user is:", updatedUser);
       console.log(response);
 
       return response as unknown as IUser;

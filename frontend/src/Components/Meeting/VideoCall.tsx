@@ -10,6 +10,13 @@ import { Card, CardContent } from "@/Components/ui/card";
 import { Button } from "@/Components/ui/button";
 import { Input } from "@/Components/ui/input";
 import { Phone, PhoneOff, Video, VideoOff, Mic, MicOff } from "lucide-react";
+// import {
+//   Dialog,
+//   DialogContent,
+//   DialogFooter,
+//   DialogHeader,
+//   DialogTitle,
+// } from "../ui/dialog";
 
 interface IncomingCallInfo {
   isSomeoneCalling: boolean;
@@ -162,20 +169,6 @@ export function VideoCall() {
     });
   };
 
-  // const toggleVideo = () => {
-  //   setIsVideoOff((prev) => {
-  //     const newState = !prev;
-  //     if (stream) {
-  //       stream.getVideoTracks().forEach((track) => {
-  //         track.enabled = !newState;
-  //       });
-  //     }
-  //     requestMediaStream();
-
-  //     return newState;
-  //   });
-  // };
-
   const toggleVideo = async () => {
     setIsVideoOff((prev) => {
       const newState = !prev;
@@ -215,8 +208,8 @@ export function VideoCall() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-gray-900 to-gray-800 p-4 md:p-8">
-      <Card className="max-w-5xl mx-auto bg-gray-900/50 border-gray-800">
+    <div className="min-h-screen mt-[-35px] w-full bg-gradient-to-b from-gray-900 to-gray-800 p-4 md:p-8">
+      <Card className="max-w-5xl mx-auto bg-gray-900 border-gray-800">
         <CardContent className="p-6">
           <h2 className="text-2xl font-bold text-center text-white mb-8">
             Video Call
@@ -243,13 +236,13 @@ export function VideoCall() {
             )}
 
             <div className="text-sm text-gray-400 text-center">
-              My ID: <span className="font-mono">{currentUserId}</span>
+              ID: <span className="font-mono">{currentUserId}</span>
             </div>
 
             <div className="grid md:grid-cols-2 gap-6">
               <div className="space-y-4">
                 <h3 className="text-lg font-semibold text-white text-center">
-                  My Video
+                  Your Video
                 </h3>
                 <div className="relative rounded-lg overflow-hidden bg-gray-800 aspect-video">
                   <video
@@ -329,6 +322,38 @@ export function VideoCall() {
                 </Button>
               </div>
             )}
+
+            {/* <Dialog open={incominCallInfo.isSomeoneCalling}>
+              <DialogContent>
+                <DialogHeader>
+                  <DialogTitle>
+                    Incoming call from:{" "}
+                    <span className="font-mono">{incominCallInfo?.from}</span>
+                  </DialogTitle>
+                </DialogHeader>
+                <DialogFooter>
+                  <Button
+                    onClick={answerCall}
+                    className="bg-emerald-600 hover:bg-emerald-700 text-white"
+                  >
+                    <Phone className="mr-2 h-4 w-4" />
+                    Answer Call
+                  </Button>
+                  <Button
+                    onClick={() =>
+                      setIncominCallInfo((info) => ({
+                        ...info,
+                        isSomeoneCalling: false,
+                      }))
+                    }
+                    className="bg-red-600 hover:bg-red-700 text-white"
+                  >
+                    <PhoneOff className="mr-2 h-4 w-4" />
+                    Decline
+                  </Button>
+                </DialogFooter>
+              </DialogContent>
+            </Dialog> */}
           </div>
         </CardContent>
       </Card>

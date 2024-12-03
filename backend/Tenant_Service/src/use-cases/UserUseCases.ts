@@ -6,11 +6,11 @@ import { IUserRepository } from "../interfaces/IUserRepository";
 import { IUserUseCases } from "../interfaces/IUserUseCases";
 
 export class UserUseCases implements IUserUseCases {
-  constructor(private userRepository: IUserRepository) {}
+  constructor(private _userRepository: IUserRepository) {}
 
   async findUser(email: string): Promise<IUser> {
     try {
-      const user = await this.userRepository.findUser(email);
+      const user = await this._userRepository.findUser(email);
 
       return user;
     } catch (error) {
@@ -23,7 +23,7 @@ export class UserUseCases implements IUserUseCases {
     adminEmail: string
   ): Promise<IUser> {
     try {
-      const tenantAdmin = await this.userRepository.updateTenantAdmin(
+      const tenantAdmin = await this._userRepository.updateTenantAdmin(
         tenantId,
         adminEmail
       );

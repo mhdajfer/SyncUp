@@ -4,7 +4,7 @@ import { IEmailUseCases } from "../interfaces/IEmailUseCases";
 import { IUserInvite } from "../interfaces/IUser";
 
 export class EmailUseCases implements IEmailUseCases {
-  constructor(private consumerRepository: IConsumerRepository) {}
+  constructor(private _consumerRepository: IConsumerRepository) {}
 
   async sendOtp(
     email: string,
@@ -13,7 +13,7 @@ export class EmailUseCases implements IEmailUseCases {
     otp: number
   ): Promise<void> {
     try {
-      await this.consumerRepository.sendOtp(email, taskName, taskDetails, otp);
+      await this._consumerRepository.sendOtp(email, taskName, taskDetails, otp);
 
       return console.log("otp sent....");
     } catch (error: any) {
@@ -25,7 +25,7 @@ export class EmailUseCases implements IEmailUseCases {
 
   async sendInvite(user: IUserInvite, token: string) {
     try {
-      const data = await this.consumerRepository.sendInvite(user, token);
+      const data = await this._consumerRepository.sendInvite(user, token);
       return data;
     } catch (error) {
       console.log("Error while sending Invite (consumeUseCases)", error);

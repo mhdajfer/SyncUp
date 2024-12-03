@@ -3,11 +3,11 @@ import { IUserRepository } from "../interfaces/IUserRepository";
 import { IUserUseCases } from "../interfaces/IUserUseCases";
 
 export class UserUseCases implements IUserUseCases {
-  constructor(private userRepository: IUserRepository) {}
+  constructor(private _userRepository: IUserRepository) {}
 
   async updateUser(user: IUser) {
     try {
-      return await this.userRepository.updateUser(user);
+      return await this._userRepository.updateUser(user);
     } catch (error: any) {
       throw error;
     }
@@ -15,7 +15,7 @@ export class UserUseCases implements IUserUseCases {
 
   async createUser(data: IUser): Promise<IUser> {
     try {
-      const user = await this.userRepository.createUser(data);
+      const user = await this._userRepository.createUser(data);
 
       return user;
     } catch (error) {

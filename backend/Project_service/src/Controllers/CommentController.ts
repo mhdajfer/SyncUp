@@ -5,7 +5,7 @@ import { CustomError } from "../ErrorHandler/CustonError";
 import { StatusCode } from "../Interfaces/StatusCode";
 
 export class CommentController {
-  constructor(private commentUseCases: ICommentUseCase) {}
+  constructor(private _commentUseCases: ICommentUseCase) {}
 
   async addComment(req: CustomRequest, res: Response, next: NextFunction) {
     try {
@@ -15,7 +15,7 @@ export class CommentController {
 
       if (!user?._id) throw new CustomError("author not found", 409);
 
-      const taskResponse = await this.commentUseCases.submitComment(
+      const taskResponse = await this._commentUseCases.submitComment(
         message,
         taskId,
         user?._id

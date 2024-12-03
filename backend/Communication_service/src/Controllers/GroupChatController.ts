@@ -6,7 +6,7 @@ import { IUser } from "../interfaces/IUser";
 import { StatusCode } from "../Interfaces/StatusCode";
 
 export class GroupChatController {
-  constructor(private groupChatUseCases: IGroupChatUseCases) {}
+  constructor(private _groupChatUseCases: IGroupChatUseCases) {}
   async createGroupChat(req: CustomRequest, res: Response, next: NextFunction) {
     try {
       const { groupName, users } = req.body;
@@ -16,7 +16,7 @@ export class GroupChatController {
 
       if (!req.user) throw new CustomError("user not found", 400);
 
-      const newChat = await this.groupChatUseCases.createGroupChat(
+      const newChat = await this._groupChatUseCases.createGroupChat(
         groupName as string,
         users as IUser[],
         currentUser as IUser
@@ -46,7 +46,7 @@ export class GroupChatController {
         .map((user) => user._id)
         .filter((id): id is string => id !== undefined);
 
-      const updatedChat = await this.groupChatUseCases.addNewMember(
+      const updatedChat = await this._groupChatUseCases.addNewMember(
         userIds,
         chatId
       );
@@ -69,7 +69,7 @@ export class GroupChatController {
       if (!userId || !chatId)
         throw new CustomError("required params not provided", 409);
 
-      const updatedChat = await this.groupChatUseCases.removeMember(
+      const updatedChat = await this._groupChatUseCases.removeMember(
         userId,
         chatId
       );

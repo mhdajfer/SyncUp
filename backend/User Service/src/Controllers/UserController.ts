@@ -13,10 +13,10 @@ import { StatusCode } from "../interfaces/StatusCode";
 import { deleteAvatarIfExists, getUploadSignedUrl } from "../Utils/S3";
 
 export class UserController {
-  private userUseCase: IUserUseCases;
+  private _userUseCase: IUserUseCases;
 
   constructor(userUseCases: IUserUseCases) {
-    this.userUseCase = userUseCases;
+    this._userUseCase = userUseCases;
   }
 
   async createUserForInvitee(
@@ -31,7 +31,7 @@ export class UserController {
 
       console.log("the user is .....", user, password);
 
-      const userData = await this.userUseCase.getUserByEmail(user.email);
+      const userData = await this._userUseCase.getUserByEmail(user.email);
 
       console.log(userData);
 
@@ -57,8 +57,8 @@ export class UserController {
       let response: IUser | null;
 
       if (!userData?.password)
-        response = await this.userUseCase.createUserInvite(data as IUser);
-      else response = await this.userUseCase.editProfile(data as IUser);
+        response = await this._userUseCase.createUserInvite(data as IUser);
+      else response = await this._userUseCase.editProfile(data as IUser);
 
       const kafkaConnection = new KafkaConnection();
       const producer = await kafkaConnection.getProducerInstance();
@@ -96,7 +96,7 @@ export class UserController {
 
       console.log(email);
 
-      const user = await this.userUseCase.getUserByEmail(email);
+      const user = await this._userUseCase.getUserByEmail(email);
 
       if (!user)
         return res
@@ -128,7 +128,9 @@ export class UserController {
       const authUser = req.user;
       if (!authUser) throw new CustomError("tenantAdmin not found", 400);
 
-      const tenantAdmin = await this.userUseCase.getUserByEmail(authUser.email);
+      const tenantAdmin = await this._userUseCase.getUserByEmail(
+        authUser.email
+      );
 
       const userData = {
         ...user,
@@ -137,7 +139,7 @@ export class UserController {
 
       console.log(userData);
 
-      const data = await this.userUseCase.inviteUser(userData);
+      const data = await this._userUseCase.inviteUser(userData);
 
       const kafkaConnection = new KafkaConnection();
       const producer = await kafkaConnection.getProducerInstance();
@@ -163,7 +165,7 @@ export class UserController {
     try {
       const { userId } = req.body;
 
-      const result = await this.userUseCase.blockUser(userId);
+      const result = await this._userUseCase.blockUser(userId);
       const message = result.isBlocked
         ? "User blocked successfully"
         : "User unblocked successfully";
@@ -184,9 +186,9 @@ export class UserController {
       const { email, otp } = req.body;
       console.log("verifying otp...", email, otp);
 
-      const verified = await this.userUseCase.verifyOtp(email, otp);
+      const verified = await this._userUseCase.verifyOtp(email, otp);
 
-      const user = await this.userUseCase.getUserByEmail(email);
+      const user = await this._userUseCase.getUserByEmail(email);
 
       if (!user) throw new CustomError("user not found", 409);
 
@@ -223,7 +225,7 @@ export class UserController {
 
       console.log("userdata", userData);
 
-      const existingUser = await this.userUseCase.getUserByEmail(
+      const existingUser = await this._userUseCase.getUserByEmail(
         userData.email
       );
 
@@ -232,7 +234,7 @@ export class UserController {
       let data;
 
       if (!existingUser) {
-        data = await this.userUseCase.createUser({
+        data = await this._userUseCase.createUser({
           ...userData,
           isVerified: true,
         });
@@ -255,7 +257,7 @@ export class UserController {
         });
       }
 
-      const { user, accessToken, refreshToken } = await this.userUseCase.login(
+      const { user, accessToken, refreshToken } = await this._userUseCase.login(
         userDetails.email,
         userDetails.email.slice(0, 5) + 123,
         "google"
@@ -282,11 +284,11 @@ export class UserController {
 
       const user: IUser = req.body;
 
-      const existingUser = await this.userUseCase.getUserByEmail(user.email);
+      const existingUser = await this._userUseCase.getUserByEmail(user.email);
 
       if (existingUser) throw new CustomError("user already exists", 409);
 
-      const data = await this.userUseCase.createUser(user);
+      const data = await this._userUseCase.createUser(user);
       if (!data) throw new CustomError("user not verified", 409);
 
       const kafkaConnection = new KafkaConnection();
@@ -320,11 +322,13 @@ export class UserController {
       const authUser = req.user;
       if (!authUser) throw new CustomError("admin not found", 400);
 
-      const tenantAdmin = await this.userUseCase.getUserByEmail(authUser.email);
+      const tenantAdmin = await this._userUseCase.getUserByEmail(
+        authUser.email
+      );
 
       if (!tenantAdmin?.tenant_id) throw new CustomError("No users", 400);
 
-      const managerList = await this.userUseCase.getManagerList(
+      const managerList = await this._userUseCase.getManagerList(
         tenantAdmin.tenant_id
       );
 
@@ -348,11 +352,13 @@ export class UserController {
       const authUser = req.user;
       if (!authUser) throw new CustomError("admin not found", 400);
 
-      const tenantAdmin = await this.userUseCase.getUserByEmail(authUser.email);
+      const tenantAdmin = await this._userUseCase.getUserByEmail(
+        authUser.email
+      );
 
       if (!tenantAdmin?.tenant_id) throw new CustomError("No users", 400);
 
-      const devList = await this.userUseCase.getDevList(tenantAdmin.tenant_id);
+      const devList = await this._userUseCase.getDevList(tenantAdmin.tenant_id);
 
       return res.status(StatusCode.OK).json({ success: true, data: devList });
     } catch (error) {
@@ -363,7 +369,7 @@ export class UserController {
 
   async getAllTenantAdmins(req: Request, res: Response, next: NextFunction) {
     try {
-      const users = await this.userUseCase.getAllTenantAdmins();
+      const users = await this._userUseCase.getAllTenantAdmins();
 
       return res.status(StatusCode.OK).json({
         success: true,
@@ -383,7 +389,7 @@ export class UserController {
       const user: IUser = req.body;
       console.log("data : ", id, user);
 
-      const userData = await this.userUseCase.editProfile(user);
+      const userData = await this._userUseCase.editProfile(user);
       console.log(userData);
 
       const kafkaConnection = new KafkaConnection();
@@ -411,10 +417,12 @@ export class UserController {
       const authUser = req.user;
       if (!authUser) throw new CustomError("admin not found", 400);
 
-      const tenantAdmin = await this.userUseCase.getUserByEmail(authUser.email);
+      const tenantAdmin = await this._userUseCase.getUserByEmail(
+        authUser.email
+      );
 
       if (!tenantAdmin?.tenant_id) throw new CustomError("No users", 400);
-      const userList = await this.userUseCase.getUsers(tenantAdmin.tenant_id);
+      const userList = await this._userUseCase.getUsers(tenantAdmin.tenant_id);
 
       res.status(StatusCode.OK).json({
         success: true,
@@ -430,7 +438,7 @@ export class UserController {
     try {
       const id = req.params.id;
 
-      const user = await this.userUseCase.getUserById(id);
+      const user = await this._userUseCase.getUserById(id);
 
       if (!user)
         return res
@@ -449,7 +457,7 @@ export class UserController {
       const { username, password } = req.body;
       console.log("got req inside userLogin", username, password);
 
-      const { user, accessToken, refreshToken } = await this.userUseCase.login(
+      const { user, accessToken, refreshToken } = await this._userUseCase.login(
         username,
         password
       );
@@ -500,7 +508,7 @@ export class UserController {
     try {
       const { email } = req.body;
 
-      const { isOtpSend, user, otp } = await this.userUseCase.createNewOtp(
+      const { isOtpSend, user, otp } = await this._userUseCase.createNewOtp(
         email
       );
 
@@ -534,7 +542,9 @@ export class UserController {
           .json({ message: "No user found" });
       }
 
-      const currentUser = await this.userUseCase.getUserByEmail(req.user.email);
+      const currentUser = await this._userUseCase.getUserByEmail(
+        req.user.email
+      );
       if (!currentUser) {
         return res.status(StatusCode.UNAUTHORIZED).json({
           message: "User not found",
@@ -549,9 +559,9 @@ export class UserController {
         await deleteAvatarIfExists(oldKey);
       }
 
-      const fileName = `Image-${this.generateRandomNumber()}.jpg`;
+      const fileName = `Image-${this._generateRandomNumber()}.jpg`;
 
-      const updatedUser = await this.userUseCase.updateAvatar(
+      const updatedUser = await this._userUseCase.updateAvatar(
         `https://syncupcloud.s3.eu-north-1.amazonaws.com/${fileName}`,
         req.user._id
       );
@@ -579,7 +589,7 @@ export class UserController {
       const user = req.user;
       const { amount } = req.body;
 
-      const updatedUser = await this.userUseCase.activateSubscription(
+      const updatedUser = await this._userUseCase.activateSubscription(
         user?._id || "",
         amount
       );
@@ -609,7 +619,7 @@ export class UserController {
           .json({ message: "No user found" });
       }
 
-      const updatedUser = await this.userUseCase.deactivateSubscription(
+      const updatedUser = await this._userUseCase.deactivateSubscription(
         user._id
       );
 
@@ -634,7 +644,7 @@ export class UserController {
 
       if (!tenantId) throw new CustomError("no tenant_id provided", 409);
 
-      const historyList = await this.userUseCase.getSubscriptionHistory(
+      const historyList = await this._userUseCase.getSubscriptionHistory(
         tenantId
       );
 
@@ -655,7 +665,7 @@ export class UserController {
     next: NextFunction
   ) {
     try {
-      const historyList = await this.userUseCase.getFullSubHistory();
+      const historyList = await this._userUseCase.getFullSubHistory();
 
       return res.status(StatusCode.OK).json({
         success: true,
@@ -670,8 +680,7 @@ export class UserController {
 
   async getSubscriptionPlans(req: Request, res: Response, next: NextFunction) {
     try {
-      const subscriptionPlans = await this.userUseCase.getSubscriptionPlans();
-
+      const subscriptionPlans = await this._userUseCase.getSubscriptionPlans();
 
       return res.status(StatusCode.OK).json({
         success: true,
@@ -688,7 +697,7 @@ export class UserController {
     try {
       const { newPlan } = req.body;
 
-      const updatedPlan = await this.userUseCase.editSubscriptionPlan(newPlan);
+      const updatedPlan = await this._userUseCase.editSubscriptionPlan(newPlan);
 
       console.log("new plan updated", updatedPlan);
 
@@ -701,7 +710,7 @@ export class UserController {
     }
   }
 
-  private generateRandomNumber(
+  private _generateRandomNumber(
     min: number = 10000,
     max: number = 99999
   ): number {
