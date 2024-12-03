@@ -38,6 +38,10 @@ export default function ManagerDashboard({
     taskSheet.addRows(
       tasks.map((task) => ({
         ...task,
+        assignee:
+          typeof task.assignee === "object"
+            ? task.assignee.firstName
+            : task.assignee,
         total_time: task.log_time?.total_time || 0,
       }))
     );
