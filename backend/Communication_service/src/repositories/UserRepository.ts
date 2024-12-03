@@ -2,6 +2,7 @@ import { CustomError } from "../ErrorHandler/CustonError";
 import User from "../frameworks/models/userModel";
 import { IUser } from "../interfaces/IUser";
 import { IUserRepository } from "../interfaces/IUserRepository";
+import { StatusCode } from "../Interfaces/StatusCode";
 
 export class UserRepository implements IUserRepository {
   async updateUser(user: IUser): Promise<IUser> {
@@ -24,7 +25,7 @@ export class UserRepository implements IUserRepository {
     } catch (error) {
       console.log("reached repository", error);
 
-      throw new CustomError("issue with db", 409);
+      throw new CustomError("issue with db", StatusCode.CONFLICT);
     }
   }
 
@@ -35,12 +36,15 @@ export class UserRepository implements IUserRepository {
       const newUser = await newData.save();
 
       if (!newUser)
-        throw new CustomError("user not created in tenant service", 409);
+        throw new CustomError(
+          "user not created in tenant service",
+          StatusCode.CONFLICT
+        );
 
       return newUser.toObject() as IUser;
-    } catch (error: any) {
-      console.log("Error in Consumer Repository: " + error.message);
-      throw new CustomError("issue with db", 409);
+    } catch (error) {
+      console.log("Error in Consumer Repository: " + error);
+      throw new CustomError("issue with db", StatusCode.CONFLICT);
     }
   }
 }

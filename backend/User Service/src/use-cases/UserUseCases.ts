@@ -107,7 +107,7 @@ export class UserUseCases implements IUserUseCases {
       }
 
       return { user, accessToken, refreshToken };
-    } catch (error: any) {
+    } catch (error) {
       throw error;
     }
   }
@@ -121,8 +121,8 @@ export class UserUseCases implements IUserUseCases {
       const newAccessToken = createToken(user);
 
       return newAccessToken;
-    } catch (error: any) {
-      throw new Error(error);
+    } catch (error) {
+      throw error;
     }
   }
 
@@ -139,7 +139,7 @@ export class UserUseCases implements IUserUseCases {
   async getUserById(userId: string): Promise<IUser | null> {
     try {
       return await this._userRepository.findUserById(userId);
-    } catch (error: any) {
+    } catch (error) {
       throw error;
     }
   }
@@ -149,7 +149,7 @@ export class UserUseCases implements IUserUseCases {
       const user = await this._userRepository.findUser(email);
 
       return user;
-    } catch (error: any) {
+    } catch (error) {
       throw error;
     }
   }
@@ -167,7 +167,7 @@ export class UserUseCases implements IUserUseCases {
       else if (existUser && !existUser.isVerified) return null;
 
       return await this._userRepository.createUser(user);
-    } catch (error: any) {
+    } catch (error) {
       throw error;
     }
   }
@@ -183,14 +183,14 @@ export class UserUseCases implements IUserUseCases {
       if (existUser) {
         throw new CustomError("User already exists", 409);
       } else return await this._userRepository.createUserInvite(user);
-    } catch (error: any) {
+    } catch (error) {
       throw error;
     }
   }
   async getUsers(tenantId: string) {
     try {
       return await this._userRepository.getAllUsers(tenantId);
-    } catch (error: any) {
+    } catch (error) {
       throw error;
     }
   }
@@ -209,8 +209,8 @@ export class UserUseCases implements IUserUseCases {
   async updateUser(user: IUser) {
     try {
       return await this._userRepository.updateUser(user);
-    } catch (error: any) {
-      throw new Error(error);
+    } catch (error) {
+      throw error;
     }
   }
 

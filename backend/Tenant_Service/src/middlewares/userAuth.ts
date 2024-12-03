@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from "express";
 import jwt, { JwtPayload } from "jsonwebtoken";
-import { Document } from "mongoose";
 import { IUser } from "../interfaces/IUser";
+import { StatusCode } from "../interfaces/StatusCode";
 
 export default async (
   req: Request & Partial<{ user: Partial<IUser> }>,
@@ -20,41 +20,52 @@ export default async (
         process.env.JWT_AUTHSECRET
       ) as JwtPayload;
 
-
       if (decode) {
         if (decode.isBlocked)
           return res
-            .status(403)
+            .status(StatusCode.FORBIDDEN)
             .json({ success: false, message: "user is blocked" });
         if (decode.isDeleted)
           return res
-            .status(403)
+            .status(StatusCode.FORBIDDEN)
             .json({ success: false, message: "user is deleted" });
         if (!decode.isVerified)
           return res
-            .status(403)
+            .status(StatusCode.FORBIDDEN)
             .json({ success: false, message: "user is not verified" });
 
         req.user = decode;
 
         next();
       } else {
-        res.status(401).json({ error: "unauthorised" });
+        res.status(StatusCode.UNAUTHORIZED).json({ error: "unauthorised" });
       }
     } else {
-      res.status(401).json({ error: "unauthorised" });
+      res.status(StatusCode.UNAUTHORIZED).json({ error: "unauthorised" });
     }
-  } catch (error: any) {
+  } catch (error) {
     console.log(error);
-    if (
-      error.message === "jwt expired" ||
-      error.message === "jwt malformed" ||
-      error.message === "invalid signature"
-    )
-      return res.status(401).json({ error: "Token expired or Invalid" });
+    if (error instanceof jwt.JsonWebTokenError) {
+      if (error.message === "jwt expired") {
+        return res
+          .status(StatusCode.UNAUTHORIZED)
+          .json({ error: "Token expired" });
+      }
+      if (error.message === "jwt malformed") {
+        return res
+          .status(StatusCode.UNAUTHORIZED)
+          .json({ error: "Token malformed" });
+      }
+      if (error.message === "invalid signature") {
+        return res
+          .status(StatusCode.UNAUTHORIZED)
+          .json({ error: "Invalid signature" });
+      }
+    }
 
-    res
-      .status(500)
+    console.error("Unexpected error during token verification:", error);
+    return res
+      .status(StatusCode.INTERNAL_SERVER_ERROR)
       .json({ error: "An unexpected error occurred. Please try again later." });
   }
 };

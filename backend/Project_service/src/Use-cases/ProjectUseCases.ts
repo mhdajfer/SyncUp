@@ -64,7 +64,7 @@ export class ProjectUseCases implements IProjectUseCases {
   async updateUser(user: IUser) {
     try {
       return await this._projectRepository.updateUser(user);
-    } catch (error: any) {
+    } catch (error) {
       throw error;
     }
   }

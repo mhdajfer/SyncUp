@@ -35,9 +35,8 @@ export class ProjectControllers {
       return res
         .status(StatusCode.CREATED)
         .json({ success: true, result, message: "project created" });
-    } catch (error: any) {
-      console.log(`Error while creating project ${error.message}`);
-      console.log("error", error.message);
+    } catch (error) {
+      console.log(`Error while creating project ${error}`);
 
       next(error);
     }
@@ -57,8 +56,8 @@ export class ProjectControllers {
       if (!result) throw new Error(`Error in Project controller`);
 
       return res.status(StatusCode.CREATED).json({ result });
-    } catch (error: any) {
-      console.log(`Error while retreiving project list ${error.message}`);
+    } catch (error) {
+      console.log(`Error while retreiving project list ${error}`);
       next(error);
     }
   }
@@ -83,8 +82,8 @@ export class ProjectControllers {
       if (!result) throw new Error(`Error in Project controller`);
 
       return res.status(StatusCode.CREATED).json({ result });
-    } catch (error: any) {
-      console.log(`Error while retreiving project list ${error.message}`);
+    } catch (error) {
+      console.log(`Error while retreiving project list ${error}`);
       next(error);
     }
   }
@@ -109,8 +108,8 @@ export class ProjectControllers {
       if (!result) throw new Error(`Error in Project controller`);
 
       return res.status(StatusCode.CREATED).json({ result });
-    } catch (error: any) {
-      console.log(`Error while retreiving project list ${error.message}`);
+    } catch (error) {
+      console.log(`Error while retreiving project list ${error}`);
       next(error);
     }
   }
@@ -153,7 +152,7 @@ export class ProjectControllers {
     try {
       const { tasks, projectId } = req.body;
 
-      const tasksWithProjectId: Task[] = tasks.map((task: any) => ({
+      const tasksWithProjectId: Task[] = tasks.map((task: Task) => ({
         ...task,
         status: task.status || undefined,
         priority: task.priority || undefined,

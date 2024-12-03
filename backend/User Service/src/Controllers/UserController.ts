@@ -429,8 +429,8 @@ export class UserController {
         data: userList,
         message: "retrieved users successfully",
       });
-    } catch (error: any) {
-      console.log(`Error getting user list : ${error.message}`);
+    } catch (error) {
+      console.log(`Error getting user list : ${error}`);
       next(error);
     }
   }
@@ -447,8 +447,8 @@ export class UserController {
       res
         .status(StatusCode.OK)
         .json({ success: true, data: user, message: "retrieved user details" });
-    } catch (error: any) {
-      console.log(`Error while retrieving user : ${error.message}`);
+    } catch (error) {
+      console.log(`Error while retrieving user : ${error}`);
       next(error);
     }
   }
@@ -466,7 +466,7 @@ export class UserController {
       return res
         .status(StatusCode.OK)
         .json({ user: user, refreshToken, accessToken, success: true });
-    } catch (error: any) {
+    } catch (error) {
       console.error("Error logging developer:", error);
       next(error);
     }
@@ -498,7 +498,7 @@ export class UserController {
         newAccessToken,
         message: "created new access token",
       });
-    } catch (error: any) {
+    } catch (error) {
       console.log(`Error while login: ${error}`);
       next(error);
     }
@@ -524,7 +524,7 @@ export class UserController {
       return res
         .status(StatusCode.CREATED)
         .json({ success: true, user, message: "user created successfully" });
-    } catch (error: any) {
+    } catch (error) {
       console.log(`Error while login: ${error}`);
       next(error);
     }

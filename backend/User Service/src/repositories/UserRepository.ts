@@ -118,7 +118,7 @@ export class UserRepository implements IUserRepository {
       const user: IUser | null = await User.findById(userId);
 
       return user;
-    } catch (error: any) {
+    } catch (error) {
       throw error;
     }
   }
@@ -135,10 +135,10 @@ export class UserRepository implements IUserRepository {
       console.log(Users);
 
       return Users;
-    } catch (error: any) {
+    } catch (error) {
       console.log(`Error while getting all users`);
 
-      throw new Error(`Error getting all users: ${error.message}`);
+      throw error;
     }
   }
   async createUser(user: IUser): Promise<number> {
@@ -158,7 +158,7 @@ export class UserRepository implements IUserRepository {
       await newOtpData.save();
 
       return otp;
-    } catch (error: any) {
+    } catch (error) {
       console.error("Error creating user in repository: ", error);
       throw error;
     }
@@ -176,7 +176,7 @@ export class UserRepository implements IUserRepository {
       await Invitee.deleteOne({ email: user.email });
 
       return newUser.toObject() as IUser;
-    } catch (error: any) {
+    } catch (error) {
       console.error("Error creating user in repository: ", error);
       throw error;
     }
@@ -211,8 +211,8 @@ export class UserRepository implements IUserRepository {
     try {
       const user = await User.findOne({ email: email });
       return user?.toObject() as IUser;
-    } catch (error: any) {
-      throw new Error("error while searching for user: " + error.message);
+    } catch (error) {
+      throw error;
     }
   }
 
@@ -359,7 +359,6 @@ export class UserRepository implements IUserRepository {
         { $set: newPlan },
         { returnDocument: "after" }
       );
-
 
       return updatedPlan as unknown as ISubscriptionPlan;
     } catch (error) {

@@ -96,8 +96,8 @@ export class ProjectRepository implements IProjectRepository {
         throw new CustomError("user not created in tenant service", 409);
 
       return newUser.toObject() as IUser;
-    } catch (error: any) {
-      console.log("Error in Consumer Repository: " + error.message);
+    } catch (error) {
+      console.log("Error in Consumer Repository: " + error);
       throw error;
     }
   }
