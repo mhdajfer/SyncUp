@@ -29,6 +29,7 @@ import {
   disableSubscription,
   editSubscriptionPlan,
   getSubscriptionPlan,
+  getUser,
 } from "@/api/userService/user";
 import { updateUserDetails } from "@/store/slices/authSlice";
 import { toast } from "sonner";
@@ -60,11 +61,41 @@ export function CurrentSubscriptions({
         if (response.success) {
           setSubscriptions([response.data]);
         }
-      } catch (error) {}
+      } catch (error: unknown) {
+        if (error instanceof AxiosError) {
+          toast.error(error.response?.data.error);
+        } else {
+          toast.error("error while retrieving subscription plan");
+          console.log(error);
+        }
+      }
     }
 
     getSubPlan();
   }, []);
+
+  const activateSub = async (amount: number) => {
+    try {
+      if (!user._id) return toast.error("user not found");
+
+      const response = await getUser(user._id);
+
+      if (response.success && response.data.subscriptionStatus) {
+        toast.error("User already subscribed");
+      } else {
+        localStorage.setItem("total-price", amount.toString());
+
+        router.push("/payments");
+      }
+    } catch (error: unknown) {
+      if (error instanceof AxiosError) {
+        toast.error(error.response?.data.error);
+      } else {
+        toast.error("error while subscribing");
+        console.log(error);
+      }
+    }
+  };
 
   const disableSubs = async () => {
     try {
@@ -75,7 +106,12 @@ export function CurrentSubscriptions({
 
         toast.success(response.message);
       }
-    } catch (error) {
+    } catch (error: unknown) {
+      if (error instanceof AxiosError) {
+        toast.error(error.response?.data.error);
+      } else {
+        toast.error("error while unsubscribing");
+      }
       console.log(error);
     }
   };
@@ -234,12 +270,7 @@ export function CurrentSubscriptions({
                       <Button
                         className="bg-blue-600 text-gray-100 hover:bg-blue-700 mt-10"
                         onClick={() => {
-                          localStorage.setItem(
-                            "total-price",
-                            sub.amount.toString()
-                          );
-
-                          router.push("/payments");
+                          activateSub(sub.amount);
                         }}
                       >
                         Subscribe

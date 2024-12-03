@@ -6,3 +6,12 @@
 2024-12-03T10:37:15.745Z [INFO]: GET /users/67051779c388a099bf570466 304 - 71ms
 2024-12-03T10:39:04.237Z [INFO]: GET /users/developers 200 - 148ms
 2024-12-03T10:39:04.393Z [INFO]: GET /users/developers 304 - 147ms
+2024-12-03T10:56:16.470Z [INFO]: POST /users/login 200 - 188ms
+2024-12-03T10:56:29.951Z [INFO]: POST /users/plan 200 - 78ms
+2024-12-03T10:56:29.956Z [INFO]: POST /users/plan 200 - 73ms
+2024-12-03T10:56:29.966Z [INFO]: POST /users/history-subscription 200 - 75ms
+2024-12-03T10:56:30.300Z [INFO]: POST /users/history-subscription 200 - 399ms
+2024-12-03T10:56:48.416Z [INFO]: POST /users/plan 200 - 62ms
+2024-12-03T10:56:48.421Z [INFO]: POST /users/plan 200 - 61ms
+2024-12-03T10:56:48.440Z [INFO]: POST /users/history-subscription 200 - 75ms
+2024-12-03T10:56:48.448Z [INFO]: POST /users/history-subscription 200 - 78ms

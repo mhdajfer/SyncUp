@@ -9,6 +9,7 @@ import { ISubscription } from "../interfaces/ISubscription";
 import SubscriptionModel from "../frameworks/models/subscriptionModel";
 import { ISubscriptionPlan } from "../interfaces/ISubscriptionPlan";
 import SubscriptionPlanModel from "../frameworks/models/subscriptionPlanModel";
+import { StatusCode } from "../interfaces/StatusCode";
 
 export class UserRepository implements IUserRepository {
   async inviteUser(invitee: IUserInvite): Promise<IUserInvite> {
@@ -248,7 +249,7 @@ export class UserRepository implements IUserRepository {
     try {
       const loggedInUser = await User.findOne({ _id: userId });
       if (!loggedInUser?.tenant_id)
-        throw new CustomError("tenant id not provided", 409);
+        throw new CustomError("tenant id not provided", StatusCode.CONFLICT);
 
       const updateFields = {
         subscriptionStatus: true,

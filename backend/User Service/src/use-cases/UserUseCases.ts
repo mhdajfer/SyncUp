@@ -10,6 +10,7 @@ import bcrypt from "bcrypt";
 import { CustomError } from "../ErrorHandler/CustonError";
 import { ISubscription } from "../interfaces/ISubscription";
 import { ISubscriptionPlan } from "../interfaces/ISubscriptionPlan";
+import { StatusCode } from "../interfaces/StatusCode";
 
 export class UserUseCases implements IUserUseCases {
   private _userRepository: IUserRepository;
@@ -228,7 +229,15 @@ export class UserUseCases implements IUserUseCases {
   async activateSubscription(userId: string, amount: number): Promise<IUser> {
     try {
       if (!userId || !amount)
-        throw new CustomError("required params missing", 409);
+        throw new CustomError("required params missing", StatusCode.CONFLICT);
+
+      const currentUser = await this._userRepository.findUserById(userId);
+
+      if (currentUser?.subscriptionStatus)
+        throw new CustomError(
+          "You are already subscribed",
+          StatusCode.CONFLICT
+        );
 
       const updatedUser = await this._userRepository.activateSubscription(
         userId,
@@ -243,7 +252,12 @@ export class UserUseCases implements IUserUseCases {
 
   async deactivateSubscription(userId: string): Promise<IUser> {
     try {
-      if (!userId) throw new CustomError("user missing", 409);
+      if (!userId) throw new CustomError("user missing", StatusCode.CONFLICT);
+
+      const currentUser = await this._userRepository.findUserById(userId);
+
+      if (!currentUser?.subscriptionStatus)
+        throw new CustomError("Already unSubscribed", StatusCode.CONFLICT);
 
       const updatedUser = await this._userRepository.deactivateSubscription(
         userId
