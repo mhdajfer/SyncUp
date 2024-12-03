@@ -10,7 +10,7 @@ import { CustomError } from "../ErrorHandler/CustonError";
 import { CustomRequest } from "../interfaces/CustomRequest";
 import hashPassword from "../Utils/bcrypt";
 import { StatusCode } from "../interfaces/StatusCode";
-import { deleteAvatarIfExists, getUploadSignedUrl } from "../Utils/S3";
+import { getUploadSignedUrl } from "../Utils/S3";
 
 export class UserController {
   private _userUseCase: IUserUseCases;
@@ -553,18 +553,7 @@ export class UserController {
         });
       }
 
-      const oldAvatarUrl = currentUser.avatar;
-      if (oldAvatarUrl) {
-        const oldKey = oldAvatarUrl.split("/").pop() as string;
-        await deleteAvatarIfExists(oldKey);
-      }
-
-      const fileName = `Image-${this._generateRandomNumber()}.jpg`;
-
-      const updatedUser = await this._userUseCase.updateAvatar(
-        `https://syncupcloud.s3.eu-north-1.amazonaws.com/${fileName}`,
-        req.user._id
-      );
+      const fileName = `Image-${req.user._id}.jpg`;
 
       const uploadUrl = await getUploadSignedUrl(fileName, "image/jpeg");
 
@@ -572,7 +561,6 @@ export class UserController {
         success: true,
         message: "upload url configured correctly",
         uploadUrl,
-        avatarUrl: `https://syncupcloud.s3.eu-north-1.amazonaws.com/${fileName}`,
       });
     } catch (error) {
       console.log("Error while upload url:", error);

@@ -7,8 +7,8 @@ import CommunicationRoutes from "./src/routes/index";
 import { Server } from "socket.io";
 import { createServer } from "http";
 import { SocketManager } from "./src/Utils/SocketManager";
-
 import { errorHandler } from "./src/ErrorHandler/ErrorHandler";
+import { requestLogger } from "../Tenant_Service/src/middlewares/requestLogger";
 dotenv.config();
 
 const app = express();
@@ -23,7 +23,7 @@ const io = new Server(httpServer, {
 
 const Port = process.env.PORT;
 
-app.use(morgan("tiny"));
+app.use(requestLogger);
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
