@@ -1,6 +1,7 @@
 import { IConsumerRepository } from "../interfaces/IConsumerRepository";
+import { Task } from "../interfaces/IProject";
 import { IUserInvite } from "../interfaces/IUser";
-import { sendMail } from "../Utils/nodeMailer";
+import { sendMail, sendTaskAssignedMail } from "../Utils/nodeMailer";
 
 export class ConsumerRepository implements IConsumerRepository {
   async sendOtp(
@@ -25,6 +26,19 @@ export class ConsumerRepository implements IConsumerRepository {
         "You are invited to the platform",
         0,
         link
+      );
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async informTaskAssigned(email: string, task: Task) {
+    try {
+      sendTaskAssignedMail(
+        email,
+        task.title,
+        task.desc as string,
+        JSON.stringify(task.due_date)
       );
     } catch (error) {
       throw error;

@@ -1,7 +1,6 @@
 import express from "express";
 import dotenv from "dotenv";
 import { connectConsumers } from "./src/events/Consumers";
-const morgan = require("morgan");
 import { connectDB } from "./src/frameworks/mongo/connect";
 import CommunicationRoutes from "./src/routes/index";
 import { Server } from "socket.io";

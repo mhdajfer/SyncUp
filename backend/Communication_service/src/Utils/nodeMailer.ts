@@ -59,3 +59,53 @@ export const sendMail = (
     }
   });
 };
+
+export const sendTaskAssignedMail = (
+  email: string,
+  taskName: string,
+  taskDetails: string,
+  dueDate: string
+) => {
+  console.log(
+    email,
+    taskName,
+    taskDetails,
+    dueDate,
+    "***************************************************************"
+  );
+
+  const transporter = nodemailer.createTransport({
+    service: "gmail",
+    auth: {
+      user: process.env.NODEMAILER_EMAIL,
+      pass: process.env.NODEMAILER_PASSWORD,
+    },
+  });
+
+  const mailOptions = {
+    from: process.env.NODEMAILER_EMAIL,
+    to: email,
+    subject: `Task Assigned: ${taskName}`,
+    html: `
+      <div style="font-family: Arial, sans-serif; font-size: 16px; color: #333;">
+        <h2 style="color: #4CAF50;">New Task Assigned</h2>
+        <p>Dear user,</p>
+        <p>A new task has been assigned to you. Please find the details below:</p>
+        <p><strong>Task Name:</strong> ${taskName}</p>
+        <p><strong>Task Details:</strong> ${taskDetails}</p>
+        <p><strong>Due Date:</strong> ${dueDate}</p>
+        <p>Please review the task and ensure its completion by the due date. If you have any questions, reach out to your manager or the team lead.</p>
+        <p>Best regards,</p>
+        <p>TeamSync</p>
+      </div>
+    `,
+  };
+
+  transporter.sendMail(mailOptions, (error, info) => {
+    if (error) {
+      console.error(`Error sending email to ${email}:`, error);
+    } else {
+      console.log(`Email sent to ${email}:`, info.response);
+    }
+  });
+};

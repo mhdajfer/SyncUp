@@ -24,11 +24,9 @@ export class UserRepository implements IUserRepository {
         { new: true }
       );
 
-      return user as IUser;
+      return user as unknown as IUser;
     } catch (error) {
       throw error;
     }
   }
-
-
 }

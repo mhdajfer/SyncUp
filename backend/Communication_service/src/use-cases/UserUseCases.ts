@@ -22,4 +22,14 @@ export class UserUseCases implements IUserUseCases {
       throw error;
     }
   }
+
+  async findUserById(userId: string): Promise<IUser> {
+    try {
+      const user = await this._userRepository.findUserById(userId);
+
+      return user;
+    } catch (error) {
+      throw error;
+    }
+  }
 }

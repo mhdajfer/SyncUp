@@ -9,6 +9,7 @@ import { IUserUseCases } from "../../interfaces/IUserUseCases";
 import { IUserRepository } from "../../interfaces/IUserRepository";
 import { UserRepository } from "../../repositories/UserRepository";
 import { UserUseCases } from "../../use-cases/UserUseCases";
+import { Task } from "../../interfaces/IProject";
 
 export class UserConsumer implements IUserConsumer {
   private consumerRepository: IConsumerRepository;
@@ -63,9 +64,26 @@ export class UserConsumer implements IUserConsumer {
         otp: number;
         token: string;
       };
+
+      if (data.eventType === "task-added")
+        return data as unknown as {
+          eventType: string;
+          data: Task;
+          invitee: IUserInvite;
+          otp: number;
+          token: string;
+        };
     }
 
     switch (data.eventType) {
+      case "task-added":
+        const updatedData = JSON.parse(
+          data.data as unknown as string
+        )[0] as Task;
+        console.log(updatedData);
+        const user = await this.userUseCases.findUserById(updatedData.assignee);
+        this.consumerUseCases.informTaskAssigned(user.email, updatedData);
+        break;
       case "create":
         console.log("its create", data);
 

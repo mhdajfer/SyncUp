@@ -5,6 +5,8 @@ import { validationResult } from "express-validator";
 import { CustomRequest } from "../Interfaces/CustomRequest";
 import { CustomError } from "../ErrorHandler/CustonError";
 import { StatusCode } from "../Interfaces/StatusCode";
+import { KafkaConnection } from "../Config/kafka/kafkaConnection";
+import { UserProducer } from "../events/Producers/UserProducer";
 
 export class ProjectControllers {
   constructor(private _projectUseCases: IProjectUseCases) {}
@@ -159,8 +161,6 @@ export class ProjectControllers {
         projectId,
       }));
 
-      console.log(req.body);
-
       if (!tasks || !projectId)
         return res.status(StatusCode.BAD_REQUEST).json({
           success: false,
@@ -170,6 +170,15 @@ export class ProjectControllers {
 
       const project = await this._projectUseCases.addTasks(tasksWithProjectId);
 
+      const kafkaConnection = new KafkaConnection();
+      const producer = await kafkaConnection.getProducerInstance();
+      const userProducer = new UserProducer(producer);
+
+      userProducer.sendDefaultMessage(
+        "task-added",
+        "user-events",
+        JSON.stringify(project)
+      );
       return res.status(StatusCode.OK).json({
         success: true,
         message: "task details added successfully",

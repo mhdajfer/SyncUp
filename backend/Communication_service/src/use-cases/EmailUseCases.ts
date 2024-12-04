@@ -2,6 +2,7 @@ import { userInfo } from "os";
 import { IConsumerRepository } from "../interfaces/IConsumerRepository";
 import { IEmailUseCases } from "../interfaces/IEmailUseCases";
 import { IUserInvite } from "../interfaces/IUser";
+import { Task } from "../interfaces/IProject";
 
 export class EmailUseCases implements IEmailUseCases {
   constructor(private _consumerRepository: IConsumerRepository) {}
@@ -30,6 +31,14 @@ export class EmailUseCases implements IEmailUseCases {
     } catch (error) {
       console.log("Error while sending Invite (consumeUseCases)", error);
 
+      throw error;
+    }
+  }
+
+  async informTaskAssigned(email: string, task: Task) {
+    try {
+      await this._consumerRepository.informTaskAssigned(email, task);
+    } catch (error) {
       throw error;
     }
   }

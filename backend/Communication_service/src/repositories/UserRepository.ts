@@ -47,4 +47,14 @@ export class UserRepository implements IUserRepository {
       throw new CustomError("issue with db", StatusCode.CONFLICT);
     }
   }
+
+  async findUserById(userId: string): Promise<IUser> {
+    try {
+      const user = await User.findOne({ _id: userId });
+
+      return user as unknown as IUser;
+    } catch (error) {
+      throw error;
+    }
+  }
 }
