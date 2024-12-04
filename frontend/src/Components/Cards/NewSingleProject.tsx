@@ -379,7 +379,6 @@ export default function NewSingleProject({ role }: { role: string }) {
                     ) : (
                       <p className="text-gray-300">{project?.description}</p>
                     )}
-
                     {isLoading ? (
                       <div>
                         <TableRowSkeleton />
@@ -488,7 +487,6 @@ export default function NewSingleProject({ role }: { role: string }) {
                         </div>
                       </div>
                     )}
-
                     <div>
                       <h3 className="text-lg font-semibold mb-2">Goal</h3>
                       {isEditing ? (
@@ -504,15 +502,18 @@ export default function NewSingleProject({ role }: { role: string }) {
                         <p className="text-gray-300">{project?.goal}</p>
                       )}
                     </div>
-                    <FileHolder
-                      file={{
-                        name: project?.name + " - Doc",
-                        size: 23373,
-                        type: "application/pdf",
-                        url: fileUrl,
-                      }}
-                    />
-
+                    {isLoading ? (
+                      <Skeleton className=" h-36 w-44 bg-gray-700" />
+                    ) : (
+                      <FileHolder
+                        file={{
+                          name: project?.name + " - Doc",
+                          size: 23373,
+                          type: "application/pdf",
+                          url: fileUrl,
+                        }}
+                      />
+                    )}
                     <Button
                       onClick={isEditing ? handleSaveChanges : handleEditToggle}
                       className={`${
@@ -523,7 +524,6 @@ export default function NewSingleProject({ role }: { role: string }) {
                     >
                       {isEditing ? "Save Changes" : "Edit Project"}
                     </Button>
-
                     {project && project.developers && (
                       <ProjectTeam
                         isLoading={isLoading}
@@ -533,7 +533,6 @@ export default function NewSingleProject({ role }: { role: string }) {
                         setProject={setProject}
                       />
                     )}
-
                     {tasks.length > 0 ? (
                       <div className=" ">
                         <h2 className="text-md font-bold text-gray-100 mb-6">
@@ -599,7 +598,6 @@ export default function NewSingleProject({ role }: { role: string }) {
                     ) : (
                       <h2>No tasks were created for this project...</h2>
                     )}
-
                     {role !== "dev" && (
                       <div className="">
                         <h3 className="text-lg font-semibold mb-2">Tasks</h3>
