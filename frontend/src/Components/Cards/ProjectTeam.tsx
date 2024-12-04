@@ -130,8 +130,8 @@ export default function ProjectTeam({
                     <SelectLabel>Developers</SelectLabel>
                     {developers.map((dev) => (
                       <SelectItem key={dev._id} value={dev._id || ""}>
-                        {dev.firstName}
-                        {dev.lastName}
+                        {dev.email.slice(0, 6)}
+                        {`(${dev.firstName})`}
                       </SelectItem>
                     ))}
                   </SelectGroup>
@@ -183,9 +183,10 @@ export default function ProjectTeam({
                           {dev.lastName && dev.lastName[1].toUpperCase()}
                         </AvatarFallback>
                       </Avatar>
-                      <div>
-                        <h4 className="font-medium text-gray-100">
-                          {dev.firstName}
+                      <div className="ms-2">
+                        <h4 className="font-medium text-gray-100 ">
+                          {dev.email.slice(0, 6)}
+                          {`(${dev.firstName})`}
                         </h4>
                         <p className="text-sm text-gray-400">{dev.role}</p>
                       </div>
