@@ -536,6 +536,9 @@ export class UserController {
     next: NextFunction
   ) {
     try {
+      const { fileName, fileType }: { fileName: string; fileType: string } =
+        req.body;
+
       if (!req.user?._id) {
         return res
           .status(StatusCode.BAD_REQUEST)
@@ -553,9 +556,7 @@ export class UserController {
         });
       }
 
-      const fileName = `Image-${req.user._id}.jpg`;
-
-      const uploadUrl = await getUploadSignedUrl(fileName, "image/jpeg");
+      const uploadUrl = await getUploadSignedUrl(fileName, fileType);
 
       res.status(StatusCode.OK).json({
         success: true,

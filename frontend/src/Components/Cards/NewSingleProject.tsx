@@ -42,6 +42,7 @@ import ProjectTeam from "./ProjectTeam";
 import { TASK_CATEGORY } from "@/Consts";
 import TableRowSkeleton from "../Skeleton/TableRowSkeleton";
 import { Skeleton } from "../ui/skeleton";
+import FileHolder from "../FileHolder";
 
 interface newTask {
   title: string;
@@ -65,7 +66,7 @@ export default function NewSingleProject({ role }: { role: string }) {
   const [managers, setManagers] = useState<IUser[]>([]);
   const [isOpen, setIsOpen] = useState(false);
   const [newTasks, setNewTasks] = useState<newTask[]>([]);
-
+  const [fileUrl, setFileUrl] = useState<string>("");
   const [tasks, setTasks] = useState<Task[]>([]);
 
   const [isEditing, setIsEditing] = useState(false);
@@ -88,6 +89,10 @@ export default function NewSingleProject({ role }: { role: string }) {
     setIsOpen(true);
     async function getProjectandDeveloper() {
       const project = await getOneProject(projectId);
+
+      const createrId = project.data.created_by;
+      const url = "Doc-" + createrId + ".pdf";
+      setFileUrl(url);
 
       const response = await getDevelopers();
 
@@ -499,6 +504,14 @@ export default function NewSingleProject({ role }: { role: string }) {
                         <p className="text-gray-300">{project?.goal}</p>
                       )}
                     </div>
+                    <FileHolder
+                      file={{
+                        name: project?.name + " - Doc",
+                        size: 23373,
+                        type: "application/pdf",
+                        url: fileUrl,
+                      }}
+                    />
 
                     <Button
                       onClick={isEditing ? handleSaveChanges : handleEditToggle}

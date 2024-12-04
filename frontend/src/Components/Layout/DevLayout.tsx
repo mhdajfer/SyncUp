@@ -1,14 +1,10 @@
-import {
-  FiUsers,
-  FiFolder,
-  FiMessageSquare,
-  FiCalendar,
-} from "react-icons/fi";
+import { FiUsers, FiFolder, FiMessageSquare, FiCalendar } from "react-icons/fi";
 import { useRouter } from "next/navigation";
 import { FC } from "react";
 import { CiLogout } from "react-icons/ci";
 import { User } from "@/interfaces/User";
 import { Avatar, AvatarFallback, AvatarImage } from "@radix-ui/react-avatar";
+import { toast } from "sonner";
 
 export default function DevLayout({
   logoutSuccess,
@@ -18,6 +14,9 @@ export default function DevLayout({
   user: User;
 }) {
   const router = useRouter();
+  const s3Url = process.env.NEXT_PUBLIC_S3_URL;
+
+  if (!s3Url) return toast.info("s3 url not specified");
 
   function onSideBarClick(val: string) {
     switch (val) {
@@ -77,7 +76,7 @@ export default function DevLayout({
         <div className="flex">
           <Avatar className=" cursor-pointer ">
             <AvatarImage
-              src={user.avatar}
+              src={`${s3Url}/Image-${user._id}.jpg`}
               alt="Profile picture"
               className="w-12 h-12 bg-cover  rounded-full"
             />

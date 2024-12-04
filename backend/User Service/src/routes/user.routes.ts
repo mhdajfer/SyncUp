@@ -66,7 +66,7 @@ router.post(
   "/forgot-password",
   userController.verifyAndSendOtp.bind(userController)
 );
-router.get(
+router.post(
   "/upload/image",
   userAuth,
   userController.generateUploadUrl.bind(userController)

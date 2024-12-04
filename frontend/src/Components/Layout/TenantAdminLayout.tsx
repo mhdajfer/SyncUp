@@ -4,6 +4,7 @@ import { FC } from "react";
 import { useRouter } from "next/navigation";
 import { FiUsers, FiFolder, FiUser, FiCalendar } from "react-icons/fi";
 import { CiLogout } from "react-icons/ci";
+import { toast } from "sonner";
 import { User } from "@/interfaces/User";
 import { Avatar, AvatarFallback, AvatarImage } from "@radix-ui/react-avatar";
 
@@ -16,6 +17,10 @@ export function TenantAdminLayout({
 }) {
   const router = useRouter();
 
+  const s3Url = process.env.NEXT_PUBLIC_S3_URL;
+
+  if (!s3Url) return toast.info("s3 url not specified");
+
   function onSideBarClick(val: string) {
     switch (val) {
       case "subscriptions":
@@ -27,17 +32,16 @@ export function TenantAdminLayout({
       case "tenant":
         router.push("/admin/tenant");
         break;
-        case "chat":
+      case "chat":
         router.push("/admin/chat");
         break;
-        case "meeting":
+      case "meeting":
         router.push("/admin/meeting");
         break;
     }
   }
 
   console.log(user);
-  
 
   return (
     <div className="h-screen w-64 bg-gray-900 text-gray-200 relative">
@@ -77,7 +81,11 @@ export function TenantAdminLayout({
         <div className="flex">
           <div>
             <Avatar className=" cursor-pointer ">
-              <AvatarImage src={user.avatar} alt="Profile picture" className="w-12 h-12 bg-cover  rounded-full"/>
+              <AvatarImage
+                src={`${s3Url}/Image-${user._id}.jpg`}
+                alt="Profile picture"
+                className="w-12 h-12 bg-cover  rounded-full"
+              />
               <AvatarFallback className=" bg-green-400 rounded-full p-2">
                 {user.firstName[0].toUpperCase()}
                 {user.lastName[0].toUpperCase()}

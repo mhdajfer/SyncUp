@@ -4,6 +4,7 @@ import { FC } from "react";
 import { CiLogout } from "react-icons/ci";
 import { Avatar, AvatarFallback, AvatarImage } from "@radix-ui/react-avatar";
 import { User } from "@/interfaces/User";
+import { toast } from "sonner";
 
 export default function PManagerLayout({
   logoutSuccess,
@@ -13,6 +14,10 @@ export default function PManagerLayout({
   user: User;
 }) {
   const router = useRouter();
+
+  const s3Url = process.env.NEXT_PUBLIC_S3_URL;
+
+  if (!s3Url) return toast.info("s3 url not specified");
   return (
     <div className="h-screen w-64 bg-gray-900 text-gray-200 relative">
       <div className="flex items-center justify-center h-20 border-b border-gray-700">
@@ -53,7 +58,7 @@ export default function PManagerLayout({
           <div>
             <Avatar className=" cursor-pointer ">
               <AvatarImage
-                src={user.avatar}
+                src={`${s3Url}/Image-${user._id}.jpg`}
                 alt="Profile picture"
                 className="w-12 h-12 bg-cover  rounded-full"
               />

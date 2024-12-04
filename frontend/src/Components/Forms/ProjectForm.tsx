@@ -13,7 +13,7 @@ import {
   SelectContent,
   SelectItem,
 } from "@/Components/ui/select";
-import { CalendarIcon, Upload } from "lucide-react";
+import { CalendarIcon } from "lucide-react";
 import { Project } from "@/interfaces/Project";
 import { createProject } from "@/api/projectService/project";
 import { getProjectManagers } from "@/api/userService/user";
@@ -24,6 +24,11 @@ import { useForm } from "react-hook-form";
 import { motion } from "framer-motion";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { AxiosError } from "axios";
+import { FileUpload } from "../FileUpload";
+import { fileTypeExtensionMap } from "@/Consts";
+import { useSelector } from "react-redux";
+import { RootState } from "@/store/store";
+import { getUploadUrl, uploadFileToS3 } from "@/lib/S3";
 
 export interface UserDetails {
   _id: string;
@@ -67,10 +72,15 @@ const projectSchema = z
 export default function ProjectForm() {
   const router = useRouter();
   const [managerList, setManagerList] = useState<UserDetails[]>([]);
+  const [file, setFile] = useState<File | null>(null);
+  const [error, setError] = useState<string | null>(null);
+
+  const currentUserId = useSelector((state: RootState) => state.auth.user?._id);
 
   const {
     register,
     handleSubmit,
+    watch,
     setValue,
     getValues,
     trigger,
@@ -79,6 +89,9 @@ export default function ProjectForm() {
     resolver: zodResolver(projectSchema),
     mode: "onChange",
   });
+
+  const startDate = watch("start_date");
+  const endDate = watch("due_date");
 
   useEffect(() => {
     async function getData() {
@@ -92,6 +105,23 @@ export default function ProjectForm() {
   const onSubmit = async () => {
     try {
       const data = getValues();
+
+      if (file) {
+        const fileExtension = fileTypeExtensionMap[file.type];
+
+        const fileName = "Doc-" + currentUserId + fileExtension;
+
+        const response = await getUploadUrl(fileName, file.type);
+
+        if (response.success) {
+          const { uploadUrl } = response;
+
+          if (!uploadUrl)
+            return toast.error("didn't get url for the image upload");
+
+          await uploadFileToS3(uploadUrl, file);
+        }
+      }
 
       const response: CreateProjectResponse = await createProject({
         ...data,
@@ -110,19 +140,12 @@ export default function ProjectForm() {
     }
   };
 
-  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (file) {
-      setValue("document", file);
-    }
-  };
-
   return (
     <motion.div
-      initial={{ opacity: 0, scale: 0.9 }} // initial state
-      animate={{ opacity: 1, scale: 1 }} // final state
-      transition={{ duration: 0.3 }} // animation duration
-      exit={{ opacity: 0, scale: 0.9 }} // exit state for when component unmounts
+      initial={{ opacity: 0, scale: 0.9 }}
+      animate={{ opacity: 1, scale: 1 }}
+      transition={{ duration: 0.3 }}
+      exit={{ opacity: 0, scale: 0.9 }}
     >
       <Card className="w-full max-w-2xl mx-auto py-8 text-sm bg-gray-900 text-white border border-slate-700">
         <form onSubmit={handleSubmit(onSubmit)}>
@@ -190,6 +213,8 @@ export default function ProjectForm() {
                     id="startDate"
                     className="border border-slate-800"
                     type="date"
+                    min={new Date().toISOString().split("T")[0]}
+                    max={endDate}
                     {...register("start_date")}
                   />
                   <CalendarIcon className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
@@ -207,6 +232,7 @@ export default function ProjectForm() {
                     id="dueDate"
                     className="border border-slate-800"
                     type="date"
+                    min={startDate || new Date().toISOString().split("T")[0]}
                     {...register("due_date")}
                   />
 
@@ -273,7 +299,7 @@ export default function ProjectForm() {
                 </p>
               )}
             </div>
-            <div className="space-y-2">
+            {/* <div className="space-y-2">
               <Label htmlFor="document">Upload Document</Label>
               <div className="flex items-center space-x-2">
                 <Input
@@ -297,7 +323,16 @@ export default function ProjectForm() {
                   )}
                 </span>
               </div>
-            </div>
+            </div> */}
+            <FileUpload
+              onFileChange={(newFile: File | null) => {
+                setFile(newFile);
+                setError(null);
+              }}
+              accept=".pdf,.doc,.docx"
+              maxSize={5000000}
+              error={error}
+            />
           </CardContent>
           <CardFooter>
             <Button
