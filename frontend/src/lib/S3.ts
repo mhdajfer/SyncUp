@@ -6,11 +6,14 @@ interface Response {
   message: string;
 }
 
-export const getUploadUrl = async () => {
+export const getUploadUrl = async (fileName: string, fileType: string) => {
   try {
-    const response = await userInstance.get("users/upload/image");
+    const response = await userInstance.post("users/upload/image", {
+      fileName,
+      fileType,
+    });
 
-    return response.data as Response & { uploadUrl: string; avatarUrl: string };
+    return response.data as Response & { uploadUrl: string };
   } catch (error) {
     throw error;
   }

@@ -16,16 +16,17 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/Components/ui/avatar";
 import { User } from "@/interfaces/User";
 import { AxiosError } from "axios";
 import { toast } from "sonner";
-import Cookies from "js-cookie";
 import { editProfile } from "@/api/userService/user";
-import { useDispatch } from "react-redux";
-import { loginSuccess } from "@/store/slices/authSlice";
 
 export default function ShowProfile({ initialUser }: { initialUser: User }) {
   const [user, setUser] = useState<User>(initialUser);
-  const dispatch = useDispatch();
+  const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const [imageUploaded, setImageUploaded] = useState<File | null>();
+  const [imageUploaded, setImageUploaded] = useState<File | null>(null);
+
+  const s3Url = process.env.NEXT_PUBLIC_S3_URL;
+
+  if (!s3Url) return toast.info("s3 url not specified");
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -36,8 +37,6 @@ export default function ShowProfile({ initialUser }: { initialUser: User }) {
   };
 
   const handleUpdate = async () => {
-    console.log("Updated user details:", user);
-
     try {
       const response = await editProfile(user);
 
@@ -59,37 +58,43 @@ export default function ShowProfile({ initialUser }: { initialUser: User }) {
   const handleSaveImage = async () => {
     if (!imageUploaded) return toast.warning("image not uploaded");
 
-    const response = await getUploadUrl();
+    try {
+      const fileName = "Image-" + user._id + ".jpg";
+      const response = await getUploadUrl(fileName, "image/jpeg");
 
-    if (response.success) {
-      const { uploadUrl, avatarUrl } = response;
+      if (response.success) {
+        const { uploadUrl } = response;
 
-      if (!avatarUrl || !uploadUrl)
-        return toast.error("didn't get urls for the image");
+        if (!uploadUrl)
+          return toast.error("didn't get url for the image upload");
 
-      await uploadFileToS3(uploadUrl, imageUploaded);
+        await uploadFileToS3(uploadUrl, imageUploaded);
 
-      const accessToken = Cookies.get("accessToken");
-      if (!accessToken) return toast.error("Access token not found");
-      toast.success("profile uploaded successfully");
-      setUser((prevUser) => ({
-        ...prevUser,
-        avatar: avatarUrl,
-      }));
-      dispatch(loginSuccess({ accessToken, user }));
-    } else return toast.error("Image upload failed");
+        const newProfilePictureUrl = `${s3Url}/Image-${user._id}.jpg`;
+
+        setUser((prevUser) => ({
+          ...prevUser,
+          avatar: newProfilePictureUrl,
+        }));
+
+        setAvatarPreview(null);
+        setImageUploaded(null);
+
+        toast.success("Profile picture updated successfully");
+      } else return toast.error("Image upload failed");
+    } catch (error) {
+      toast.error("Failed to update profile picture");
+      console.error(error);
+    }
   };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    setImageUploaded(file);
     if (file) {
+      setImageUploaded(file);
       const reader = new FileReader();
       reader.onloadend = () => {
-        setUser((prevUser) => ({
-          ...prevUser,
-          profilePicture: reader.result as string,
-        }));
+        setAvatarPreview(reader.result as string);
       };
       reader.readAsDataURL(file);
     }
@@ -108,7 +113,12 @@ export default function ShowProfile({ initialUser }: { initialUser: User }) {
             className="w-24 h-24 cursor-pointer relative group"
             onClick={handleProfilePictureClick}
           >
-            <AvatarImage src={user.avatar} alt="Profile picture" />
+            <AvatarImage
+              src={
+                avatarPreview || user.avatar || `${s3Url}/Image-${user._id}.jpg`
+              }
+              alt="Profile picture"
+            />
             <AvatarFallback className="bg-green-400">
               {user.firstName[0].toUpperCase()}
               {user.lastName[0].toUpperCase()}
@@ -122,9 +132,7 @@ export default function ShowProfile({ initialUser }: { initialUser: User }) {
           <input
             type="file"
             ref={fileInputRef}
-            onChange={(e) => {
-              handleFileChange(e);
-            }}
+            onChange={handleFileChange}
             accept="image/*"
             className="hidden"
             aria-label="Change profile picture"
@@ -132,13 +140,14 @@ export default function ShowProfile({ initialUser }: { initialUser: User }) {
           {imageUploaded && (
             <button
               onClick={handleSaveImage}
-              className="px-1 py-1 mt-3 text-xs  text-white rounded  bg-violet-950 hover:bg-violet-900 transition-colors duration-300"
+              className="px-1 py-1 mt-3 text-xs text-white rounded bg-violet-950 hover:bg-violet-900 transition-colors duration-300"
             >
               Save Image
             </button>
           )}
         </div>
 
+        {/* Rest of the form fields remain the same */}
         <div className="grid grid-cols-2 gap-8">
           <div>
             <Label htmlFor="firstName">First Name</Label>
@@ -147,7 +156,7 @@ export default function ShowProfile({ initialUser }: { initialUser: User }) {
               name="firstName"
               value={user.firstName}
               onChange={handleInputChange}
-              className=" border border-gray-800 text-gray-400"
+              className="border border-gray-800 text-gray-400"
             />
           </div>
           <div>
@@ -157,7 +166,7 @@ export default function ShowProfile({ initialUser }: { initialUser: User }) {
               name="lastName"
               value={user.lastName}
               onChange={handleInputChange}
-              className=" border border-gray-800 text-gray-400"
+              className="border border-gray-800 text-gray-400"
             />
           </div>
         </div>
@@ -169,7 +178,7 @@ export default function ShowProfile({ initialUser }: { initialUser: User }) {
             type="number"
             value={user.age}
             onChange={handleInputChange}
-            className=" border border-gray-800 text-gray-400"
+            className="border border-gray-800 text-gray-400"
           />
         </div>
         <div>
@@ -180,7 +189,7 @@ export default function ShowProfile({ initialUser }: { initialUser: User }) {
             type="email"
             value={user.email}
             onChange={handleInputChange}
-            className=" border border-gray-800 text-gray-400"
+            className="border border-gray-800 text-gray-400"
           />
         </div>
         <div>
@@ -190,7 +199,7 @@ export default function ShowProfile({ initialUser }: { initialUser: User }) {
             name="tenant_id"
             value={user.tenant_id}
             onChange={handleInputChange}
-            className=" border border-gray-800 text-gray-400"
+            className="border border-gray-800 text-gray-400"
           />
         </div>
         <div>
@@ -200,7 +209,7 @@ export default function ShowProfile({ initialUser }: { initialUser: User }) {
             name="phoneNumber"
             value={user.phoneNumber}
             onChange={handleInputChange}
-            className=" border border-gray-800 text-gray-400"
+            className="border border-gray-800 text-gray-400"
           />
         </div>
         <div>
@@ -210,7 +219,7 @@ export default function ShowProfile({ initialUser }: { initialUser: User }) {
             name="role"
             value={user.role}
             onChange={handleInputChange}
-            className=" border border-gray-800 text-gray-400"
+            className="border border-gray-800 text-gray-400"
           />
         </div>
       </CardContent>

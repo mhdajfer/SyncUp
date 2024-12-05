@@ -46,8 +46,10 @@ export const deleteAvatarIfExists = async (avatarUrl?: string) => {
   const key = avatarUrl.split(".com/")[1];
   if (!key) return;
 
+  console.log(key, avatarUrl)
+
   const deleteCommand = new DeleteObjectCommand({
-    Bucket: "your-bucket-name",
+    Bucket: process.env.AWS_S3_BUCKET_NAME,
     Key: key,
   });
 
