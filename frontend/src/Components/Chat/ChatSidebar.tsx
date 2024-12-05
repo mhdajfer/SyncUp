@@ -57,6 +57,9 @@ export default function ChatSidebar({
 
   const currentUser = useSelector((state: RootState) => state.auth.user);
   const currentUserId = currentUser?._id;
+  const s3Url = process.env.NEXT_PUBLIC_S3_URL;
+
+  if (!s3Url) toast.info("s3 url not specified");
 
   const handleStartChat = async (user: User) => {
     try {
@@ -120,17 +123,17 @@ export default function ChatSidebar({
     return typeof otherUser === "object" ? otherUser.firstName : otherUser;
   };
 
-  const setChatImage = (chat: Chat) => {
-    const otherUser = chat.users.find((user) =>
-      typeof user !== "string"
-        ? user._id !== currentUserId
-        : user !== currentUserId
-    );
+  // const setChatImage = (chat: Chat) => {
+  //   const otherUser = chat.users.find((user) =>
+  //     typeof user !== "string"
+  //       ? user._id !== currentUserId
+  //       : user !== currentUserId
+  //   );
 
-    if (!otherUser) return toast.error("Issue with chat name");
+  //   if (!otherUser) return toast.error("Issue with chat name");
 
-    return typeof otherUser === "object" ? otherUser.avatar : otherUser;
-  };
+  //   return typeof otherUser === "object" ? otherUser.avatar : otherUser;
+  // };
 
   const handleOneChat = async (chat: Chat) => {
     try {
@@ -153,6 +156,15 @@ export default function ChatSidebar({
         toast.error(error.response?.data.error);
       } else toast.error("error while getting messages");
     }
+  };
+
+  const getOtherUserId = (users: User[] | string[]) => {
+    if (typeof users[0] === "object") {
+      // If users is an array of User objects, return the _id of the first element
+      return (users[0] as User)._id;
+    }
+    // If users is an array of strings, return the first element
+    return users[0];
   };
 
   const filteredUsers = users.filter(
@@ -225,7 +237,7 @@ export default function ChatSidebar({
                     >
                       <Avatar className="mr-2 bg-violet-900">
                         <AvatarImage
-                          src={user.avatar}
+                          src={`${s3Url}/Image-${user._id}.jpg`}
                           alt={user.firstName[0]}
                         />
                         <AvatarFallback>{user.firstName[0]}</AvatarFallback>
@@ -264,14 +276,11 @@ export default function ChatSidebar({
                 <div className="flex items-center">
                   <Avatar className="mr-3">
                     <AvatarImage
-                      src={
-                        chat.isGroup
-                          ? `https://api.dicebear.com/6.x/initials/svg?seed=${chat.chat}`
-                          : (setChatImage(chat) as string)
-                      }
-                      alt={chat.chat[0]}
+                      src={`${s3Url}/Image-${getOtherUserId(chat.users)}.jpg`}
                     />
-                    <AvatarFallback>{chat.chat[0]}</AvatarFallback>
+                    <AvatarFallback className="bg-orange-400">
+                      {setChatName(chat)}
+                    </AvatarFallback>
                   </Avatar>
                   <div className="flex-grow">
                     <h3 className="font-semibold">

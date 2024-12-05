@@ -16,6 +16,10 @@ export default function SingleChat({
   const sender: User = message.sender as User;
   const isCurrentUser = sender._id === currentUserId;
 
+  const s3Url = process.env.NEXT_PUBLIC_S3_URL;
+
+  if (!s3Url) console.log("s3 url not specified");
+
   return (
     <div
       className={`flex items-start mb-4 ${isCurrentUser ? "justify-end" : ""}`}
@@ -26,11 +30,11 @@ export default function SingleChat({
         overflow-hidden "
         >
           <AvatarImage
-            src={sender.avatar}
+            src={`${s3Url}/Image-${sender._id}.jpg`}
             alt={`Avatar of ${sender.firstName}`}
           />
-          <AvatarFallback>
-            {sender.firstName ? sender.firstName[0] : "?"}
+          <AvatarFallback className="bg-orange-400 w-full flex justify-center items-center">
+            {sender.firstName ? sender.firstName.slice(0, 2) : "?"}
           </AvatarFallback>
         </Avatar>
       )}
