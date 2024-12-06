@@ -44,13 +44,15 @@ export class ChateUseCases implements IChatUseCases {
   async sendMessage(
     senderId: string,
     content: string,
-    chatId: string
+    chatId: string,
+    file?: boolean
   ): Promise<IMessage> {
     try {
       const response = await this._chatRepository.sendMessage(
         senderId,
         chatId,
-        content
+        content,
+        file
       );
 
       return response;

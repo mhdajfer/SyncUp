@@ -20,11 +20,16 @@ export const getChats = async () => {
   }
 };
 
-export const sendMessage = async (chatId: string, content: string) => {
+export const sendMessage = async (
+  chatId: string,
+  content: string,
+  file?: boolean
+) => {
   try {
     const response = await userInstance.post("/comm/chats/sendMessage", {
       chatId,
       content,
+      file,
     });
 
     return response.data as Response & { data: Message };

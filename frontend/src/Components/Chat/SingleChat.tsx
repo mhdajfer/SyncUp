@@ -3,6 +3,10 @@ import { Message } from "@/interfaces/Message";
 import { User } from "@/interfaces/User";
 import { Avatar, AvatarFallback, AvatarImage } from "@radix-ui/react-avatar";
 import { format } from "date-fns";
+import Image from "next/image";
+import { useState } from "react";
+import { toast } from "sonner";
+import { ImageModal } from "@/Components/ImageModal";
 
 export default function SingleChat({
   message,
@@ -13,12 +17,22 @@ export default function SingleChat({
   currentUserId: string | undefined;
   isGroup: boolean;
 }) {
+  const [isImageModalOpen, setIsImageModalOpen] = useState(false);
   const sender: User = message.sender as User;
   const isCurrentUser = sender._id === currentUserId;
 
   const s3Url = process.env.NEXT_PUBLIC_S3_URL;
 
   if (!s3Url) console.log("s3 url not specified");
+
+  const viewImage = () => {
+    try {
+      setIsImageModalOpen(true);
+    } catch (error) {
+      console.error("Error opening image:", error);
+      toast.error("Failed to open image");
+    }
+  };
 
   return (
     <div
@@ -48,7 +62,18 @@ export default function SingleChat({
             {sender.firstName || "Unknown User"}
           </p>
         )}
-        <p>{message.content}</p>
+        {message.file ? (
+          <Image
+            src={`${s3Url}/Message-${message._id}.jpg`}
+            alt="Sent File"
+            className="rounded-lg max-w-xs mt-2 cursor-pointer"
+            width={100}
+            height={100}
+            onClick={viewImage}
+          />
+        ) : (
+          <p>{message.content}</p>
+        )}
         {message.updatedAt && (
           <p className="text-xs text-gray-400 mt-1">
             {format(new Date(message.updatedAt), "PPpp")}
@@ -66,6 +91,11 @@ export default function SingleChat({
           </AvatarFallback>
         </Avatar>
       )}
+      <ImageModal
+        isOpen={isImageModalOpen}
+        onClose={() => setIsImageModalOpen(false)}
+        imageUrl={`${s3Url}/Message-${message._id}.jpg`}
+      />
     </div>
   );
 }

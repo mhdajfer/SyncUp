@@ -9,7 +9,8 @@ export interface IChatUseCases {
   sendMessage(
     senderId: string,
     content: string,
-    chatId: string
+    chatId: string,
+    file?: boolean
   ): Promise<IMessage>;
   getMessages(chatId: string): Promise<IMessage[]>;
 }

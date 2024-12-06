@@ -73,13 +73,15 @@ export class ChatRepository implements IChatRepository {
   async sendMessage(
     senderId: string,
     chatId: string,
-    content: string
+    content: string,
+    file?: boolean
   ): Promise<IMessage> {
     try {
       const msgData = {
         sender: senderId,
         content: content,
         chat: chatId,
+        file,
       };
 
       let createdChat = await Message.create(msgData);

@@ -10,7 +10,8 @@ export interface IChatRepository {
   sendMessage(
     senderId: string,
     chatId: string,
-    content: string
+    content: string,
+    file?: boolean
   ): Promise<IMessage>;
   getMessages(chatId: string): Promise<IMessage[]>;
 }

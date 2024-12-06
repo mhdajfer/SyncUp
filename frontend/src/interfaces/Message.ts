@@ -8,4 +8,5 @@ export interface Message {
   chat: Chat | string;
   createdAt?: string;
   updatedAt?: string;
+  file?: boolean;
 }

@@ -65,14 +65,15 @@ export class ChatController {
   async sendMessage(req: CustomRequest, res: Response, next: NextFunction) {
     try {
       const senderId = req.user?._id;
-      const { content, chatId } = req.body;
+      const { content, chatId, file } = req.body;
 
       if (!senderId) throw new CustomError("User not found", 409);
 
       const message = await this._chatUseCases.sendMessage(
         senderId,
         content,
-        chatId
+        chatId,
+        file
       );
 
       return res
@@ -97,5 +98,4 @@ export class ChatController {
       next(error);
     }
   }
-
 }
