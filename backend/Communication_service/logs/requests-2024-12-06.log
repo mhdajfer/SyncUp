@@ -65,3 +65,10 @@
 2024-12-06T05:18:55.710Z [INFO]: GET /chats/allChat 304 - 229ms
 2024-12-06T05:19:15.188Z [INFO]: POST /chats/getMessages 200 - 209ms
 2024-12-06T05:19:52.529Z [INFO]: POST /chats/sendMessage 201 - 310ms
+<<<<<<< Updated upstream
+=======
+2024-12-06T06:24:26.857Z [INFO]: GET /chats/allChat 401 - 13ms
+2024-12-06T06:24:26.874Z [INFO]: GET /chats/allChat 401 - 7ms
+2024-12-06T06:24:27.310Z [INFO]: GET /chats/allChat 200 - 327ms
+2024-12-06T06:24:27.692Z [INFO]: GET /chats/allChat 304 - 373ms
+>>>>>>> Stashed changes

@@ -56,9 +56,30 @@ export class SocketManager implements ISocketManager {
         socket.to(data.to).emit("callAccepted", data.signal);
       });
 
+<<<<<<< Updated upstream
       socket.on("endCall", ({ to }: { to: any }) => {
+=======
+<<<<<<< Updated upstream
+      socket.on("endCall", ({ to }) => {
+>>>>>>> Stashed changes
         socket.to(to).emit("callEnded");
       });
+=======
+      socket.on(
+        "endCall",
+        ({
+          userId,
+          currentUserId,
+        }: {
+          userId: string;
+          currentUserId: string;
+        }) => {
+          console.log(userId, currentUserId)
+          socket.to(userId).emit("callEnded");
+          socket.to(currentUserId).emit("callEnded");
+        }
+      );
+>>>>>>> Stashed changes
 
       // Handle disconnection
       socket.on("disconnect", () => {

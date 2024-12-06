@@ -8,8 +8,15 @@ import { useSelector } from "react-redux";
 import { RootState } from "@/store/store";
 import { Card, CardContent } from "@/Components/ui/card";
 import { Button } from "@/Components/ui/button";
+import Image from "next/image";
 import { Input } from "@/Components/ui/input";
 import { Phone, PhoneOff, Video, VideoOff, Mic, MicOff } from "lucide-react";
+<<<<<<< Updated upstream
+=======
+<<<<<<< Updated upstream
+=======
+import DEFAULT_IMAGE from "../../../public/DefaultImg.avif";
+>>>>>>> Stashed changes
 // import {
 //   Dialog,
 //   DialogContent,
@@ -17,6 +24,10 @@ import { Phone, PhoneOff, Video, VideoOff, Mic, MicOff } from "lucide-react";
 //   DialogHeader,
 //   DialogTitle,
 // } from "../ui/dialog";
+<<<<<<< Updated upstream
+=======
+>>>>>>> Stashed changes
+>>>>>>> Stashed changes
 
 interface IncomingCallInfo {
   isSomeoneCalling: boolean;
@@ -46,7 +57,14 @@ export function VideoCall() {
     signalData: {} as SignalData,
   });
 
+<<<<<<< Updated upstream
   const destroyConnection = useCallback(() => {
+=======
+<<<<<<< Updated upstream
+=======
+  const destroyConnection = useCallback(() => {
+    toast.info("Call ended successfully");
+>>>>>>> Stashed changes
     if (connectionRef.current) {
       connectionRef.current.destroy();
     }
@@ -56,6 +74,10 @@ export function VideoCall() {
     window.location.reload();
   }, [stream]);
 
+<<<<<<< Updated upstream
+=======
+>>>>>>> Stashed changes
+>>>>>>> Stashed changes
   useEffect(() => {
     socket.emit("registerUser", {
       userId: currentUserId,
@@ -79,6 +101,7 @@ export function VideoCall() {
     signalData: SignalData;
   }) => {
     toast.success("Incoming call received");
+    setUserId(from);
     setIncominCallInfo({ isSomeoneCalling: true, from, signalData });
   };
 
@@ -91,7 +114,11 @@ export function VideoCall() {
       });
 
       peer.on("signal", (signalData) => {
-        socket.emit("initiateCall", { userId, signalData, myId: socket?.id });
+        socket.emit("initiateCall", {
+          userId,
+          signalData,
+          myId: currentUserId,
+        });
       });
 
       peer.on("stream", (remoteStream) => {
@@ -135,7 +162,7 @@ export function VideoCall() {
   };
 
   const endCall = () => {
-    socket.emit("endCall", { to: incominCallInfo.from });
+    socket.emit("endCall", { userId, currentUserId });
     destroyConnection();
   };
 
@@ -245,13 +272,22 @@ export function VideoCall() {
                   Your Video
                 </h3>
                 <div className="relative rounded-lg overflow-hidden bg-gray-800 aspect-video">
-                  <video
-                    ref={myVideoRef}
-                    autoPlay
-                    playsInline
-                    muted
-                    className="w-full h-full object-cover"
-                  />
+                  {stream ? (
+                    <video
+                      ref={myVideoRef}
+                      autoPlay
+                      playsInline
+                      muted
+                      className="w-full h-full object-cover"
+                    />
+                  ) : (
+                    <Image
+                      src={DEFAULT_IMAGE}
+                      alt="No video available"
+                      layout="fill"
+                      objectFit="cover"
+                    />
+                  )}
                 </div>
               </div>
 
@@ -261,12 +297,21 @@ export function VideoCall() {
                     Peer Video
                   </h3>
                   <div className="relative rounded-lg overflow-hidden bg-gray-800 aspect-video">
-                    <video
-                      ref={peerVideoRef}
-                      autoPlay
-                      playsInline
-                      className="w-full h-full object-cover"
-                    />
+                    {peerVideoRef.current && peerVideoRef.current.srcObject ? (
+                      <video
+                        ref={peerVideoRef}
+                        autoPlay
+                        playsInline
+                        className="w-full h-full object-cover"
+                      />
+                    ) : (
+                      <Image
+                        src={DEFAULT_IMAGE}
+                        alt="No peer video available"
+                        layout="fill"
+                        objectFit="cover"
+                      />
+                    )}
                   </div>
                 </div>
               )}
