@@ -11,23 +11,8 @@ import { Button } from "@/Components/ui/button";
 import Image from "next/image";
 import { Input } from "@/Components/ui/input";
 import { Phone, PhoneOff, Video, VideoOff, Mic, MicOff } from "lucide-react";
-<<<<<<< Updated upstream
-=======
-<<<<<<< Updated upstream
-=======
+
 import DEFAULT_IMAGE from "../../../public/DefaultImg.avif";
->>>>>>> Stashed changes
-// import {
-//   Dialog,
-//   DialogContent,
-//   DialogFooter,
-//   DialogHeader,
-//   DialogTitle,
-// } from "../ui/dialog";
-<<<<<<< Updated upstream
-=======
->>>>>>> Stashed changes
->>>>>>> Stashed changes
 
 interface IncomingCallInfo {
   isSomeoneCalling: boolean;
@@ -57,14 +42,8 @@ export function VideoCall() {
     signalData: {} as SignalData,
   });
 
-<<<<<<< Updated upstream
-  const destroyConnection = useCallback(() => {
-=======
-<<<<<<< Updated upstream
-=======
   const destroyConnection = useCallback(() => {
     toast.info("Call ended successfully");
->>>>>>> Stashed changes
     if (connectionRef.current) {
       connectionRef.current.destroy();
     }
@@ -73,11 +52,22 @@ export function VideoCall() {
     }
     window.location.reload();
   }, [stream]);
+  const requestMediaStream = async () => {
+    try {
+      toast.success(`Requesting media stream ${isVideoOff}`);
+      const mediaStream = await navigator.mediaDevices.getUserMedia({
+        video: isVideoOff,
+        audio: !isMuted,
+      });
+      setStream(mediaStream);
+      if (myVideoRef.current) {
+        myVideoRef.current.srcObject = mediaStream;
+      }
+    } catch (error) {
+      console.error("Error accessing media devices:", error);
+    }
+  };
 
-<<<<<<< Updated upstream
-=======
->>>>>>> Stashed changes
->>>>>>> Stashed changes
   useEffect(() => {
     socket.emit("registerUser", {
       userId: currentUserId,
@@ -164,22 +154,6 @@ export function VideoCall() {
   const endCall = () => {
     socket.emit("endCall", { userId, currentUserId });
     destroyConnection();
-  };
-
-  const requestMediaStream = async () => {
-    try {
-      toast.success(`Requesting media stream ${isVideoOff}`);
-      const mediaStream = await navigator.mediaDevices.getUserMedia({
-        video: isVideoOff,
-        audio: !isMuted,
-      });
-      setStream(mediaStream);
-      if (myVideoRef.current) {
-        myVideoRef.current.srcObject = mediaStream;
-      }
-    } catch (error) {
-      console.error("Error accessing media devices:", error);
-    }
   };
 
   const toggleMute = () => {
@@ -272,7 +246,7 @@ export function VideoCall() {
                   Your Video
                 </h3>
                 <div className="relative rounded-lg overflow-hidden bg-gray-800 aspect-video">
-                  {stream ? (
+                  {!isVideoOff ? (
                     <video
                       ref={myVideoRef}
                       autoPlay
@@ -297,21 +271,12 @@ export function VideoCall() {
                     Peer Video
                   </h3>
                   <div className="relative rounded-lg overflow-hidden bg-gray-800 aspect-video">
-                    {peerVideoRef.current && peerVideoRef.current.srcObject ? (
-                      <video
-                        ref={peerVideoRef}
-                        autoPlay
-                        playsInline
-                        className="w-full h-full object-cover"
-                      />
-                    ) : (
-                      <Image
-                        src={DEFAULT_IMAGE}
-                        alt="No peer video available"
-                        layout="fill"
-                        objectFit="cover"
-                      />
-                    )}
+                    <video
+                      ref={peerVideoRef}
+                      autoPlay
+                      playsInline
+                      className="w-full h-full object-cover"
+                    />
                   </div>
                 </div>
               )}

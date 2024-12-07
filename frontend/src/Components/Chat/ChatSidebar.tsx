@@ -160,11 +160,13 @@ export default function ChatSidebar({
 
   const getOtherUserId = (users: User[] | string[]) => {
     if (typeof users[0] === "object") {
-      // If users is an array of User objects, return the _id of the first element
-      return (users[0] as User)._id;
+      if (users[0]._id === currentUserId)
+        return (users[1] as User)._id as string;
+      else return (users[0] as User)._id as string;
     }
     // If users is an array of strings, return the first element
-    return users[0];
+    if (users[0] === currentUserId) return users[1] as string;
+    else return users[0] as string;
   };
 
   const filteredUsers = users.filter(
@@ -276,10 +278,14 @@ export default function ChatSidebar({
                 <div className="flex items-center">
                   <Avatar className="mr-3">
                     <AvatarImage
-                      src={`${s3Url}/Image-${getOtherUserId(chat.users)}.jpg`}
+                      src={
+                        chat.isGroup
+                          ? ""
+                          : `${s3Url}/Image-${getOtherUserId(chat.users)}.jpg`
+                      }
                     />
                     <AvatarFallback className="bg-orange-400">
-                      {setChatName(chat)}
+                      {chat.isGroup ? chat.chat : setChatName(chat)}
                     </AvatarFallback>
                   </Avatar>
                   <div className="flex-grow">

@@ -72,3 +72,21 @@
 2024-12-06T06:24:27.310Z [INFO]: GET /chats/allChat 200 - 327ms
 2024-12-06T06:24:27.692Z [INFO]: GET /chats/allChat 304 - 373ms
 >>>>>>> Stashed changes
+2024-12-06T06:41:49.522Z [INFO]: GET /chats/allChat 304 - 296ms
+2024-12-06T06:41:52.212Z [INFO]: POST /chats/getMessages 200 - 281ms
+2024-12-06T06:41:56.540Z [INFO]: POST /chats/getMessages 200 - 168ms
+2024-12-06T06:42:00.667Z [INFO]: POST /chats/getMessages 200 - 560ms
+2024-12-06T06:42:11.864Z [INFO]: POST /chats/sendMessage 201 - 1480ms
+2024-12-06T06:42:17.660Z [INFO]: GET /chats/allChat 200 - 1128ms
+2024-12-06T06:42:24.143Z [INFO]: POST /chats/getMessages 200 - 2166ms
+2024-12-06T06:42:26.511Z [INFO]: POST /chats/getMessages 200 - 384ms
+2024-12-06T06:42:38.026Z [INFO]: POST /chats/getMessages 200 - 8563ms
+2024-12-06T06:42:52.926Z [INFO]: GET /chats/allChat 304 - 390ms
+2024-12-06T06:45:11.449Z [INFO]: GET /chats/allChat 200 - 765ms
+2024-12-06T06:45:15.075Z [INFO]: POST /chats/getMessages 200 - 409ms
+2024-12-06T06:45:56.133Z [INFO]: GET /chats/allChat 304 - 734ms
+2024-12-06T06:46:06.585Z [INFO]: GET /chats/allChat 304 - 443ms
+2024-12-06T06:46:17.440Z [INFO]: GET /chats/allChat 304 - 492ms
+2024-12-06T06:46:31.598Z [INFO]: GET /chats/allChat 304 - 546ms
+2024-12-06T06:46:35.406Z [INFO]: POST /chats/getMessages 200 - 417ms
+2024-12-06T06:46:49.041Z [INFO]: POST /chats/getMessages 200 - 842ms
