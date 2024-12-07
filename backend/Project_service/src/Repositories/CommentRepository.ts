@@ -1,6 +1,6 @@
-import taskModel from "../Frameworks/models/Task";
-import { ICommentRepository } from "../Interfaces/ICommentRepository";
-import { Task } from "../Interfaces/IProject";
+import { taskModel } from "../Frameworks/models";
+import { ICommentRepository } from "../Interfaces";
+import { Task } from "../Interfaces";
 
 export class CommentRepository implements ICommentRepository {
   async submitComment(

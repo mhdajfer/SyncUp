@@ -21,7 +21,7 @@ app.use(requestLogger);
 
 connectDB();
 
-// connectConsumers();
+connectConsumers();
 
 app.use("/users", userRoute);
 

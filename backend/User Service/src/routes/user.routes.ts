@@ -1,6 +1,6 @@
 import express, { Request, Response } from "express";
 import { UserRepository } from "../repositories/UserRepository";
-import { UserController } from "../Controllers/UserController";
+import { UserController } from "../Controllers";
 import { UserUseCases } from "../use-cases/UserUseCases";
 import { IUserRepository } from "../interfaces/IUserRepository";
 import { IUserUseCases } from "../interfaces/IUserUseCases";
@@ -8,7 +8,7 @@ import { checkSchema } from "express-validator";
 import signupValidator from "../validators/signupValidator";
 import userAuth from "../Middlewares/userAuth";
 import authRefresh from "../Middlewares/authRefresh";
-import { PaymentController } from "../Controllers/PaymentController";
+import { PaymentController } from "../Controllers";
 const router = express.Router();
 
 const userRepository: IUserRepository = new UserRepository();

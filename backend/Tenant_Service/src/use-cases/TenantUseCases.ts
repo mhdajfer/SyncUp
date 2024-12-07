@@ -1,8 +1,8 @@
-import { ICreateTenant, ITenants } from "../interfaces/ITenant";
-import { ITenantAdminRepository } from "../interfaces/ITenantAdminRepository";
-import { ITenantAdminUseCases } from "../interfaces/ITenantAdminUseCases";
-import { IUser } from "../interfaces/IUser";
-import { IUserUseCases } from "../interfaces/IUserUseCases";
+import { ICreateTenant, ITenants, StatusCode } from "../interfaces";
+import { ITenantAdminRepository } from "../interfaces";
+import { ITenantAdminUseCases } from "../interfaces";
+import { IUser } from "../interfaces";
+import { IUserUseCases } from "../interfaces";
 import { CustomError } from "../ErrorHandler/CustonError";
 
 export class TenantAdminUseCases implements ITenantAdminUseCases {
@@ -43,7 +43,7 @@ export class TenantAdminUseCases implements ITenantAdminUseCases {
     try {
       const tenantData = await this._tenantAdminRepository.editTenant(data);
 
-      if (!tenantData) throw new CustomError("tenant not updated", 409);
+      if (!tenantData) throw new CustomError("tenant not updated", StatusCode.CONFLICT);
 
       return tenantData;
     } catch (error) {

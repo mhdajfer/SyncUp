@@ -1,7 +1,6 @@
 import { model } from "mongoose";
-import messageSchema from "../../entities/message.entity";
+import { messageSchema } from "../../entities";
 
-
-const Message = model('Message', messageSchema);
+const Message = model("Message", messageSchema);
 
 export default Message;

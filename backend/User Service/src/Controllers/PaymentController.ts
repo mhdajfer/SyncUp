@@ -9,13 +9,13 @@ export class PaymentController {
       const { amount, currency } = req.body;
 
       if (!process.env.STRIPE_SECRET_KEY)
-        throw new CustomError("stripe secret key not found", 409);
+        throw new CustomError("stripe secret key not found", StatusCode.CONFLICT);
 
       const stripeT = new stripe(process.env.STRIPE_SECRET_KEY);
 
       if (!amount || !currency) {
         return res
-          .status(400)
+          .status(StatusCode.BAD_REQUEST)
           .json({ error: "Amount and currency are required." });
       }
 

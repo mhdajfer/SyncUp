@@ -1,6 +1,6 @@
-import { IConsumerRepository } from "../interfaces/IConsumerRepository";
-import { IConsumerUseCases } from "../interfaces/IConsumerUseCases";
-import { IUser } from "../interfaces/IUser";
+import { IConsumerRepository } from "../interfaces";
+import { IConsumerUseCases } from "../interfaces";
+import { IUser } from "../interfaces";
 
 export class ConsumerUseCases implements IConsumerUseCases {
   constructor(private _consumerRepository: IConsumerRepository) {}

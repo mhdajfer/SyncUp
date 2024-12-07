@@ -13,7 +13,7 @@ export class CommentController {
       const user = req.user;
       console.log("adding comment");
 
-      if (!user?._id) throw new CustomError("author not found", 409);
+      if (!user?._id) throw new CustomError("author not found", StatusCode.CONFLICT);
 
       const taskResponse = await this._commentUseCases.submitComment(
         message,

@@ -1,8 +1,9 @@
 import { CustomError } from "../ErrorHandler/CustonError";
-import { IChat } from "../interfaces/IChat";
-import { IGroupChatRepository } from "../interfaces/IGroupChatRepository";
-import { IGroupChatUseCases } from "../interfaces/IGroupChatUseCases";
-import { IUser } from "../interfaces/IUser";
+import { IChat } from "../interfaces";
+import { IGroupChatRepository } from "../interfaces";
+import { IGroupChatUseCases } from "../interfaces";
+import { IUser } from "../interfaces";
+import { StatusCode } from "../Interfaces/StatusCode";
 
 export class GroupChatUseCases implements IGroupChatUseCases {
   constructor(private _groupChatRepository: IGroupChatRepository) {}
@@ -15,11 +16,11 @@ export class GroupChatUseCases implements IGroupChatUseCases {
       if (users.length < 2)
         throw new CustomError(
           "more than 2 user is required to create group chat",
-          409
+          StatusCode.CONFLICT
         );
 
       if (!groupName || !admin)
-        throw new CustomError("not Provided group name and admin details", 409);
+        throw new CustomError("not Provided group name and admin details", StatusCode.CONFLICT);
 
       const GroupChat = await this._groupChatRepository.createGroupChat(
         groupName,
@@ -40,7 +41,7 @@ export class GroupChatUseCases implements IGroupChatUseCases {
         chatId
       );
 
-      if (!updatedChat) throw new CustomError("New member not added", 409);
+      if (!updatedChat) throw new CustomError("New member not added", StatusCode.CONFLICT);
 
       return updatedChat;
     } catch (error) {
@@ -55,7 +56,7 @@ export class GroupChatUseCases implements IGroupChatUseCases {
         chatId
       );
 
-      if (!updatedChat) throw new CustomError("member not removed", 409);
+      if (!updatedChat) throw new CustomError("member not removed", StatusCode.CONFLICT);
 
       return updatedChat;
     } catch (error) {

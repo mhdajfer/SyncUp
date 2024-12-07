@@ -1,8 +1,8 @@
 import { CustomError } from "../ErrorHandler/CustonError";
-import { IProject, Task } from "../Interfaces/IProject";
-import { IProjectRepository } from "../Interfaces/IProjectRepository";
-import { IProjectUseCases } from "../Interfaces/IProjectUseCases";
-import { IUser } from "../Interfaces/IUser";
+import { IProject, StatusCode, Task } from "../Interfaces";
+import { IProjectRepository } from "../Interfaces";
+import { IProjectUseCases } from "../Interfaces";
+import { IUser } from "../Interfaces";
 
 export class ProjectUseCases implements IProjectUseCases {
   constructor(private _projectRepository: IProjectRepository) {
@@ -93,7 +93,7 @@ export class ProjectUseCases implements IProjectUseCases {
     try {
       const project = await this._projectRepository.addTasks(data);
 
-      if (!project) throw new CustomError("project not found", 409);
+      if (!project) throw new CustomError("project not found", StatusCode.CONFLICT);
 
       return project;
     } catch (error) {
@@ -105,7 +105,7 @@ export class ProjectUseCases implements IProjectUseCases {
     try {
       const tasks = await this._projectRepository.getTasks(projectId);
 
-      if (!tasks) throw new CustomError("tasks not found", 409);
+      if (!tasks) throw new CustomError("tasks not found", StatusCode.CONFLICT);
 
       return tasks;
     } catch (error) {
@@ -117,7 +117,7 @@ export class ProjectUseCases implements IProjectUseCases {
     try {
       const taskDetails = await this._projectRepository.getOneTask(taskId);
 
-      if (!taskDetails) throw new CustomError("taskDetails not found", 409);
+      if (!taskDetails) throw new CustomError("taskDetails not found", StatusCode.CONFLICT);
 
       return taskDetails;
     } catch (error) {
@@ -129,7 +129,7 @@ export class ProjectUseCases implements IProjectUseCases {
     try {
       const updatedTask = await this._projectRepository.editTask(data);
 
-      if (!updatedTask) throw new CustomError("Task not found", 409);
+      if (!updatedTask) throw new CustomError("Task not found", StatusCode.CONFLICT);
 
       return updatedTask;
     } catch (error) {
@@ -154,7 +154,7 @@ export class ProjectUseCases implements IProjectUseCases {
         projectId
       );
 
-      if (!project) throw new CustomError("Member already exists", 409);
+      if (!project) throw new CustomError("Member already exists", StatusCode.CONFLICT);
 
       return project;
     } catch (error) {
@@ -172,7 +172,7 @@ export class ProjectUseCases implements IProjectUseCases {
       if (!project) {
         throw new CustomError(
           "Project not found or developer not part of the team",
-          409
+          StatusCode.CONFLICT
         );
       }
       return project;

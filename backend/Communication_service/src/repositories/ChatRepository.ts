@@ -1,10 +1,10 @@
-import Chat from "../frameworks/models/chatModel";
-import Message from "../frameworks/models/messageModel";
-import User from "../frameworks/models/userModel";
-import { IChat } from "../interfaces/IChat";
-import { IChatRepository } from "../interfaces/IChatRepository";
-import { IMessage } from "../interfaces/IMessage";
-import { IUser } from "../interfaces/IUser";
+import { Chat } from "../frameworks/models";
+import { Message } from "../frameworks/models";
+import { User } from "../frameworks/models";
+import { IChat } from "../interfaces";
+import { IChatRepository } from "../interfaces";
+import { IMessage } from "../interfaces";
+import { IUser } from "../interfaces";
 
 export class ChatRepository implements IChatRepository {
   async getAllUsers(): Promise<IUser[]> {

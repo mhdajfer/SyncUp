@@ -1,8 +1,7 @@
 import { CustomError } from "../ErrorHandler/CustonError";
-import { ICommentRepository } from "../Interfaces/ICommentRepository";
-import { ICommentUseCase } from "../Interfaces/ICommentUseCase";
-import { Task } from "../Interfaces/IProject";
-import { CommentRepository } from "../Repositories/CommentRepository";
+import { ICommentRepository, StatusCode } from "../Interfaces";
+import { ICommentUseCase } from "../Interfaces";
+import { Task } from "../Interfaces";
 
 export class CommentUseCases implements ICommentUseCase {
   constructor(private _commentRepository: ICommentRepository) {
@@ -21,7 +20,7 @@ export class CommentUseCases implements ICommentUseCase {
         authorId
       );
 
-      if (!task) throw new CustomError("Comment not submitted", 409);
+      if (!task) throw new CustomError("Comment not submitted", StatusCode.CONFLICT);
 
       return task;
     } catch (error) {

@@ -1,14 +1,14 @@
 import { Consumer } from "kafkajs";
 import { IUserConsumer } from "../../interfaces/IUserConsumer";
-import { ConsumerRepository } from "../../repositories/ConsumerRepository";
+import { ConsumerRepository } from "../../repositories";
 import { IConsumerRepository } from "../../interfaces/IConsumerRepository";
 import { IEmailUseCases } from "../../interfaces/IEmailUseCases";
-import { EmailUseCases } from "../../use-cases/EmailUseCases";
+import { EmailUseCases } from "../../use-cases";
 import { IUser, IUserInvite } from "../../interfaces/IUser";
 import { IUserUseCases } from "../../interfaces/IUserUseCases";
 import { IUserRepository } from "../../interfaces/IUserRepository";
 import { UserRepository } from "../../repositories/UserRepository";
-import { UserUseCases } from "../../use-cases/UserUseCases";
+import { UserUseCases } from "../../use-cases";
 import { Task } from "../../interfaces/IProject";
 
 export class UserConsumer implements IUserConsumer {

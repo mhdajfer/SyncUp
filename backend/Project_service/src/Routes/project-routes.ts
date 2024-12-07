@@ -1,13 +1,13 @@
 import express from "express";
-import { ProjectRepository } from "../Repositories/ProjectRepository";
-import { ProjectUseCases } from "../Use-cases/ProjectUseCases";
-import { ProjectControllers } from "../Controllers/ProjectControllers";
+import { ProjectRepository } from "../Repositories";
+import { ProjectUseCases } from "../Use-cases";
+import { ProjectControllers } from "../Controllers";
 import { checkSchema } from "express-validator";
 import projectValidator from "../validators/projectValidator";
 import userAuth from "../Middlewares/userAuth";
-import { CommentController } from "../Controllers/CommentController";
-import { CommentRepository } from "../Repositories/CommentRepository";
-import { CommentUseCases } from "../Use-cases/CommentUseCases";
+import { CommentController } from "../Controllers";
+import { CommentRepository } from "../Repositories";
+import { CommentUseCases } from "../Use-cases";
 
 const router = express.Router();
 

@@ -1,15 +1,14 @@
 import express from "express";
-import { ChatRepository } from "../repositories/ChatRepository";
-import { ChateUseCases } from "../use-cases/ChatUseCases";
-import { ChatController } from "../Controllers/ChatController";
+import { ChatRepository } from "../repositories";
+import { ChatUseCases } from "../use-cases";
+import { ChatController } from "../Controllers";
 import userAuth from "../Middlewares/userAuth";
 
 const router = express.Router();
 
 const chatRepository = new ChatRepository();
-const chatUseCases = new ChateUseCases(chatRepository);
+const chatUseCases = new ChatUseCases(chatRepository);
 const chatController = new ChatController(chatUseCases);
-
 
 router.get("/", chatController.getAllUsers.bind(chatController));
 

@@ -1,7 +1,6 @@
 import { model } from "mongoose";
-import chatSchema from "../../entities/chat.entity";
+import { chatSchema } from "../../entities";
 
-
-const Chat = model('Chat', chatSchema);
+const Chat = model("Chat", chatSchema);
 
 export default Chat;

@@ -1,8 +1,7 @@
-import { userInfo } from "os";
-import { IConsumerRepository } from "../interfaces/IConsumerRepository";
-import { IEmailUseCases } from "../interfaces/IEmailUseCases";
-import { IUserInvite } from "../interfaces/IUser";
-import { Task } from "../interfaces/IProject";
+import { IConsumerRepository } from "../interfaces";
+import { IEmailUseCases } from "../interfaces";
+import { IUserInvite } from "../interfaces";
+import { Task } from "../interfaces";
 
 export class EmailUseCases implements IEmailUseCases {
   constructor(private _consumerRepository: IConsumerRepository) {}

@@ -1,7 +1,7 @@
 import { CustomError } from "../ErrorHandler/CustonError";
-import User from "../frameworks/models/userModel";
-import { IConsumerRepository } from "../interfaces/IConsumerRepository";
-import { IUser } from "../interfaces/IUser";
+import { User } from "../frameworks/models";
+import { IConsumerRepository, StatusCode } from "../interfaces";
+import { IUser } from "../interfaces";
 
 export class ConsumerRepository implements IConsumerRepository {
   async createUser(data: IUser): Promise<IUser> {
@@ -11,7 +11,7 @@ export class ConsumerRepository implements IConsumerRepository {
       const newUser = await newData.save();
 
       if (!newUser)
-        throw new CustomError("user not created in tenant service", 409);
+        throw new CustomError("user not created in tenant service", StatusCode.CONFLICT);
 
       return newUser.toObject() as IUser;
     } catch (error) {

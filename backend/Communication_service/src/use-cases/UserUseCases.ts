@@ -1,6 +1,6 @@
-import { IUser } from "../interfaces/IUser";
-import { IUserRepository } from "../interfaces/IUserRepository";
-import { IUserUseCases } from "../interfaces/IUserUseCases";
+import { IUser } from "../interfaces";
+import { IUserRepository } from "../interfaces";
+import { IUserUseCases } from "../interfaces";
 
 export class UserUseCases implements IUserUseCases {
   constructor(private _userRepository: IUserRepository) {}

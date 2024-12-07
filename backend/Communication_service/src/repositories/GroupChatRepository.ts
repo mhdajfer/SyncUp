@@ -1,7 +1,7 @@
-import Chat from "../frameworks/models/chatModel";
-import { IChat } from "../interfaces/IChat";
-import { IGroupChatRepository } from "../interfaces/IGroupChatRepository";
-import { IUser } from "../interfaces/IUser";
+import { Chat } from "../frameworks/models";
+import { IChat } from "../interfaces";
+import { IGroupChatRepository } from "../interfaces";
+import { IUser } from "../interfaces";
 
 export class GroupChatRepository implements IGroupChatRepository {
   async createGroupChat(

@@ -1,11 +1,10 @@
-import { CustomError } from "../ErrorHandler/CustonError";
 import { IChat } from "../interfaces/IChat";
-import { IChatRepository } from "../interfaces/IChatRepository";
-import { IChatUseCases } from "../interfaces/IChatUseCases";
-import { IMessage } from "../interfaces/IMessage";
-import { IUser } from "../interfaces/IUser";
+import { IChatRepository } from "../interfaces";
+import { IChatUseCases } from "../interfaces";
+import { IMessage } from "../interfaces";
+import { IUser } from "../interfaces";
 
-export class ChateUseCases implements IChatUseCases {
+export class ChatUseCases implements IChatUseCases {
   constructor(private _chatRepository: IChatRepository) {}
 
   async getAllUsers(): Promise<IUser[]> {

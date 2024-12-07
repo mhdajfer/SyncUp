@@ -1,15 +1,14 @@
-import { IUser, IUserInvite } from "../interfaces/IUser";
-import { IUserRepository } from "../interfaces/IUserRepository";
-import User from "../frameworks/models/userModel";
-import { ObjectId } from "mongodb";
-import Otp from "../frameworks/models/otpModel";
+import { IUser, IUserInvite } from "../interfaces";
+import { IUserRepository } from "../interfaces";
+import { User } from "../frameworks/models";
+import { Otp } from "../frameworks/models";
 import { CustomError } from "../ErrorHandler/CustonError";
-import Invitee from "../frameworks/models/inviteeModel";
-import { ISubscription } from "../interfaces/ISubscription";
-import SubscriptionModel from "../frameworks/models/subscriptionModel";
-import { ISubscriptionPlan } from "../interfaces/ISubscriptionPlan";
-import SubscriptionPlanModel from "../frameworks/models/subscriptionPlanModel";
-import { StatusCode } from "../interfaces/StatusCode";
+import { Invitee } from "../frameworks/models";
+import { ISubscription } from "../interfaces";
+import { SubscriptionModel } from "../frameworks/models";
+import { ISubscriptionPlan } from "../interfaces";
+import { SubscriptionPlanModel } from "../frameworks/models";
+import { StatusCode } from "../interfaces";
 
 export class UserRepository implements IUserRepository {
   async inviteUser(invitee: IUserInvite): Promise<IUserInvite> {
@@ -17,7 +16,7 @@ export class UserRepository implements IUserRepository {
       const newUser = new Invitee(invitee);
 
       const data = await newUser.save();
-      if (!data) throw new CustomError("invitee not created", 400);
+      if (!data) throw new CustomError("invitee not created", StatusCode.BAD_REQUEST);
 
       return data as IUserInvite;
     } catch (error) {
@@ -59,7 +58,7 @@ export class UserRepository implements IUserRepository {
         email,
       }).sort({ createdAt: -1 });
 
-      if (!user) throw new CustomError("No user found", 400);
+      if (!user) throw new CustomError("No user found", StatusCode.BAD_REQUEST);
 
       console.log(
         ` checking whether ${otp} and ${user.otp} are same.............}`
@@ -67,7 +66,7 @@ export class UserRepository implements IUserRepository {
 
       if (user.otp == otp) {
         return true;
-      } else throw new CustomError("otp not matching", 409);
+      } else throw new CustomError("otp not matching", StatusCode.CONFLICT);
     } catch (error) {
       throw error;
     }
@@ -76,7 +75,7 @@ export class UserRepository implements IUserRepository {
     try {
       const user = await User.findById(userId);
       if (!user) {
-        throw new CustomError("User not found", 400);
+        throw new CustomError("User not found", StatusCode.BAD_REQUEST);
       }
 
       const updatedUser = await User.findByIdAndUpdate(
@@ -284,7 +283,7 @@ export class UserRepository implements IUserRepository {
     try {
       const loggedInUser = await User.findOne({ _id: userId });
       if (!loggedInUser?.tenant_id)
-        throw new CustomError("tenant id not provided", 409);
+        throw new CustomError("tenant id not provided", StatusCode.CONFLICT);
 
       const updateFields = {
         subscriptionStatus: false,

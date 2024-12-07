@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-import SubscriptionSchema from "../../entities/subscription.entiti";
+import {SubscriptionSchema} from "../../entities";
 
 const SubscriptionModel = mongoose.model("subscription", SubscriptionSchema);
 

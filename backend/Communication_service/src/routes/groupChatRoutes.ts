@@ -2,9 +2,9 @@ import express from "express";
 import userAuth from "../Middlewares/userAuth";
 
 const router = express.Router();
-import { GroupChatRepository } from "../repositories/GroupChatRepository";
-import { GroupChatUseCases } from "../use-cases/GroupChatUseCases";
-import { GroupChatController } from "../Controllers/GroupChatController";
+import { GroupChatRepository } from "../repositories";
+import { GroupChatUseCases } from "../use-cases";
+import { GroupChatController } from "../Controllers";
 
 const groupChatRepository = new GroupChatRepository();
 const groupChatUseCases = new GroupChatUseCases(groupChatRepository);

@@ -1,6 +1,6 @@
-import { IUser, IUserInvite } from "../interfaces/IUser";
-import { IUserUseCases } from "../interfaces/IUserUseCases";
-import { IUserRepository } from "../interfaces/IUserRepository";
+import { IUser, IUserInvite } from "../interfaces";
+import { IUserUseCases } from "../interfaces";
+import { IUserRepository } from "../interfaces";
 import {
   createRefreshToken,
   createToken,
@@ -8,9 +8,9 @@ import {
 } from "../Utils/Jwt";
 import bcrypt from "bcrypt";
 import { CustomError } from "../ErrorHandler/CustonError";
-import { ISubscription } from "../interfaces/ISubscription";
-import { ISubscriptionPlan } from "../interfaces/ISubscriptionPlan";
-import { StatusCode } from "../interfaces/StatusCode";
+import { ISubscription } from "../interfaces";
+import { ISubscriptionPlan } from "../interfaces";
+import { StatusCode } from "../interfaces";
 
 export class UserUseCases implements IUserUseCases {
   private _userRepository: IUserRepository;
@@ -90,21 +90,21 @@ export class UserUseCases implements IUserUseCases {
   ): Promise<{ user: IUser; accessToken: string; refreshToken: string }> {
     try {
       const user: IUser | null = await this._userRepository.findUser(username);
-      if (!user) throw new CustomError(`User ${username} not exist`, 400);
+      if (!user) throw new CustomError(`User ${username} not exist`, StatusCode.BAD_REQUEST);
       console.log(user);
 
       if (user.isBlocked)
-        throw new CustomError(`User ${username} blocked`, 400);
+        throw new CustomError(`User ${username} blocked`, StatusCode.BAD_REQUEST);
 
       const accessToken = createToken(user);
       const refreshToken = createRefreshToken(user);
 
       if (useCase == "normal") {
         if (!user.isVerified)
-          throw new CustomError(`User ${username} not verified`, 400);
+          throw new CustomError(`User ${username} not verified`, StatusCode.BAD_REQUEST);
         const res = await bcrypt.compare(password, user.password);
 
-        if (!res) throw new CustomError("Incorrect password", 400);
+        if (!res) throw new CustomError("Incorrect password", StatusCode.BAD_REQUEST);
       }
 
       return { user, accessToken, refreshToken };
@@ -164,7 +164,7 @@ export class UserUseCases implements IUserUseCases {
       console.log("existing user", existUser);
 
       if (existUser && existUser.isVerified)
-        throw new CustomError("User already exists", 409);
+        throw new CustomError("User already exists", StatusCode.CONFLICT);
       else if (existUser && !existUser.isVerified) return null;
 
       return await this._userRepository.createUser(user);
@@ -182,7 +182,7 @@ export class UserUseCases implements IUserUseCases {
       console.log("existing user", existUser);
 
       if (existUser) {
-        throw new CustomError("User already exists", 409);
+        throw new CustomError("User already exists", StatusCode.CONFLICT);
       } else return await this._userRepository.createUserInvite(user);
     } catch (error) {
       throw error;
@@ -200,7 +200,7 @@ export class UserUseCases implements IUserUseCases {
     try {
       const data = await this._userRepository.editProfile(user);
 
-      if (!data) throw new CustomError("profile not modified", 409);
+      if (!data) throw new CustomError("profile not modified", StatusCode.CONFLICT);
 
       return user;
     } catch (error) {
@@ -271,7 +271,7 @@ export class UserUseCases implements IUserUseCases {
 
   async getSubscriptionHistory(tenantId: string): Promise<ISubscription[]> {
     try {
-      if (!tenantId) throw new CustomError("tenantId is required", 409);
+      if (!tenantId) throw new CustomError("tenantId is required", StatusCode.CONFLICT);
 
       const historyList = await this._userRepository.getSubscriptionHistory(
         tenantId

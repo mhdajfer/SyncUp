@@ -1,9 +1,8 @@
 import { CustomError } from "../ErrorHandler/CustonError";
-import Tenant from "../frameworks/models/tenantModel";
-import { ICreateTenant, ITenants } from "../interfaces/ITenant";
-import { ITenantAdmin } from "../interfaces/ITenantAdmin";
-import { ITenantAdminRepository } from "../interfaces/ITenantAdminRepository";
-import { IUser } from "../interfaces/IUser";
+import { Tenant } from "../frameworks/models";
+import { ICreateTenant, ITenants, StatusCode } from "../interfaces";
+import { ITenantAdminRepository } from "../interfaces";
+import { IUser } from "../interfaces";
 
 export class TenantAdminRepository implements ITenantAdminRepository {
   async createTenant(data: ICreateTenant, tenant: IUser): Promise<ITenants> {
@@ -20,7 +19,7 @@ export class TenantAdminRepository implements ITenantAdminRepository {
 
       const response: ITenants = await newData.save();
 
-      if (!response) throw new CustomError("tenant not created", 409);
+      if (!response) throw new CustomError("tenant not created", StatusCode.CONFLICT);
 
       return response;
     } catch (error) {
@@ -33,7 +32,7 @@ export class TenantAdminRepository implements ITenantAdminRepository {
       const user = await Tenant.findOne({ user_id: tenantAdmin._id });
       console.log(user);
 
-      if (!user) throw new CustomError("No tenant found", 400);
+      if (!user) throw new CustomError("No tenant found", StatusCode.BAD_REQUEST);
 
       return user as unknown as ITenants;
     } catch (error) {
@@ -57,12 +56,9 @@ export class TenantAdminRepository implements ITenantAdminRepository {
 
   async getAllTenants(): Promise<ITenants[]> {
     try {
-
       const tenants = await Tenant.find();
 
-
       return tenants as ITenants[];
-      
     } catch (error) {
       throw error;
     }

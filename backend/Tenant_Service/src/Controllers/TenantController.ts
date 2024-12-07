@@ -1,10 +1,10 @@
 import { CustomError } from "../ErrorHandler/CustonError";
-import { CustomRequest } from "../interfaces/CustomRequest";
-import { ICreateTenant } from "../interfaces/ITenant";
-import { ITenantAdminUseCases } from "../interfaces/ITenantAdminUseCases";
+import { CustomRequest } from "../interfaces";
+import { ICreateTenant } from "../interfaces";
+import { ITenantAdminUseCases } from "../interfaces";
 
 import { NextFunction, Request, Response } from "express";
-import { StatusCode } from "../interfaces/StatusCode";
+import { StatusCode } from "../interfaces";
 
 export class TenantController {
   constructor(private _tenantUseCases: ITenantAdminUseCases) {}
@@ -15,7 +15,7 @@ export class TenantController {
 
       const tenant = req.user;
 
-      if (!tenant) throw new CustomError("NO tenant admin details", 409);
+      if (!tenant) throw new CustomError("NO tenant admin details", StatusCode.CONFLICT);
 
       const newTenant = await this._tenantUseCases.createTenant(data, tenant);
 
@@ -35,7 +35,7 @@ export class TenantController {
 
       console.log("user", tenantAdmin);
 
-      if (!tenantAdmin) throw new CustomError("tenant admin not found", 409);
+      if (!tenantAdmin) throw new CustomError("tenant admin not found", StatusCode.CONFLICT);
 
       const tenant = await this._tenantUseCases.getTenant(tenantAdmin);
 
@@ -54,13 +54,11 @@ export class TenantController {
     try {
       const tenants = await this._tenantUseCases.getAllTenants();
 
-      return res
-        .status(StatusCode.OK)
-        .json({
-          success: true,
-          message: "Tenants retrieved successfully",
-          data: tenants,
-        });
+      return res.status(StatusCode.OK).json({
+        success: true,
+        message: "Tenants retrieved successfully",
+        data: tenants,
+      });
     } catch (error) {
       console.log("Error while getting all tenants", error);
       next(error);

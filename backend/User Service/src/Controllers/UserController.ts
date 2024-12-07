@@ -1,13 +1,13 @@
 import { Request, Response, NextFunction } from "express";
-import { IUserUseCases } from "../interfaces/IUserUseCases";
-import { googleUser, IUser } from "../interfaces/IUser";
+import { IUserUseCases } from "../interfaces";
+import { googleUser, IUser } from "../interfaces";
 import { validationResult } from "express-validator";
 import jwt from "jsonwebtoken";
 import { createToken, verifyAccessToken } from "../Utils/Jwt";
 import { KafkaConnection } from "../Config/kafka/kafkaConnection";
 import { UserProducer } from "../events/Producers/UserProducer";
 import { CustomError } from "../ErrorHandler/CustonError";
-import { CustomRequest } from "../interfaces/CustomRequest";
+import { CustomRequest } from "../interfaces";
 import hashPassword from "../Utils/bcrypt";
 import { StatusCode } from "../interfaces/StatusCode";
 import { getUploadSignedUrl } from "../Utils/S3";
@@ -35,7 +35,7 @@ export class UserController {
 
       console.log(userData);
 
-      //  if (!userData) throw new CustomError("user details not found", 400);
+      //  if (!userData) throw new CustomError("user details not found", StatusCode.BAD_REQUEST);
       const hashedPassword = await hashPassword(password);
 
       let data;
@@ -75,7 +75,7 @@ export class UserController {
 
       console.log("user created", response);
 
-      res.json(201).json({
+      res.json(StatusCode.CREATED).json({
         success: true,
         data: response,
         message: "welcome back",
@@ -126,7 +126,7 @@ export class UserController {
       const user = req.body;
 
       const authUser = req.user;
-      if (!authUser) throw new CustomError("tenantAdmin not found", 400);
+      if (!authUser) throw new CustomError("tenantAdmin not found", StatusCode.BAD_REQUEST);
 
       const tenantAdmin = await this._userUseCase.getUserByEmail(
         authUser.email
@@ -190,9 +190,9 @@ export class UserController {
 
       const user = await this._userUseCase.getUserByEmail(email);
 
-      if (!user) throw new CustomError("user not found", 409);
+      if (!user) throw new CustomError("user not found", StatusCode.CONFLICT);
 
-      if (!verified) throw new CustomError("user not verified", 409);
+      if (!verified) throw new CustomError("user not verified", StatusCode.CONFLICT);
 
       const kafkaConnection = new KafkaConnection();
       const producer = await kafkaConnection.getProducerInstance();
@@ -240,7 +240,7 @@ export class UserController {
         });
         console.log("createdUser", data);
 
-        if (!data) throw new CustomError("user not created", 409);
+        if (!data) throw new CustomError("user not created", StatusCode.CONFLICT);
 
         const kafkaConnection = new KafkaConnection();
         const producer = await kafkaConnection.getProducerInstance();
@@ -286,10 +286,10 @@ export class UserController {
 
       const existingUser = await this._userUseCase.getUserByEmail(user.email);
 
-      if (existingUser) throw new CustomError("user already exists", 409);
+      if (existingUser) throw new CustomError("user already exists", StatusCode.CONFLICT);
 
       const data = await this._userUseCase.createUser(user);
-      if (!data) throw new CustomError("user not verified", 409);
+      if (!data) throw new CustomError("user not verified", StatusCode.CONFLICT);
 
       const kafkaConnection = new KafkaConnection();
       const producer = await kafkaConnection.getProducerInstance();
@@ -320,13 +320,13 @@ export class UserController {
   ) {
     try {
       const authUser = req.user;
-      if (!authUser) throw new CustomError("admin not found", 400);
+      if (!authUser) throw new CustomError("admin not found", StatusCode.BAD_REQUEST);
 
       const tenantAdmin = await this._userUseCase.getUserByEmail(
         authUser.email
       );
 
-      if (!tenantAdmin?.tenant_id) throw new CustomError("No users", 400);
+      if (!tenantAdmin?.tenant_id) throw new CustomError("No users", StatusCode.BAD_REQUEST);
 
       const managerList = await this._userUseCase.getManagerList(
         tenantAdmin.tenant_id
@@ -350,13 +350,13 @@ export class UserController {
   ) {
     try {
       const authUser = req.user;
-      if (!authUser) throw new CustomError("admin not found", 400);
+      if (!authUser) throw new CustomError("admin not found", StatusCode.BAD_REQUEST);
 
       const tenantAdmin = await this._userUseCase.getUserByEmail(
         authUser.email
       );
 
-      if (!tenantAdmin?.tenant_id) throw new CustomError("No users", 400);
+      if (!tenantAdmin?.tenant_id) throw new CustomError("No users", StatusCode.BAD_REQUEST);
 
       const devList = await this._userUseCase.getDevList(tenantAdmin.tenant_id);
 
@@ -415,13 +415,13 @@ export class UserController {
   async onGetUserList(req: CustomRequest, res: Response, next: NextFunction) {
     try {
       const authUser = req.user;
-      if (!authUser) throw new CustomError("admin not found", 400);
+      if (!authUser) throw new CustomError("admin not found", StatusCode.BAD_REQUEST);
 
       const tenantAdmin = await this._userUseCase.getUserByEmail(
         authUser.email
       );
 
-      if (!tenantAdmin?.tenant_id) throw new CustomError("No users", 400);
+      if (!tenantAdmin?.tenant_id) throw new CustomError("No users", StatusCode.BAD_REQUEST);
       const userList = await this._userUseCase.getUsers(tenantAdmin.tenant_id);
 
       res.status(StatusCode.OK).json({
@@ -631,7 +631,7 @@ export class UserController {
     try {
       const tenantId = req.user?.tenant_id;
 
-      if (!tenantId) throw new CustomError("no tenant_id provided", 409);
+      if (!tenantId) throw new CustomError("no tenant_id provided", StatusCode.CONFLICT);
 
       const historyList = await this._userUseCase.getSubscriptionHistory(
         tenantId

@@ -1,9 +1,9 @@
 import { KafkaConnection } from "../Config/kafka/kafkaConnection";
 import { CustomError } from "../ErrorHandler/CustonError";
 import { UserProducer } from "../events/Producers/UserProducer";
-import { IUser } from "../interfaces/IUser";
-import { IUserRepository } from "../interfaces/IUserRepository";
-import { IUserUseCases } from "../interfaces/IUserUseCases";
+import { IUser, StatusCode } from "../interfaces";
+import { IUserRepository } from "../interfaces";
+import { IUserUseCases } from "../interfaces";
 
 export class UserUseCases implements IUserUseCases {
   constructor(private _userRepository: IUserRepository) {}
@@ -32,7 +32,7 @@ export class UserUseCases implements IUserUseCases {
         "**************************************************** tenant_id updated************************************************8"
       );
 
-      if (!tenantAdmin) throw new CustomError("Tenant adimin not updated", 409);
+      if (!tenantAdmin) throw new CustomError("Tenant adimin not updated", StatusCode.CONFLICT);
 
       const kafkaConnection = new KafkaConnection();
       const producer = await kafkaConnection.getProducerInstance();

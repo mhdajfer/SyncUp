@@ -1,5 +1,5 @@
 import { model } from "mongoose";
-import otpSchema from "../../entities/user.otp";
+import {otpSchema} from "../../entities";
 
 otpSchema.index({ createdAt: 1 }, { expireAfterSeconds: 300 });
 

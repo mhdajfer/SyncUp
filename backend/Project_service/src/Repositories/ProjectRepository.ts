@@ -1,10 +1,10 @@
-import { IProjectRepository } from "../Interfaces/IProjectRepository";
-import Project from "../Frameworks/models/Project";
-import { IProject, Task } from "../Interfaces/IProject";
-import User from "../Frameworks/models/userModel";
+import { IProjectRepository, StatusCode } from "../Interfaces";
+import { Project } from "../Frameworks/models";
+import { IProject, Task } from "../Interfaces";
+import { User } from "../Frameworks/models";
 import { CustomError } from "../ErrorHandler/CustonError";
-import { IUser } from "../Interfaces/IUser";
-import taskModel from "../Frameworks/models/Task";
+import { IUser } from "../Interfaces";
+import { taskModel } from "../Frameworks/models";
 import { ObjectId } from "mongodb";
 
 export class ProjectRepository implements IProjectRepository {
@@ -63,7 +63,7 @@ export class ProjectRepository implements IProjectRepository {
         .populate("developers")
         .exec();
 
-      if (!project) throw new CustomError("Project not found", 400);
+      if (!project) throw new CustomError("Project not found", StatusCode.BAD_REQUEST);
 
       return project as unknown as IProject;
     } catch (error) {
@@ -76,7 +76,10 @@ export class ProjectRepository implements IProjectRepository {
       console.log("inside repository", user.tenant_id);
       delete user._id;
 
-      const response = await User.updateMany({ email: user.email }, { ...user });
+      const response = await User.updateMany(
+        { email: user.email },
+        { ...user }
+      );
 
       return response as unknown as IUser;
     } catch (error) {
@@ -93,7 +96,7 @@ export class ProjectRepository implements IProjectRepository {
       const newUser = await newData.save();
 
       if (!newUser)
-        throw new CustomError("user not created in tenant service", 409);
+        throw new CustomError("user not created in tenant service", StatusCode.CONFLICT);
 
       return newUser.toObject() as IUser;
     } catch (error) {
@@ -111,7 +114,7 @@ export class ProjectRepository implements IProjectRepository {
       );
 
       if (!editedData) {
-        throw new CustomError("project not modified", 400);
+        throw new CustomError("project not modified", StatusCode.BAD_REQUEST);
       }
 
       return editedData as unknown as IProject;

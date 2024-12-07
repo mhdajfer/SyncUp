@@ -20,7 +20,7 @@ app.use(requestLogger);
 
 connectDB();
 
-// connectConsumers();
+connectConsumers();
 
 app.use("/projects", projectRoutes);
 app.use(errorHandler);

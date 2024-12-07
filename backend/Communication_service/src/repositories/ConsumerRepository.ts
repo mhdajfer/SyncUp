@@ -1,6 +1,6 @@
-import { IConsumerRepository } from "../interfaces/IConsumerRepository";
-import { Task } from "../interfaces/IProject";
-import { IUserInvite } from "../interfaces/IUser";
+import { IConsumerRepository } from "../interfaces";
+import { Task } from "../interfaces";
+import { IUserInvite } from "../interfaces";
 import { sendMail, sendTaskAssignedMail } from "../Utils/nodeMailer";
 
 export class ConsumerRepository implements IConsumerRepository {
@@ -33,13 +33,9 @@ export class ConsumerRepository implements IConsumerRepository {
   }
 
   async informTaskAssigned(email: string, task: Task) {
+    const dueDate = JSON.stringify(task.due_date).slice(0, 11);
     try {
-      sendTaskAssignedMail(
-        email,
-        task.title,
-        task.desc as string,
-        JSON.stringify(task.due_date)
-      );
+      sendTaskAssignedMail(email, task.title, task.desc as string, dueDate);
     } catch (error) {
       throw error;
     }

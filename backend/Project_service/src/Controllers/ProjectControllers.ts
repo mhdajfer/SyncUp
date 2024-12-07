@@ -24,7 +24,7 @@ export class ProjectControllers {
       const projectDetails: IProject = req.body;
       const authUser = req.user;
 
-      if (!authUser?._id) throw new CustomError("Manager not found", 409);
+      if (!authUser?._id) throw new CustomError("Manager not found", StatusCode.CONFLICT);
 
       const result = await this._projectUseCases.createProject({
         ...projectDetails,
@@ -49,7 +49,7 @@ export class ProjectControllers {
       const authUser = req.user;
       console.log("auth user ", authUser);
 
-      if (!authUser?._id) throw new CustomError("Manager not found", 409);
+      if (!authUser?._id) throw new CustomError("Manager not found", StatusCode.CONFLICT);
 
       const result = await this._projectUseCases.getProjectList(authUser._id);
 
@@ -73,7 +73,7 @@ export class ProjectControllers {
       const authUser = req.user;
       console.log("auth user ", authUser);
 
-      if (!authUser?._id) throw new CustomError("Manager not found", 409);
+      if (!authUser?._id) throw new CustomError("Manager not found", StatusCode.CONFLICT);
 
       const result = await this._projectUseCases.getAssignedProjects(
         authUser._id
@@ -99,7 +99,7 @@ export class ProjectControllers {
       const authUser = req.user;
       console.log("auth user ", authUser);
 
-      if (!authUser?._id) throw new CustomError("Manager not found", 409);
+      if (!authUser?._id) throw new CustomError("Manager not found", StatusCode.CONFLICT);
 
       const result = await this._projectUseCases.getAssignedProjectsForDev(
         authUser._id

@@ -1,5 +1,5 @@
 import { model } from "mongoose";
-import inviteeSchema from "../../entities/invite.user";
+import {inviteeSchema} from "../../entities";
 
 inviteeSchema.index({ email: 1 }, { expireAfterSeconds: 1200 });
 
