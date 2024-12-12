@@ -3,7 +3,7 @@ import { IChat } from "../interfaces";
 import { IGroupChatRepository } from "../interfaces";
 import { IGroupChatUseCases } from "../interfaces";
 import { IUser } from "../interfaces";
-import { StatusCode } from "../Interfaces/StatusCode";
+import { StatusCode } from "../interfaces/StatusCode";
 
 export class GroupChatUseCases implements IGroupChatUseCases {
   constructor(private _groupChatRepository: IGroupChatRepository) {}

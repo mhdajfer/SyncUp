@@ -3,7 +3,7 @@ import { CustomRequest } from "../interfaces";
 import { IGroupChatUseCases } from "../interfaces";
 import { CustomError } from "../ErrorHandler/CustonError";
 import { IUser } from "../interfaces";
-import { StatusCode } from "../Interfaces/StatusCode";
+import { StatusCode } from "../interfaces/StatusCode";
 
 export class GroupChatController {
   constructor(private _groupChatUseCases: IGroupChatUseCases) {}
@@ -14,7 +14,8 @@ export class GroupChatController {
 
       console.log(groupName, users);
 
-      if (!req.user) throw new CustomError("user not found", StatusCode.BAD_REQUEST);
+      if (!req.user)
+        throw new CustomError("user not found", StatusCode.BAD_REQUEST);
 
       const newChat = await this._groupChatUseCases.createGroupChat(
         groupName as string,
@@ -40,7 +41,10 @@ export class GroupChatController {
       const { users, chatId }: { users: IUser[]; chatId: string } = req.body;
 
       if (users.length == 0 || !chatId)
-        throw new CustomError("required params not provided", StatusCode.CONFLICT);
+        throw new CustomError(
+          "required params not provided",
+          StatusCode.CONFLICT
+        );
 
       const userIds: string[] = users
         .map((user) => user._id)
@@ -67,7 +71,10 @@ export class GroupChatController {
       const { userId, chatId } = req.body;
 
       if (!userId || !chatId)
-        throw new CustomError("required params not provided", StatusCode.CONFLICT);
+        throw new CustomError(
+          "required params not provided",
+          StatusCode.CONFLICT
+        );
 
       const updatedChat = await this._groupChatUseCases.removeMember(
         userId,

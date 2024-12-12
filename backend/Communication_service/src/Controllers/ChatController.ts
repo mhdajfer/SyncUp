@@ -2,8 +2,7 @@ import { NextFunction, Request, Response } from "express";
 import { CustomRequest } from "../interfaces/CustomRequest";
 import { CustomError } from "../ErrorHandler/CustonError";
 import { IChatUseCases } from "../interfaces";
-import { StatusCode } from "../Interfaces/StatusCode";
-import { IMessage } from "../interfaces";
+import { StatusCode } from "../interfaces/StatusCode";
 
 export class ChatController {
   constructor(private _chatUseCases: IChatUseCases) {}
@@ -47,7 +46,8 @@ export class ChatController {
 
   async getAllChats(req: CustomRequest, res: Response, next: NextFunction) {
     try {
-      if (!req.user?._id) throw new CustomError("user not found", StatusCode.BAD_REQUEST);
+      if (!req.user?._id)
+        throw new CustomError("user not found", StatusCode.BAD_REQUEST);
 
       const chats = await this._chatUseCases.getAllChats(req.user?._id);
 
@@ -67,7 +67,8 @@ export class ChatController {
       const senderId = req.user?._id;
       const { content, chatId, file } = req.body;
 
-      if (!senderId) throw new CustomError("User not found", StatusCode.CONFLICT);
+      if (!senderId)
+        throw new CustomError("User not found", StatusCode.CONFLICT);
 
       const message = await this._chatUseCases.sendMessage(
         senderId,

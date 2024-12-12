@@ -29,3 +29,12 @@
 2024-12-07T04:52:46.770Z [INFO]: POST /chats/getMessages 200 - 610ms
 2024-12-07T04:57:06.748Z [INFO]: GET /chats/allChat 304 - 212ms
 2024-12-07T05:15:50.798Z [INFO]: GET /chats/allChat 304 - 96ms
+2024-12-07T10:09:41.343Z [INFO]: GET /chats/allChat 200 - 291ms
+2024-12-07T10:09:53.620Z [INFO]: POST /chats/getMessages 200 - 199ms
+2024-12-07T10:10:35.137Z [INFO]: GET /chats/allChat 200 - 225ms
+2024-12-07T10:10:39.656Z [INFO]: POST /chats/getMessages 200 - 157ms
+2024-12-07T10:10:55.217Z [INFO]: POST /chats/sendMessage 201 - 499ms
+2024-12-07T10:27:19.632Z [INFO]: GET /chats/allChat 200 - 155ms
+2024-12-07T10:27:21.253Z [INFO]: POST /chats/getMessages 200 - 172ms
+2024-12-07T10:27:35.911Z [INFO]: POST /chats/sendMessage 201 - 457ms
+2024-12-07T10:33:49.421Z [INFO]: GET /chats/allChat 401 - 2ms

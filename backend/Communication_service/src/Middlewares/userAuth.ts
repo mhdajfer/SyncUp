@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from "express";
 import jwt, { JsonWebTokenError, TokenExpiredError } from "jsonwebtoken";
-import { StatusCode } from "../Interfaces/StatusCode";
+import { StatusCode } from "../interfaces/StatusCode";
 
 export default function userAuth(
   req: Request & Partial<{ user: string | jwt.JwtPayload }>,

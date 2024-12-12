@@ -4,7 +4,7 @@ import projectRoutes from "./src/Routes/project-routes";
 import { errorHandler } from "./src/ErrorHandler/ErrorHandler";
 import { connectDB } from "./src/Frameworks/mongo/connect";
 import { connectConsumers } from "./src/events/Consumers";
-import { requestLogger } from "../Tenant_Service/src/middlewares/requestLogger";
+import { requestLogger } from "./src/Middlewares/requestLogger";
 import dotenv from "dotenv";
 
 dotenv.config();

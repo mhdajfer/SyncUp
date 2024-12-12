@@ -7,7 +7,7 @@ import { Server } from "socket.io";
 import { createServer } from "http";
 import { SocketManager } from "./src/Utils/SocketManager";
 import { errorHandler } from "./src/ErrorHandler/ErrorHandler";
-import { requestLogger } from "../Tenant_Service/src/middlewares/requestLogger";
+import { requestLogger } from "./src/Middlewares/requestLogger";
 dotenv.config();
 
 const app = express();

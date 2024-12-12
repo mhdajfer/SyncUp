@@ -2,7 +2,7 @@ import { CustomError } from "../ErrorHandler/CustonError";
 import User from "../frameworks/models/userModel";
 import { IUser } from "../interfaces/IUser";
 import { IUserRepository } from "../interfaces/IUserRepository";
-import { StatusCode } from "../Interfaces/StatusCode";
+import { StatusCode } from "../interfaces/StatusCode";
 
 export class UserRepository implements IUserRepository {
   async updateUser(user: IUser): Promise<IUser> {
