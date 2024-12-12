@@ -6,7 +6,7 @@ import {
   createToken,
   verifyRefreshToken,
 } from "../Utils/Jwt";
-import bcrypt from "bcrypt";
+import bcrypt from "bcryptjs";
 import { CustomError } from "../ErrorHandler/CustonError";
 import { ISubscription } from "../interfaces";
 import { ISubscriptionPlan } from "../interfaces";

@@ -30,7 +30,7 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
     } else setLoading(false);
   }, [isAuthenticated, router, loading, user?.role]);
 
-  if (!user) return toast.error("user not found");
+  if (!user) toast.error("user not found");
 
   function handleLogout() {
     console.log("logout");
@@ -43,7 +43,9 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
       ) : (
         <div className="flex">
           <div className="w-fit fixed">
-            <PManagerLayout logoutSuccess={handleLogout} user={user} />
+            {user && (
+              <PManagerLayout logoutSuccess={handleLogout} user={user} />
+            )}
           </div>
           <div className="ml-64 bg-[#082032] min-h-screen flex flex-col items-center justify-center w-full h-full py-10 px-4  overflow-y-scroll">
             {children}

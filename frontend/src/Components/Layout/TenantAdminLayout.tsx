@@ -19,7 +19,7 @@ export function TenantAdminLayout({
 
   const s3Url = process.env.NEXT_PUBLIC_S3_URL;
 
-  if (!s3Url) return toast.info("s3 url not specified");
+  if (!s3Url) toast.info("s3 url not specified");
 
   function onSideBarClick(val: string) {
     switch (val) {

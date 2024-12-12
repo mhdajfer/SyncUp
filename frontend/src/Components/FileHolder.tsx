@@ -28,7 +28,6 @@ export default function FileHolder({ file }: FileHolderProps) {
 
   if (!s3Url) {
     toast.error("S3 URL not specified");
-    return null;
   }
 
   const handleViewFile = async () => {

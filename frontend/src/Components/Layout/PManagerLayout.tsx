@@ -17,7 +17,7 @@ export default function PManagerLayout({
 
   const s3Url = process.env.NEXT_PUBLIC_S3_URL;
 
-  if (!s3Url) return toast.info("s3 url not specified");
+  if (!s3Url) toast.info("s3 url not specified");
   return (
     <div className="h-screen w-64 bg-gray-900 text-gray-200 relative">
       <div className="flex items-center justify-center h-20 border-b border-gray-700">
