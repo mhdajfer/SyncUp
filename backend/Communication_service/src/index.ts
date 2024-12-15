@@ -1,13 +1,13 @@
 import express from "express";
 import dotenv from "dotenv";
-import { connectConsumers } from "./src/events/Consumers";
-import { connectDB } from "./src/frameworks/mongo/connect";
-import CommunicationRoutes from "./src/routes/index";
+import { connectConsumers } from "./events/Consumers";
+import { connectDB } from "./frameworks/mongo/connect";
+import CommunicationRoutes from "./routes/index";
 import { Server } from "socket.io";
 import { createServer } from "http";
-import { SocketManager } from "./src/Utils/SocketManager";
-import { errorHandler } from "./src/ErrorHandler/ErrorHandler";
-import { requestLogger } from "./src/Middlewares/requestLogger";
+import { SocketManager } from "./Utils/SocketManager";
+import { errorHandler } from "./ErrorHandler/ErrorHandler";
+import { requestLogger } from "./Middlewares/requestLogger";
 dotenv.config();
 
 const app = express();
@@ -26,7 +26,7 @@ app.use(requestLogger);
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-connectConsumers();
+// connectConsumers();
 
 connectDB();
 

@@ -1,10 +1,10 @@
 import express from "express";
 import cors from "cors";
-import projectRoutes from "./src/Routes/project-routes";
-import { errorHandler } from "./src/ErrorHandler/ErrorHandler";
-import { connectDB } from "./src/Frameworks/mongo/connect";
-import { connectConsumers } from "./src/events/Consumers";
-import { requestLogger } from "./src/Middlewares/requestLogger";
+import projectRoutes from "./Routes/project-routes";
+import { errorHandler } from "./ErrorHandler/ErrorHandler";
+import { connectDB } from "./Frameworks/mongo/connect";
+import { connectConsumers } from "./events/Consumers";
+import { requestLogger } from "./Middlewares/requestLogger";
 import dotenv from "dotenv";
 
 dotenv.config();
@@ -20,7 +20,7 @@ app.use(requestLogger);
 
 connectDB();
 
-connectConsumers();
+// connectConsumers();
 
 app.use("/projects", projectRoutes);
 app.use(errorHandler);

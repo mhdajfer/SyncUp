@@ -14,3 +14,4 @@ export { IChatUseCases } from "./IChatUseCases";
 export { IGroupChatRepository } from "./IGroupChatRepository";
 export { IUserRepository } from "./IUserRepository";
 export { IUserUseCases } from "./IUserUseCases";
+export { StatusCode } from "./StatusCode";

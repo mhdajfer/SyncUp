@@ -1,12 +1,12 @@
 import express from "express";
 import dotenv from "dotenv";
 import cors from "cors";
-import tenantAdminRoutes from "./src/routes/tenantRouter";
+import tenantAdminRoutes from "./routes/tenantRouter";
 import cookieParser from "cookie-parser";
-import { connectDB } from "./src/frameworks/mongo/connect";
-import { errorHandler } from "./src/ErrorHandler/ErrorHandler";
-import { connectConsumers } from "./src/events/Consumers";
-import { requestLogger } from "./src/middlewares/requestLogger";
+import { connectDB } from "./frameworks/mongo/connect";
+import { errorHandler } from "./ErrorHandler/ErrorHandler";
+import { connectConsumers } from "./events/Consumers";
+import { requestLogger } from "./middlewares/requestLogger";
 
 const app = express();
 dotenv.config();
@@ -21,7 +21,7 @@ app.use(requestLogger);
 
 connectDB();
 
-connectConsumers();
+// connectConsumers();
 
 app.use("/tenants", tenantAdminRoutes);
 

@@ -2,6 +2,7 @@ import { NextFunction, Request, Response } from "express";
 import jwt, { JsonWebTokenError, TokenExpiredError } from "jsonwebtoken";
 import { verifyRefreshToken } from "../Utils/Jwt";
 import { StatusCode } from "../interfaces";
+import { CustomError } from "../ErrorHandler/CustonError";
 
 export default function authRefresh(
   req: Request & Partial<{ user: string | jwt.JwtPayload }>,
@@ -9,43 +10,59 @@ export default function authRefresh(
   next: NextFunction
 ) {
   try {
-    const token = req.body.refreshToken;
-    if (!token)
-      return res
-        .status(StatusCode.UNAUTHORIZED)
-        .json({ success: false, message: "Token not found", data: null });
+    // Validate presence of refreshToken in request body
+    const token = req.body?.refreshToken;
+    if (!token) {
+      throw new CustomError(
+        "Refresh token not provided",
+        StatusCode.UNAUTHORIZED
+      );
+    }
 
-    if (!process.env.REFRESH_SECRET)
-      return res.status(StatusCode.BAD_REQUEST).json({
-        success: false,
-        message: "secret key not provided",
-        data: null,
-      });
+    // Ensure REFRESH_SECRET is configured
+    if (!process.env.REFRESH_SECRET) {
+      throw new CustomError(
+        "Refresh secret key not found",
+        StatusCode.BAD_REQUEST
+      );
+    }
 
-    const user = verifyRefreshToken(token);
+    // Verify the refresh token
+    const user = verifyRefreshToken(token); // Make sure this function throws CustomError on failure
+    if (!user) {
+      throw new CustomError(
+        "Invalid or expired refresh token",
+        StatusCode.UNAUTHORIZED
+      );
+    }
 
-    console.log("token verified......", user.email);
-
-    if (!user)
-      return res
-        .status(StatusCode.UNAUTHORIZED)
-        .json({ success: false, message: "user not found", data: null });
-
+    // Attach user to request for downstream processing
     req.user = user;
-    next();
+
+    next(); // Proceed to the next middleware
   } catch (error) {
+    // Handle JWT-specific errors
     if (
       error instanceof TokenExpiredError ||
       error instanceof JsonWebTokenError
     ) {
-      return res
-        .status(StatusCode.UNAUTHORIZED)
-        .json({ success: false, message: "Token expired", data: null });
+      return next(
+        new CustomError(
+          "refresh token expired or invalid",
+          StatusCode.UNAUTHORIZED
+        )
+      );
     }
 
-    console.log(`Error during authentication: ${error}`);
-    return res
-      .status(StatusCode.INTERNAL_SERVER_ERROR)
-      .json({ success: false, message: "Internal server error", data: null });
+    console.error("Error during refresh token validation:", error);
+
+    if (error instanceof CustomError) {
+      return next(new CustomError(`${error.message}`, StatusCode.BAD_REQUEST));
+    }
+
+    // Generic fallback for unhandled errors
+    return next(
+      new CustomError("Internal server error", StatusCode.INTERNAL_SERVER_ERROR)
+    );
   }
 }

@@ -23,7 +23,7 @@ export class UserController {
     req: CustomRequest,
     res: Response,
     next: NextFunction
-  ) {
+  ): Promise<void> {
     try {
       const { token, password } = req.body;
 
@@ -90,7 +90,7 @@ export class UserController {
     req: CustomRequest,
     res: Response,
     next: NextFunction
-  ) {
+  ): Promise<void> {
     try {
       const { email } = req.body;
 
@@ -99,9 +99,7 @@ export class UserController {
       const user = await this._userUseCase.getUserByEmail(email);
 
       if (!user)
-        return res
-          .status(StatusCode.BAD_REQUEST)
-          .json({ success: false, message: "User not exist", data: null });
+        throw new CustomError("User not exist", StatusCode.BAD_REQUEST);
 
       const kafkaConnection = new KafkaConnection();
       const producer = await kafkaConnection.getProducerInstance();
@@ -111,7 +109,7 @@ export class UserController {
 
       await userProducer.inviteUsers(user, inviteToken);
 
-      return res.status(StatusCode.CREATED).json({
+      res.status(StatusCode.CREATED).json({
         success: true,
         data: user,
         message: "check you mail",
@@ -121,12 +119,17 @@ export class UserController {
     }
   }
 
-  async inviteUser(req: CustomRequest, res: Response, next: NextFunction) {
+  async inviteUser(
+    req: CustomRequest,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> {
     try {
       const user = req.body;
 
       const authUser = req.user;
-      if (!authUser) throw new CustomError("tenantAdmin not found", StatusCode.BAD_REQUEST);
+      if (!authUser)
+        throw new CustomError("tenantAdmin not found", StatusCode.BAD_REQUEST);
 
       const tenantAdmin = await this._userUseCase.getUserByEmail(
         authUser.email
@@ -149,7 +152,7 @@ export class UserController {
 
       await userProducer.inviteUsers(data, inviteToken);
 
-      return res.status(StatusCode.CREATED).json({
+      res.status(StatusCode.CREATED).json({
         success: true,
         data,
         message: "added invitee",
@@ -161,7 +164,11 @@ export class UserController {
     }
   }
 
-  async blockUser(req: Request, res: Response, next: NextFunction) {
+  async blockUser(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> {
     try {
       const { userId } = req.body;
 
@@ -170,7 +177,7 @@ export class UserController {
         ? "User blocked successfully"
         : "User unblocked successfully";
 
-      return res.status(StatusCode.OK).json({
+      res.status(StatusCode.OK).json({
         success: true,
         data: result,
         message: message,
@@ -181,7 +188,11 @@ export class UserController {
     }
   }
 
-  async verifyOtp(req: Request, res: Response, next: NextFunction) {
+  async verifyOtp(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> {
     try {
       const { email, otp } = req.body;
       console.log("verifying otp...", email, otp);
@@ -192,7 +203,8 @@ export class UserController {
 
       if (!user) throw new CustomError("user not found", StatusCode.CONFLICT);
 
-      if (!verified) throw new CustomError("user not verified", StatusCode.CONFLICT);
+      if (!verified)
+        throw new CustomError("user not verified", StatusCode.CONFLICT);
 
       const kafkaConnection = new KafkaConnection();
       const producer = await kafkaConnection.getProducerInstance();
@@ -200,7 +212,7 @@ export class UserController {
 
       await userProducer.notifyRegistrationSuccess(user);
 
-      return res
+      res
         .status(StatusCode.OK)
         .json({ success: true, message: "user verified" });
     } catch (error) {
@@ -209,7 +221,11 @@ export class UserController {
     }
   }
 
-  async googleSignup(req: Request, res: Response, next: NextFunction) {
+  async googleSignup(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> {
     try {
       const userDetails: googleUser = req.body;
 
@@ -240,7 +256,8 @@ export class UserController {
         });
         console.log("createdUser", data);
 
-        if (!data) throw new CustomError("user not created", StatusCode.CONFLICT);
+        if (!data)
+          throw new CustomError("user not created", StatusCode.CONFLICT);
 
         const kafkaConnection = new KafkaConnection();
         const producer = await kafkaConnection.getProducerInstance();
@@ -264,7 +281,7 @@ export class UserController {
       );
 
       console.log("logged in successfully.....", user);
-      return res
+      res
         .status(StatusCode.OK)
         .json({ user: user, refreshToken, accessToken, success: true });
     } catch (error) {
@@ -273,23 +290,31 @@ export class UserController {
     }
   }
 
-  async onCreateUser(req: Request, res: Response, next: NextFunction) {
+  async onCreateUser(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> {
     try {
       //req validation
       const errors = validationResult(req);
       console.log(errors);
 
       if (!errors.isEmpty())
-        return res.json({ success: false, data: null, message: errors });
+        res
+          .status(StatusCode.BAD_REQUEST)
+          .json({ success: false, data: null, message: errors });
 
       const user: IUser = req.body;
 
       const existingUser = await this._userUseCase.getUserByEmail(user.email);
 
-      if (existingUser) throw new CustomError("user already exists", StatusCode.CONFLICT);
+      if (existingUser)
+        throw new CustomError("user already exists", StatusCode.CONFLICT);
 
       const data = await this._userUseCase.createUser(user);
-      if (!data) throw new CustomError("user not verified", StatusCode.CONFLICT);
+      if (!data)
+        throw new CustomError("user not verified", StatusCode.CONFLICT);
 
       const kafkaConnection = new KafkaConnection();
       const producer = await kafkaConnection.getProducerInstance();
@@ -297,14 +322,14 @@ export class UserController {
 
       await userProducer.sendMessage("create", user, data);
 
-      return res
+      res
         .status(StatusCode.OK)
         .json({ success: true, data, message: `otp send to ${user.email}` });
     } catch (error: any) {
       console.log(error.message);
 
       if (error.message.includes("user already exists")) {
-        return res.json({
+        res.json({
           success: false,
           data: null,
           message: "User with the same email or phone number already exists.",
@@ -317,16 +342,18 @@ export class UserController {
     req: CustomRequest,
     res: Response,
     next: NextFunction
-  ) {
+  ): Promise<void> {
     try {
       const authUser = req.user;
-      if (!authUser) throw new CustomError("admin not found", StatusCode.BAD_REQUEST);
+      if (!authUser)
+        throw new CustomError("admin not found", StatusCode.BAD_REQUEST);
 
       const tenantAdmin = await this._userUseCase.getUserByEmail(
         authUser.email
       );
 
-      if (!tenantAdmin?.tenant_id) throw new CustomError("No users", StatusCode.BAD_REQUEST);
+      if (!tenantAdmin?.tenant_id)
+        throw new CustomError("No users", StatusCode.BAD_REQUEST);
 
       const managerList = await this._userUseCase.getManagerList(
         tenantAdmin.tenant_id
@@ -334,9 +361,7 @@ export class UserController {
 
       console.log("list of managers", managerList);
 
-      return res
-        .status(StatusCode.OK)
-        .json({ success: true, data: managerList });
+      res.status(StatusCode.OK).json({ success: true, data: managerList });
     } catch (error) {
       console.error("Error retrieving managers list:", error);
       next(error);
@@ -347,31 +372,37 @@ export class UserController {
     req: CustomRequest,
     res: Response,
     next: NextFunction
-  ) {
+  ): Promise<void> {
     try {
       const authUser = req.user;
-      if (!authUser) throw new CustomError("admin not found", StatusCode.BAD_REQUEST);
+      if (!authUser)
+        throw new CustomError("admin not found", StatusCode.BAD_REQUEST);
 
       const tenantAdmin = await this._userUseCase.getUserByEmail(
         authUser.email
       );
 
-      if (!tenantAdmin?.tenant_id) throw new CustomError("No users", StatusCode.BAD_REQUEST);
+      if (!tenantAdmin?.tenant_id)
+        throw new CustomError("No users", StatusCode.BAD_REQUEST);
 
       const devList = await this._userUseCase.getDevList(tenantAdmin.tenant_id);
 
-      return res.status(StatusCode.OK).json({ success: true, data: devList });
+      res.status(StatusCode.OK).json({ success: true, data: devList });
     } catch (error) {
       console.error("Error retrieving developer list:", error);
       next(error);
     }
   }
 
-  async getAllTenantAdmins(req: Request, res: Response, next: NextFunction) {
+  async getAllTenantAdmins(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> {
     try {
       const users = await this._userUseCase.getAllTenantAdmins();
 
-      return res.status(StatusCode.OK).json({
+      res.status(StatusCode.OK).json({
         success: true,
         message: "users retrieved successfully",
         data: users,
@@ -382,7 +413,11 @@ export class UserController {
     }
   }
 
-  async editProfile(req: Request, res: Response, next: NextFunction) {
+  async editProfile(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> {
     try {
       const id = req.params.id;
 
@@ -402,26 +437,32 @@ export class UserController {
         JSON.stringify(userData)
       );
 
-      return res.status(StatusCode.OK).json({
+      res.status(StatusCode.OK).json({
         success: true,
         data: userData,
         message: "profile updated successfully",
       });
     } catch (error) {
-      throw error;
+      next(error);
     }
   }
 
-  async onGetUserList(req: CustomRequest, res: Response, next: NextFunction) {
+  async onGetUserList(
+    req: CustomRequest,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> {
     try {
       const authUser = req.user;
-      if (!authUser) throw new CustomError("admin not found", StatusCode.BAD_REQUEST);
+      if (!authUser)
+        throw new CustomError("admin not found", StatusCode.BAD_REQUEST);
 
       const tenantAdmin = await this._userUseCase.getUserByEmail(
         authUser.email
       );
 
-      if (!tenantAdmin?.tenant_id) throw new CustomError("No users", StatusCode.BAD_REQUEST);
+      if (!tenantAdmin?.tenant_id)
+        throw new CustomError("No users", StatusCode.BAD_REQUEST);
       const userList = await this._userUseCase.getUsers(tenantAdmin.tenant_id);
 
       res.status(StatusCode.OK).json({
@@ -434,16 +475,18 @@ export class UserController {
       next(error);
     }
   }
-  async onGetUser(req: Request, res: Response, next: NextFunction) {
+  async onGetUser(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> {
     try {
       const id = req.params.id;
 
       const user = await this._userUseCase.getUserById(id);
 
       if (!user)
-        return res
-          .status(StatusCode.NOT_FOUND)
-          .json({ message: "User not found" });
+        res.status(StatusCode.NOT_FOUND).json({ message: "User not found" });
       res
         .status(StatusCode.OK)
         .json({ success: true, data: user, message: "retrieved user details" });
@@ -452,7 +495,11 @@ export class UserController {
       next(error);
     }
   }
-  async userLogin(req: Request, res: Response, next: NextFunction) {
+  async userLogin(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> {
     try {
       const { username, password } = req.body;
       console.log("got req inside userLogin", username, password);
@@ -463,7 +510,7 @@ export class UserController {
       );
 
       console.log("logged in successfully.....", user);
-      return res
+      res
         .status(StatusCode.OK)
         .json({ user: user, refreshToken, accessToken, success: true });
     } catch (error) {
@@ -476,15 +523,13 @@ export class UserController {
     req: Request & Partial<{ user: IUser | jwt.JwtPayload }>,
     res: Response,
     next: NextFunction
-  ) {
+  ): Promise<void> {
     try {
       let user = req.user;
       console.log("creating new token for : ", user?.email);
 
       if (!user)
-        return res
-          .status(StatusCode.UNAUTHORIZED)
-          .json({ success: false, message: "User not found", data: null });
+        throw new CustomError("user not found", StatusCode.UNAUTHORIZED);
 
       delete user.__v;
       delete user.iat;
@@ -504,7 +549,11 @@ export class UserController {
     }
   }
 
-  async createNewOtp(req: Request, res: Response, next: NextFunction) {
+  async createNewOtp(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> {
     try {
       const { email } = req.body;
 
@@ -513,7 +562,9 @@ export class UserController {
       );
 
       if (!isOtpSend)
-        return res.json({ success: false, message: "error sending new otp" });
+        res
+          .status(StatusCode.BAD_REQUEST)
+          .json({ success: false, message: "error sending new otp" });
 
       const kafkaConnection = new KafkaConnection();
       const producer = await kafkaConnection.getProducerInstance();
@@ -521,7 +572,7 @@ export class UserController {
 
       await userProducer.sendMessage("create", user, otp);
 
-      return res
+      res
         .status(StatusCode.CREATED)
         .json({ success: true, user, message: "user created successfully" });
     } catch (error) {
@@ -534,27 +585,19 @@ export class UserController {
     req: CustomRequest,
     res: Response,
     next: NextFunction
-  ) {
+  ): Promise<void> {
     try {
       const { fileName, fileType }: { fileName: string; fileType: string } =
         req.body;
 
-      if (!req.user?._id) {
-        return res
-          .status(StatusCode.BAD_REQUEST)
-          .json({ message: "No user found" });
-      }
+      if (!req.user?._id)
+        throw new CustomError("user not found", StatusCode.UNAUTHORIZED);
 
       const currentUser = await this._userUseCase.getUserByEmail(
         req.user.email
       );
-      if (!currentUser) {
-        return res.status(StatusCode.UNAUTHORIZED).json({
-          message: "User not found",
-          data: null,
-          success: false,
-        });
-      }
+      if (!currentUser)
+        throw new CustomError("user not found", StatusCode.UNAUTHORIZED);
 
       const uploadUrl = await getUploadSignedUrl(fileName, fileType);
 
@@ -573,7 +616,7 @@ export class UserController {
     req: CustomRequest,
     res: Response,
     next: NextFunction
-  ) {
+  ): Promise<void> {
     try {
       const user = req.user;
       const { amount } = req.body;
@@ -583,7 +626,7 @@ export class UserController {
         amount
       );
 
-      return res.status(StatusCode.OK).json({
+      res.status(StatusCode.OK).json({
         success: true,
         message: "Updated subscription",
         data: updatedUser,
@@ -598,21 +641,18 @@ export class UserController {
     req: CustomRequest,
     res: Response,
     next: NextFunction
-  ) {
+  ): Promise<void> {
     try {
       const user = req.user;
 
-      if (!user?._id) {
-        return res
-          .status(StatusCode.BAD_REQUEST)
-          .json({ message: "No user found" });
-      }
+      if (!user?._id)
+        throw new CustomError("user not found", StatusCode.UNAUTHORIZED);
 
       const updatedUser = await this._userUseCase.deactivateSubscription(
         user._id
       );
 
-      return res.status(StatusCode.OK).json({
+      res.status(StatusCode.OK).json({
         success: true,
         message: "removed subscription",
         data: updatedUser,
@@ -627,17 +667,18 @@ export class UserController {
     req: CustomRequest,
     res: Response,
     next: NextFunction
-  ) {
+  ): Promise<void> {
     try {
       const tenantId = req.user?.tenant_id;
 
-      if (!tenantId) throw new CustomError("no tenant_id provided", StatusCode.CONFLICT);
+      if (!tenantId)
+        throw new CustomError("no tenant_id provided", StatusCode.CONFLICT);
 
       const historyList = await this._userUseCase.getSubscriptionHistory(
         tenantId
       );
 
-      return res.status(StatusCode.OK).json({
+      res.status(StatusCode.OK).json({
         success: true,
         message: "subscription history retrieved successfully",
         data: historyList,
@@ -652,11 +693,11 @@ export class UserController {
     req: CustomRequest,
     res: Response,
     next: NextFunction
-  ) {
+  ): Promise<void> {
     try {
       const historyList = await this._userUseCase.getFullSubHistory();
 
-      return res.status(StatusCode.OK).json({
+      res.status(StatusCode.OK).json({
         success: true,
         message: "subscription history retrieved successfully",
         data: historyList,
@@ -667,11 +708,15 @@ export class UserController {
     }
   }
 
-  async getSubscriptionPlans(req: Request, res: Response, next: NextFunction) {
+  async getSubscriptionPlans(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> {
     try {
       const subscriptionPlans = await this._userUseCase.getSubscriptionPlans();
 
-      return res.status(StatusCode.OK).json({
+      res.status(StatusCode.OK).json({
         success: true,
         message: "plans retrieved successfully",
         data: subscriptionPlans,
@@ -682,7 +727,11 @@ export class UserController {
     }
   }
 
-  async editSubscriptionPlan(req: Request, res: Response, next: NextFunction) {
+  async editSubscriptionPlan(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> {
     try {
       const { newPlan } = req.body;
 
@@ -690,7 +739,7 @@ export class UserController {
 
       console.log("new plan updated", updatedPlan);
 
-      return res
+      res
         .status(StatusCode.OK)
         .json({ success: true, message: "updated Plan", data: updatedPlan });
     } catch (error) {

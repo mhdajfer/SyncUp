@@ -7,11 +7,15 @@ import { StatusCode } from "../interfaces/StatusCode";
 export class ChatController {
   constructor(private _chatUseCases: IChatUseCases) {}
 
-  async getAllUsers(req: Request, res: Response, next: NextFunction) {
+  async getAllUsers(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> {
     try {
       const users = await this._chatUseCases.getAllUsers();
 
-      return res.status(StatusCode.OK).json({
+      res.status(StatusCode.OK).json({
         success: true,
         message: "successfully retrieved all users",
         data: users,
@@ -22,7 +26,11 @@ export class ChatController {
     }
   }
 
-  async getOneChat(req: CustomRequest, res: Response, next: NextFunction) {
+  async getOneChat(
+    req: CustomRequest,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> {
     try {
       const userId1 = req.user?._id;
       const userId2 = req.body.userId;
@@ -33,7 +41,7 @@ export class ChatController {
 
       const chat = await this._chatUseCases.getChat(userId1, userId2);
 
-      return res.status(StatusCode.OK).json({
+      res.status(StatusCode.OK).json({
         success: true,
         data: chat,
         message: "successfully retrieved chat",
@@ -44,14 +52,18 @@ export class ChatController {
     }
   }
 
-  async getAllChats(req: CustomRequest, res: Response, next: NextFunction) {
+  async getAllChats(
+    req: CustomRequest,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> {
     try {
       if (!req.user?._id)
         throw new CustomError("user not found", StatusCode.BAD_REQUEST);
 
       const chats = await this._chatUseCases.getAllChats(req.user?._id);
 
-      return res.status(StatusCode.OK).json({
+      res.status(StatusCode.OK).json({
         success: true,
         message: "successfully retrieved all chats",
         data: chats,
@@ -62,7 +74,11 @@ export class ChatController {
     }
   }
 
-  async sendMessage(req: CustomRequest, res: Response, next: NextFunction) {
+  async sendMessage(
+    req: CustomRequest,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> {
     try {
       const senderId = req.user?._id;
       const { content, chatId, file } = req.body;
@@ -77,7 +93,7 @@ export class ChatController {
         file
       );
 
-      return res
+      res
         .status(StatusCode.CREATED)
         .json({ success: true, data: message, message: "message sent." });
     } catch (error) {
@@ -86,12 +102,16 @@ export class ChatController {
     }
   }
 
-  async getMessages(req: Request, res: Response, next: NextFunction) {
+  async getMessages(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> {
     try {
       const { chatId } = req.body;
       const messages = await this._chatUseCases.getMessages(chatId);
 
-      return res
+      res
         .status(StatusCode.OK)
         .json({ success: true, message: "retrieved messages", data: messages });
     } catch (error) {

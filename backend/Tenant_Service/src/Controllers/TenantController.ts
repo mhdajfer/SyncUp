@@ -9,19 +9,24 @@ import { StatusCode } from "../interfaces";
 export class TenantController {
   constructor(private _tenantUseCases: ITenantAdminUseCases) {}
 
-  async createTenant(req: CustomRequest, res: Response, next: NextFunction) {
+  async createTenant(
+    req: CustomRequest,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> {
     try {
       const data: ICreateTenant = req.body;
 
       const tenant = req.user;
 
-      if (!tenant) throw new CustomError("NO tenant admin details", StatusCode.CONFLICT);
+      if (!tenant)
+        throw new CustomError("NO tenant admin details", StatusCode.CONFLICT);
 
       const newTenant = await this._tenantUseCases.createTenant(data, tenant);
 
       console.log(newTenant);
 
-      return res
+      res
         .status(StatusCode.CREATED)
         .json({ success: true, data: "newTenant", message: "Tenant created" });
     } catch (error) {
@@ -29,17 +34,22 @@ export class TenantController {
     }
   }
 
-  async getTenant(req: CustomRequest, res: Response, next: NextFunction) {
+  async getTenant(
+    req: CustomRequest,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> {
     try {
       const tenantAdmin = req.user;
 
       console.log("user", tenantAdmin);
 
-      if (!tenantAdmin) throw new CustomError("tenant admin not found", StatusCode.CONFLICT);
+      if (!tenantAdmin)
+        throw new CustomError("tenant admin not found", StatusCode.CONFLICT);
 
       const tenant = await this._tenantUseCases.getTenant(tenantAdmin);
 
-      return res.status(StatusCode.OK).json({
+      res.status(StatusCode.OK).json({
         success: true,
         data: tenant,
         message: "retrieved tenant successfully",
@@ -50,11 +60,15 @@ export class TenantController {
     }
   }
 
-  async getAllTenants(req: Request, res: Response, next: NextFunction) {
+  async getAllTenants(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> {
     try {
       const tenants = await this._tenantUseCases.getAllTenants();
 
-      return res.status(StatusCode.OK).json({
+      res.status(StatusCode.OK).json({
         success: true,
         message: "Tenants retrieved successfully",
         data: tenants,
@@ -65,7 +79,11 @@ export class TenantController {
     }
   }
 
-  async editTenant(req: Request, res: Response, next: NextFunction) {
+  async editTenant(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> {
     try {
       const { tenantData } = req.body;
 
@@ -73,7 +91,7 @@ export class TenantController {
 
       const data = await this._tenantUseCases.editTenant(tenantData);
 
-      return res
+      res
         .status(StatusCode.OK)
         .json({ success: true, data, message: "tenant updated successfully" });
     } catch (error) {

@@ -7,13 +7,18 @@ import { StatusCode } from "../Interfaces/StatusCode";
 export class CommentController {
   constructor(private _commentUseCases: ICommentUseCase) {}
 
-  async addComment(req: CustomRequest, res: Response, next: NextFunction) {
+  async addComment(
+    req: CustomRequest,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> {
     try {
       const { message, taskId } = req.body;
       const user = req.user;
       console.log("adding comment");
 
-      if (!user?._id) throw new CustomError("author not found", StatusCode.CONFLICT);
+      if (!user?._id)
+        throw new CustomError("author not found", StatusCode.CONFLICT);
 
       const taskResponse = await this._commentUseCases.submitComment(
         message,
@@ -21,7 +26,7 @@ export class CommentController {
         user?._id
       );
 
-      return res
+      res
         .status(StatusCode.OK)
         .json({ success: true, message: "Comment added", data: taskResponse });
     } catch (error) {

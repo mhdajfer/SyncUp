@@ -1,71 +1,41 @@
 import { NextFunction, Request, Response } from "express";
-import jwt, { JwtPayload } from "jsonwebtoken";
-import { IUser } from "../interfaces/IUser";
-import { StatusCode } from "../interfaces/StatusCode";
+import jwt, { JsonWebTokenError, TokenExpiredError } from "jsonwebtoken";
+import { StatusCode } from "../interfaces";
+import { CustomError } from "../ErrorHandler/CustonError";
 
-export default async (
-  req: Request & Partial<{ user: Partial<IUser> }>,
+export default function userAuth(
+  req: Request & Partial<{ user: string | jwt.JwtPayload }>,
   res: Response,
   next: NextFunction
-) => {
+) {
   try {
     const token = req.header("Authorization");
 
-    if (token) {
-      if (!process.env.JWT_AUTHSECRET)
-        throw new Error("JWT_SECRET_KEY not found in .env file");
+    if (!token)
+      throw new CustomError("token not found", StatusCode.UNAUTHORIZED);
 
-      const decode = jwt.verify(
-        token,
-        process.env.JWT_AUTHSECRET
-      ) as JwtPayload;
+    if (!process.env.JWT_AUTHSECRET)
+      throw new CustomError("secret key not provided", StatusCode.NOT_FOUND);
 
-      if (decode) {
-        if (decode.isBlocked)
-          return res
-            .status(StatusCode.FORBIDDEN)
-            .json({ success: false, message: "user is blocked" });
-        if (decode.isDeleted)
-          return res
-            .status(StatusCode.FORBIDDEN)
-            .json({ success: false, message: "user is deleted" });
-        if (!decode.isVerified)
-          return res
-            .status(StatusCode.FORBIDDEN)
-            .json({ success: false, message: "user is not verified" });
+    const user = jwt.verify(token, process.env.JWT_AUTHSECRET);
 
-        req.user = decode;
+    if (!user) throw new CustomError("user not found", StatusCode.UNAUTHORIZED);
 
-        next();
-      } else {
-        res.status(StatusCode.UNAUTHORIZED).json({ error: "unauthorised" });
-      }
-    } else {
-      res.status(StatusCode.UNAUTHORIZED).json({ error: "unauthorised" });
-    }
+    req.user = user;
+
+    next();
   } catch (error) {
-    console.log(error);
-    if (error instanceof jwt.JsonWebTokenError) {
-      if (error.message === "jwt expired") {
-        return res
-          .status(StatusCode.UNAUTHORIZED)
-          .json({ error: "Token expired" });
-      }
-      if (error.message === "jwt malformed") {
-        return res
-          .status(StatusCode.UNAUTHORIZED)
-          .json({ error: "Token malformed" });
-      }
-      if (error.message === "invalid signature") {
-        return res
-          .status(StatusCode.UNAUTHORIZED)
-          .json({ error: "Invalid signature" });
-      }
+    if (error instanceof TokenExpiredError) {
+      return next(new CustomError("Token expired", StatusCode.UNAUTHORIZED));
     }
 
-    console.error("Unexpected error during token verification:", error);
-    return res
-      .status(StatusCode.INTERNAL_SERVER_ERROR)
-      .json({ error: "An unexpected error occurred. Please try again later." });
+    if (error instanceof JsonWebTokenError) {
+      return next(new CustomError("Invalid token", StatusCode.UNAUTHORIZED));
+    }
+
+    console.error(`Error during authentication: ${error}`);
+    return next(
+      new CustomError("Internal server error", StatusCode.INTERNAL_SERVER_ERROR)
+    );
   }
-};
+}

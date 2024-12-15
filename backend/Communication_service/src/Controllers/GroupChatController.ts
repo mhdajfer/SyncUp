@@ -7,7 +7,11 @@ import { StatusCode } from "../interfaces/StatusCode";
 
 export class GroupChatController {
   constructor(private _groupChatUseCases: IGroupChatUseCases) {}
-  async createGroupChat(req: CustomRequest, res: Response, next: NextFunction) {
+  async createGroupChat(
+    req: CustomRequest,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> {
     try {
       const { groupName, users } = req.body;
       const currentUser = req.user;
@@ -23,7 +27,7 @@ export class GroupChatController {
         currentUser as IUser
       );
 
-      return res
+      res
         .status(StatusCode.CREATED)
         .json({ success: true, message: "Group chat created", data: newChat });
     } catch (error) {
@@ -36,7 +40,7 @@ export class GroupChatController {
     req: Request,
     res: Response,
     next: NextFunction
-  ) {
+  ): Promise<void> {
     try {
       const { users, chatId }: { users: IUser[]; chatId: string } = req.body;
 
@@ -55,7 +59,7 @@ export class GroupChatController {
         chatId
       );
 
-      return res.status(StatusCode.OK).json({
+      res.status(StatusCode.OK).json({
         success: true,
         message: "new member added successfully",
         data: updatedChat,
@@ -66,7 +70,11 @@ export class GroupChatController {
     }
   }
 
-  async removeMember(req: Request, res: Response, next: NextFunction) {
+  async removeMember(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> {
     try {
       const { userId, chatId } = req.body;
 
@@ -81,7 +89,7 @@ export class GroupChatController {
         chatId
       );
 
-      return res.status(StatusCode.OK).json({
+      res.status(StatusCode.OK).json({
         success: true,
         message: "user removed from group",
         data: updatedChat,

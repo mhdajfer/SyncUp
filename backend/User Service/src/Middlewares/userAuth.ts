@@ -1,6 +1,7 @@
 import { NextFunction, Request, Response } from "express";
 import jwt, { JsonWebTokenError, TokenExpiredError } from "jsonwebtoken";
 import { StatusCode } from "../interfaces";
+import { CustomError } from "../ErrorHandler/CustonError";
 
 export default function userAuth(
   req: Request & Partial<{ user: string | jwt.JwtPayload }>,
@@ -11,40 +12,30 @@ export default function userAuth(
     const token = req.header("Authorization");
 
     if (!token)
-      return res
-        .status(StatusCode.UNAUTHORIZED)
-        .json({ success: false, message: "Token not found", data: null });
+      throw new CustomError("token not found", StatusCode.UNAUTHORIZED);
 
     if (!process.env.JWT_AUTHSECRET)
-      return res.status(StatusCode.NOT_FOUND).json({
-        success: false,
-        message: "secret key not provided",
-        data: null,
-      });
+      throw new CustomError("secret key not provided", StatusCode.NOT_FOUND);
 
     const user = jwt.verify(token, process.env.JWT_AUTHSECRET);
 
-    if (!user)
-      return res
-        .status(StatusCode.UNAUTHORIZED)
-        .json({ success: false, message: "user not found", data: null });
+    if (!user) throw new CustomError("user not found", StatusCode.UNAUTHORIZED);
 
     req.user = user;
 
     next();
   } catch (error) {
-    if (
-      error instanceof TokenExpiredError ||
-      error instanceof JsonWebTokenError
-    ) {
-      return res
-        .status(StatusCode.UNAUTHORIZED)
-        .json({ success: false, message: "Token expired", data: null });
+    if (error instanceof TokenExpiredError) {
+      return next(new CustomError("Token expired", StatusCode.UNAUTHORIZED));
     }
 
-    console.log(`Error during authentication: ${error}`);
-    return res
-      .status(StatusCode.INTERNAL_SERVER_ERROR)
-      .json({ success: false, message: "Internal server error", data: null });
+    if (error instanceof JsonWebTokenError) {
+      return next(new CustomError("Invalid token", StatusCode.UNAUTHORIZED));
+    }
+
+    console.error(`Error during authentication: ${error}`);
+    return next(
+      new CustomError("Internal server error", StatusCode.INTERNAL_SERVER_ERROR)
+    );
   }
 }
