@@ -28,12 +28,12 @@ services:
 
   user_service:
     build:
-      context: ./User Service
+      context: ./backend/User Service
       dockerfile: Dockerfile
     ports:
       - "3003:3003"
     env_file:
-      - ./User Service/.env
+      - ./backend/User Service/.env
     environment:
       KAFKA_BROKER: kafka:9092
       SERVICE: "user_service"
@@ -42,12 +42,12 @@ services:
 
   api_gateway:
     build:
-      context: ./Api_Gateway
+      context: ./backend/Api_Gateway
       dockerfile: Dockerfile
     ports:
       - "3001:3001"
     env_file:
-      - ./Api_Gateway/.env
+      - ./backend/Api_Gateway/.env
     environment:
       KAFKA_BROKER: kafka:9092
       SERVICE: "api_gateway"
@@ -56,12 +56,12 @@ services:
 
   communication_service:
     build:
-      context: ./Communication_service
+      context: ./backend/Communication_service
       dockerfile: Dockerfile
     ports:
       - "3004:3004"
     env_file:
-      - ./Communication_service/.env
+      - ./backend/Communication_service/.env
     environment:
       KAFKA_BROKER: kafka:9092
       SERVICE: "communication_service"
@@ -70,12 +70,12 @@ services:
 
   project_service:
     build:
-      context: ./Project_service
+      context: ./backend/Project_service
       dockerfile: Dockerfile
     ports:
       - "3002:3002"
     env_file:
-      - ./Project_service/.env
+      - ./backend/Project_service/.env
     environment:
       KAFKA_BROKER: kafka:9092
       SERVICE: "project_service"
@@ -84,18 +84,30 @@ services:
 
   tenant_service:
     build:
-      context: ./Tenant_Service
+      context: ./backend/Tenant_Service
       dockerfile: Dockerfile
     ports:
       - "3005:3005"
     env_file:
-      - ./Tenant_Service/.env
+      - ./backend/Tenant_Service/.env
     environment:
       KAFKA_BROKER: kafka:9092
       SERVICE: "tenant_service"
     networks:
       - kafka_network
 
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    env_file:
+      - ./frontend/.env
+    depends_on:
+      - api_gateway
+    networks:
+      - kafka_network
 volumes:
   kafka-data:
 
