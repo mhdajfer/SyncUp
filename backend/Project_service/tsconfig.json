@@ -1,5 +1,7 @@
 {
   "compilerOptions": {
+    "outDir": "./.dist", // Output directory for compiled files
+    "rootDir": "./src",
     "target": "ESNext",
     "module": "commonjs",
     "strict": true,
