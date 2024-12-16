@@ -1,30 +1,25 @@
-import express from "express";
-import cors from "cors";
-import projectRoutes from "./Routes/project-routes";
-import { errorHandler } from "./ErrorHandler/ErrorHandler";
+import dotenv from "dotenv";
+import { createApp } from "./app";
 import { connectDB } from "./Frameworks/mongo/connect";
 import { connectConsumers } from "./events/Consumers";
-import { requestLogger } from "./Middlewares/requestLogger";
-import dotenv from "dotenv";
 
 dotenv.config();
 
-const app = express();
+const port = process.env.PORT || 3000;
 
-const port = process.env.PORT;
+(async () => {
+  try {
+    connectDB();
 
-app.use(cors());
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
-app.use(requestLogger);
+    connectConsumers();
 
-connectDB();
+    const app = createApp();
 
-// connectConsumers();
-
-app.use("/projects", projectRoutes);
-app.use(errorHandler);
-
-app.listen(port, () => {
-  console.log(`Project server started on ${port}`);
-});
+    app.listen(port, () => {
+      console.log(`User server started on port ${port}`);
+    });
+  } catch (error) {
+    console.error("Failed to start server:", error);
+    process.exit(1);
+  }
+})();

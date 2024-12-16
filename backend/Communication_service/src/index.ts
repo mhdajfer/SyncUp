@@ -1,38 +1,21 @@
-import express from "express";
-import dotenv from "dotenv";
-import { connectConsumers } from "./events/Consumers";
-import { connectDB } from "./frameworks/mongo/connect";
-import CommunicationRoutes from "./routes/index";
-import { Server } from "socket.io";
 import { createServer } from "http";
+import { Server } from "socket.io";
 import { SocketManager } from "./Utils/SocketManager";
-import { errorHandler } from "./ErrorHandler/ErrorHandler";
-import { requestLogger } from "./Middlewares/requestLogger";
+import dotenv from "dotenv";
+import app from "./app";
+
 dotenv.config();
 
-const app = express();
 const httpServer = createServer(app);
 const io = new Server(httpServer, {
   cors: {
-    origin: "http://localhost:3000",
+    origin: process.env.SOCKET_IO_ORIGIN,
     methods: ["GET", "POST"],
   },
   allowEIO3: true,
 });
 
 const Port = process.env.PORT;
-
-app.use(requestLogger);
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
-
-// connectConsumers();
-
-connectDB();
-
-app.use("/chats", CommunicationRoutes);
-
-app.use(errorHandler);
 
 const socketManager = new SocketManager(io);
 socketManager.initialize();

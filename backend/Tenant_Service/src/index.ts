@@ -1,32 +1,25 @@
-import express from "express";
 import dotenv from "dotenv";
-import cors from "cors";
-import tenantAdminRoutes from "./routes/tenantRouter";
-import cookieParser from "cookie-parser";
+import { createApp } from "./app";
 import { connectDB } from "./frameworks/mongo/connect";
-import { errorHandler } from "./ErrorHandler/ErrorHandler";
 import { connectConsumers } from "./events/Consumers";
-import { requestLogger } from "./middlewares/requestLogger";
 
-const app = express();
 dotenv.config();
 
-const port = process.env.PORT || 3005;
+const port = process.env.PORT || 3000;
 
-app.use(cors());
-app.use(cookieParser());
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
-app.use(requestLogger);
+(async () => {
+  try {
+    connectDB();
 
-connectDB();
+    connectConsumers();
 
-// connectConsumers();
+    const app = createApp();
 
-app.use("/tenants", tenantAdminRoutes);
-
-app.use(errorHandler);
-
-app.listen(port, () => {
-  console.log(`Tenant server started on ${port}`);
-});
+    app.listen(port, () => {
+      console.log(`User server started on port ${port}`);
+    });
+  } catch (error) {
+    console.error("Failed to start server:", error);
+    process.exit(1);
+  }
+})();
