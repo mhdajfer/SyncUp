@@ -1,6 +1,4 @@
-// export const BASIC_URL = "http://localhost:3001";
-export const BASIC_URL = "http://api-gateway-clusterip-srv:3001";
-
+export const BASIC_URL = process.env.BASIC_URL;
 
 export const TASK_CATEGORY = ["Feature", "Bug", "Testing", "Planning"];
 

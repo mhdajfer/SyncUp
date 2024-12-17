@@ -4,7 +4,7 @@
   "main": "index.js",
   "scripts": {
     "start": "npm run build && cross-env NODE_ENV=production node .dist/index.js",
-    "dev": "cross-env NODE_ENV=production nodemon src/index.ts",
+    "dev": "cross-env NODE_ENV=development nodemon src/index.ts",
     "clean": "rm -rf dist",
     "prod": "npm run build && npm run start",
     "build": "tsc"
