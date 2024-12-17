@@ -1,10 +1,7 @@
 import { createServer } from "http";
 import { Server } from "socket.io";
 import { SocketManager } from "./Utils/SocketManager";
-import dotenv from "dotenv";
 import app from "./app";
-
-dotenv.config();
 
 const httpServer = createServer(app);
 const io = new Server(httpServer, {
