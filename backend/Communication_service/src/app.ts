@@ -25,7 +25,7 @@ connectConsumers();
 
 connectDB();
 
-app.use("/chats", CommunicationRoutes);
+app.use("/comm/chats", CommunicationRoutes);
 
 app.use(errorHandler);
 

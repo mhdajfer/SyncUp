@@ -20,7 +20,7 @@ interface IncomingCallInfo {
   signalData: SignalData;
 }
 
-const END_POINT = "http://localhost:3004";
+const END_POINT = "http://communication-clusterid-service:3004";
 const socket: Socket = io(END_POINT);
 
 export function VideoCall() {
