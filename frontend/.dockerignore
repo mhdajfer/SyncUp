@@ -5,8 +5,7 @@ node_modules
 .next
 .dist
 
-# Ignore local environment files
-.env.local
+
 
 # Ignore configuration files specific to the developer's machine
 # Ignore lock files (optional, depends on whether you use `npm install` or `npm ci`)

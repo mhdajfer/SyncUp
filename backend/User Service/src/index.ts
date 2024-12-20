@@ -31,7 +31,7 @@ const port = process.env.PORT;
     const app = createApp();
 
     app.listen(port, () => {
-      console.log(`User server started on port ${port}`);
+      console.log(`latest User server started on port ${port}`);
     });
   } catch (error) {
     console.error("Failed to start server:", error);

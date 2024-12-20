@@ -1,0 +1,45 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: ingress-srv-syncup
+spec:
+  ingressClassName: nginx
+  rules:
+    - host: dummy.com # Replace with your actual domain name
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: frontend-nodeport-srv
+                port:
+                  number: 3000
+          - path: /users/
+            pathType: Prefix
+            backend:
+              service:
+                name: user-clusterid-service
+                port:
+                  number: 3003
+          - path: /projects/
+            pathType: Prefix
+            backend:
+              service:
+                name: project-clusterid-service
+                port:
+                  number: 3002
+          - path: /comm/
+            pathType: Prefix
+            backend:
+              service:
+                name: communication-clusterid-service
+                port:
+                  number: 3004
+          - path: /tenants/
+            pathType: Prefix
+            backend:
+              service:
+                name: tenant-clusterid-service
+                port:
+                  number: 3005

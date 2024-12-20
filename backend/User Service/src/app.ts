@@ -1,4 +1,4 @@
-import express from "express";
+import express, { NextFunction, Request, Response } from "express";
 import cors from "cors";
 import cookieParser from "cookie-parser";
 import userRoute from "./routes/user.routes";
@@ -8,6 +8,11 @@ import { requestLogger } from "./Middlewares/requestLogger";
 export const createApp = (): express.Application => {
   const app = express();
 
+  const mid = (req: Request, res: Response, next: NextFunction) => {
+    console.log("got request", req.body);
+    next();
+  };
+
   // Middlewares
   app.use(cors());
   app.use(cookieParser());
@@ -16,7 +21,7 @@ export const createApp = (): express.Application => {
   app.use(requestLogger);
 
   // Routes
-  app.use("/users", userRoute);
+  app.use("/users", mid, userRoute);
 
   // Error handler
   app.use(errorHandler);

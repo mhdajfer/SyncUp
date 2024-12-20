@@ -1,0 +1,38 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: tenant
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: tenant
+  template:
+    metadata:
+      labels:
+        app: tenant
+    spec:
+      containers:
+        - name: tenant
+          image: ajfer/syncup-tenant-service
+          resources:
+            requests:
+              memory: "256Mi" # Increased request to match previous limit
+              cpu: "250m"
+            limits:
+              memory: "512Mi" # Doubled the limit
+              cpu: "500m"
+          env:
+            - name: PORT
+              value: "3005"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: tenant-clusterid-service
+spec:
+  ports:
+    - port: 3005
+      targetPort: 3005
+  selector:
+    app: tenant

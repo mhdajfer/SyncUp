@@ -3,7 +3,7 @@ import { IKafkaConnection } from "../../interfaces/IKafkaConnection";
 
 const kafkaInstance = new Kafka({
   clientId: process.env.SERVICE || "syncUp-client",
-  brokers: [process.env.KAFKA_BROKER || "localhost:9092"],
+  brokers: [process.env.KAFKA_BROKER || "kafka:9092"],
 });
 
 export class KafkaConnection implements IKafkaConnection {

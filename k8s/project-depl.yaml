@@ -1,0 +1,38 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: project
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: project
+  template:
+    metadata:
+      labels:
+        app: project
+    spec:
+      containers:
+        - name: project
+          image: ajfer/syncup-project-service
+          resources:
+            requests:
+              memory: "256Mi" # Increased request to match previous limit
+              cpu: "250m"
+            limits:
+              memory: "512Mi" # Doubled the limit; adjust as needed
+              cpu: "500m"
+          env:
+            - name: PORT
+              value: "3002"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: project-clusterid-service
+spec:
+  ports:
+    - port: 3002
+      targetPort: 3002
+  selector:
+    app: project

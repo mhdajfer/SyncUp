@@ -9,8 +9,17 @@ import commRouter from "./routes/chat.routes";
 export const createApp = (): express.Application => {
   const app = express();
 
-  app.use(cors());
+  const corsOptions = {
+    origin: "http://localhost:31088", // Single origin
+  };
+
+  app.use(cors(corsOptions));
   app.use(cookieParser());
+
+  app.use((req, res, next) => {
+    console.log("gor request");
+    next();
+  });
 
   app.use("/users", userRouter);
   app.use("/projects", projectRouter);

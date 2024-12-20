@@ -1,4 +1,4 @@
-export const BASIC_URL = process.env.BASIC_URL;
+export const BASIC_URL = "http://dummy.com";
 
 export const TASK_CATEGORY = ["Feature", "Bug", "Testing", "Planning"];
 
