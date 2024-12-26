@@ -1,0 +1,37 @@
+name: user-deploy
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "backend/User Service/**"
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Build Docker image
+        run: cd 'User Service' && docker build -t syncup/user-service .
+
+      - name: tag Docker image
+        run: docker tag syncup/user-service ajfer/syncup-user-service
+
+      - name: Docker Login
+        run: docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
+
+      - name: Push Docker image
+        run: docker push ajfer/syncup-user-service
+
+      - name: Install doctl
+        uses: digitalocean/action-doctl@v2
+        with:
+          token: ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}
+
+      - name: Save Kubernetes config
+        run: doctl kubernetes cluster kubeconfig save syncup
+
+      - name: Restart Kubernetes deployment
+        run: kubectl rollout restart deployment user -n syncup
