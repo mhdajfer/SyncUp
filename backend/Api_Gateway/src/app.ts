@@ -9,11 +9,7 @@ import commRouter from "./routes/chat.routes";
 export const createApp = (): express.Application => {
   const app = express();
 
-  const corsOptions = {
-    origin: "http://localhost:31088", // Single origin
-  };
-
-  app.use(cors(corsOptions));
+  app.use(cors());
   app.use(cookieParser());
 
   app.use((req, res, next) => {

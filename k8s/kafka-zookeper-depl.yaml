@@ -2,6 +2,7 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: kafka-zookeeper-config
+  namespace: syncup
 data:
   KAFKA_ZOOKEEPER_CONNECT: "zookeeper:2181"
   KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: "INSIDE:PLAINTEXT,OUTSIDE:PLAINTEXT"
@@ -15,6 +16,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: zookeeper
+  namespace: syncup
   labels:
     app: zookeeper
 spec:
@@ -41,6 +43,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: zookeeper
+  namespace: syncup
   labels:
     app: zookeeper
 spec:
@@ -56,6 +59,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: kafka
+  namespace: syncup
   labels:
     app: kafka
 spec:
@@ -92,6 +96,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: kafka
+  namespace: syncup
   labels:
     app: kafka
 spec:

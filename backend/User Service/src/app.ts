@@ -14,7 +14,15 @@ export const createApp = (): express.Application => {
   };
 
   // Middlewares
+  // const corsOptions = {
+  //   origin: process.env.CORS_ORIGIN || "https://syncup.mhdajfer.in",
+  //   methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+  //   allowedHeaders: ["Content-Type", "Authorization"],
+  //   credentials: true, // If cookies or Authorization headers are used
+  // };
+
   app.use(cors());
+
   app.use(cookieParser());
   app.use(express.json());
   app.use(express.urlencoded({ extended: true }));

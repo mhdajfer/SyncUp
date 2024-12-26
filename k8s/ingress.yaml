@@ -2,10 +2,23 @@ apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: ingress-srv-syncup
+  namespace: syncup
+  annotations:
+    cert-manager.io/issuer: letsencrypt-nginx
+    nginx.ingress.kubernetes.io/enable-cors: "true"
+    nginx.ingress.kubernetes.io/cors-allow-origin: "https://syncup.mhdajfer.in"
+    nginx.ingress.kubernetes.io/cors-allow-methods: "GET, POST, PUT, DELETE, OPTIONS"
+    nginx.ingress.kubernetes.io/cors-allow-headers: "Content-Type, Authorization"
+    nginx.ingress.kubernetes.io/cors-allow-credentials: "true"
+    nginx.ingress.kubernetes.io/websocket-services: "communication-clusterid-service"
 spec:
+  tls:
+    - hosts:
+        - syncup.mhdajfer.in
+      secretName: letsencrypt-nginx
   ingressClassName: nginx
   rules:
-    - host: dummy.com # Replace with your actual domain name
+    - host: syncup.mhdajfer.in
       http:
         paths:
           - path: /

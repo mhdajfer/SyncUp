@@ -19,7 +19,7 @@ export class ConsumerRepository implements IConsumerRepository {
 
   async sendInvite(user: IUserInvite, token: string) {
     try {
-      const link = `http://dummy.com/newPassword?token=${token}`;
+      const link = `https://syncup.mhdajfer.in/newPassword?token=${token}`;
       return sendMail(
         user.email,
         "invitation",
