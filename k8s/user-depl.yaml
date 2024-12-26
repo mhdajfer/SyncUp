@@ -18,7 +18,7 @@ spec:
           image: ajfer/syncup-user-service
           resources:
             requests:
-              memory: "256Mi" 
+              memory: "256Mi"
               cpu: "250m"
             limits:
               memory: "512Mi"
@@ -26,6 +26,9 @@ spec:
           env:
             - name: PORT
               value: "3003"
+          envFrom:
+            - secretRef:
+                name: app-secrets
 ---
 apiVersion: v1
 kind: Service

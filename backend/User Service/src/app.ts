@@ -8,11 +8,6 @@ import { requestLogger } from "./Middlewares/requestLogger";
 export const createApp = (): express.Application => {
   const app = express();
 
-  const mid = (req: Request, res: Response, next: NextFunction) => {
-    console.log("got request", req.body);
-    next();
-  };
-
   app.use(cors());
 
   app.use(cookieParser());
@@ -20,7 +15,7 @@ export const createApp = (): express.Application => {
   app.use(express.urlencoded({ extended: true }));
   app.use(requestLogger);
 
-  app.use("/users", mid, userRoute);
+  app.use("/users", userRoute);
 
   app.use(errorHandler);
 
