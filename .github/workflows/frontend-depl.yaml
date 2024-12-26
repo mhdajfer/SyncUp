@@ -1,0 +1,37 @@
+name: frontend-deploy
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "frontend/**"
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Build Docker image
+        run: cd frontend && docker build -t syncup/frontend .
+
+      - name: tag Docker image
+        run: docker tag syncup/frontend ajfer/syncup-frontend
+
+      - name: Docker Login
+        run: docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
+
+      - name: Push Docker image
+        run: docker push ajfer/syncup-frontend
+
+      - name: Install doctl
+        uses: digitalocean/action-doctl@v2
+        with:
+          token: ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}
+
+      - name: Save Kubernetes config
+        run: doctl kubernetes cluster kubeconfig save syncup
+
+      - name: Restart Kubernetes deployment
+        run: kubectl rollout restart deployment frontend -n syncup
