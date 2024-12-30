@@ -8,7 +8,7 @@ interface Response {
 
 export const getUploadUrl = async (fileName: string, fileType: string) => {
   try {
-    const response = await userInstance.post("users/upload/image", {
+    const response = await userInstance.post("/users/upload/image", {
       fileName,
       fileType,
     });

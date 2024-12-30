@@ -3,7 +3,7 @@ import { userInstance } from "@/axios";
 export const createPaymentIntent = async (amount: number, currency: string) => {
   try {
 
-    const response = await userInstance.post(`users/create-intent`, {
+    const response = await userInstance.post(`/users/create-intent`, {
       amount,
       currency,
     });
