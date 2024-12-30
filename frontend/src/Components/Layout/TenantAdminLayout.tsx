@@ -7,6 +7,7 @@ import { CiLogout } from "react-icons/ci";
 import { toast } from "sonner";
 import { User } from "@/interfaces/User";
 import { Avatar, AvatarFallback, AvatarImage } from "@radix-ui/react-avatar";
+import { S3_URL } from "@/Consts";
 
 export function TenantAdminLayout({
   logoutSuccess,
@@ -18,6 +19,9 @@ export function TenantAdminLayout({
   const router = useRouter();
 
   const s3Url = process.env.NEXT_PUBLIC_S3_URL;
+
+  console.log("s3Url ", s3Url);
+  console.log("S3_URL ", S3_URL);
 
   if (!s3Url) toast.info("s3 url not specified");
 

@@ -1,4 +1,6 @@
-export const BASIC_URL = "http://dummy.com";
+export const BASIC_URL = process.env.NEXT_PUBLIC_BASIC_URL;
+
+export const S3_URL = process.env.NEXT_PUBLIC_S3_URL;
 
 export const TASK_CATEGORY = ["Feature", "Bug", "Testing", "Planning"];
 
