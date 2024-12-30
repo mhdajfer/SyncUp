@@ -97,6 +97,7 @@ export default function TenantForm() {
   const router = useRouter();
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
+    mode:"onChange",
     defaultValues: {
       company_name: "",
       company_type: "",
@@ -126,7 +127,7 @@ export default function TenantForm() {
       if (response.success) toast.success(response.message);
       else toast.error(response.message);
 
-      router.push("/admin/dashboard/tenant");
+      router.push("/admin/tenant");
     } catch (error) {
       console.log("Error while creating new Tenant", error);
       toast.error("Tenant not created:");

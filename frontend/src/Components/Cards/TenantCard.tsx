@@ -297,7 +297,7 @@ export default function TenantCard() {
           </CardContent>
         </Card>
       ) : (
-        <div>
+        <div className="w-full justify-center items-center">
           <Button
             onClick={() => {
               router.push("/admin/tenant/create");
