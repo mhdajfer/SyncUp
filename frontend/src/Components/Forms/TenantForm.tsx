@@ -31,10 +31,11 @@ import {
 } from "@/Components/ui/card";
 import { toast } from "sonner";
 import { createTenant } from "@/api/userService/user";
-import { ICreateTenant, User } from "@/interfaces/User";
+import { ICreateTenant, ITenant, User } from "@/interfaces/User";
 import { useRouter } from "next/navigation";
 import { updateUserDetails } from "@/store/slices/authSlice";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import { RootState } from "@/store/store";
 
 const addressSchema = z.object({
   country: z
@@ -98,6 +99,9 @@ type FormValues = z.infer<typeof formSchema>;
 export default function TenantForm() {
   const router = useRouter();
   const dispatch = useDispatch();
+  const currentUser = useSelector(
+    (state: RootState) => state.auth.user
+  ) as User;
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     mode: "onChange",
@@ -125,10 +129,20 @@ export default function TenantForm() {
         domain: values.domain,
       };
 
-      const response = await createTenant(tenantData);
+      const response = (await createTenant(tenantData)) as {
+        success: boolean;
+        data: ITenant;
+        message: string;
+      };
 
       if (response.success) {
-        dispatch(updateUserDetails(response.data as User));
+        const tenantId = response.data.tenant_id as string;
+        dispatch(
+          updateUserDetails({
+            ...currentUser,
+            tenant_id: tenantId,
+          })
+        );
         toast.success(response.message);
       } else toast.error(response.message);
 

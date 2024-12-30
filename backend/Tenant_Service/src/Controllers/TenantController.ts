@@ -28,7 +28,7 @@ export class TenantController {
 
       res
         .status(StatusCode.CREATED)
-        .json({ success: true, data: "newTenant", message: "Tenant created" });
+        .json({ success: true, data: newTenant, message: "Tenant created" });
     } catch (error) {
       next(error);
     }
