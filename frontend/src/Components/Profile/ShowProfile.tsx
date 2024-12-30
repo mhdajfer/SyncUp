@@ -17,16 +17,13 @@ import { User } from "@/interfaces/User";
 import { AxiosError } from "axios";
 import { toast } from "sonner";
 import { editProfile } from "@/api/userService/user";
+import { S3_URL } from "@/Consts";
 
 export default function ShowProfile({ initialUser }: { initialUser: User }) {
   const [user, setUser] = useState<User>(initialUser);
   const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [imageUploaded, setImageUploaded] = useState<File | null>(null);
-
-  const s3Url = process.env.NEXT_PUBLIC_S3_URL;
-
-  if (!s3Url) toast.info("s3 url not specified");
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -70,7 +67,7 @@ export default function ShowProfile({ initialUser }: { initialUser: User }) {
 
         await uploadFileToS3(uploadUrl, imageUploaded);
 
-        const newProfilePictureUrl = `${s3Url}/Image-${user._id}.jpg`;
+        const newProfilePictureUrl = `${S3_URL}/Image-${user._id}.jpg`;
 
         setUser((prevUser) => ({
           ...prevUser,
@@ -115,7 +112,9 @@ export default function ShowProfile({ initialUser }: { initialUser: User }) {
           >
             <AvatarImage
               src={
-                avatarPreview || user.avatar || `${s3Url}/Image-${user._id}.jpg`
+                avatarPreview ||
+                user.avatar ||
+                `${S3_URL}/Image-${user._id}.jpg`
               }
               alt="Profile picture"
             />

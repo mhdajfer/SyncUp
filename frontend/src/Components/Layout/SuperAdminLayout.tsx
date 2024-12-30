@@ -6,7 +6,8 @@ import { FiUsers, FiFolder, FiUser, FiCalendar } from "react-icons/fi";
 import { CiLogout } from "react-icons/ci";
 import { User } from "@/interfaces/User";
 import { Avatar, AvatarFallback, AvatarImage } from "@radix-ui/react-avatar";
-import { toast } from "sonner";
+import { S3_URL } from "@/Consts";
+
 
 export function SuperAdminLayout({
   logoutSuccess,
@@ -17,9 +18,6 @@ export function SuperAdminLayout({
 }) {
   const router = useRouter();
 
-  const s3Url = process.env.NEXT_PUBLIC_S3_URL;
-
-  if (!s3Url) toast.info("s3 url not specified");
 
   function onSideBarClick(val: string) {
     switch (val) {
@@ -74,7 +72,7 @@ export function SuperAdminLayout({
           <div>
             <Avatar className=" cursor-pointer ">
               <AvatarImage
-                src={`${s3Url}/Image-${user._id}.jpg`}
+                src={`${S3_URL}/Image-${user._id}.jpg`}
                 alt="Profile picture"
                 className="w-12 h-12 bg-cover  rounded-full"
               />

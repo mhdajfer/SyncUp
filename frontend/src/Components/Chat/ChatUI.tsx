@@ -20,7 +20,6 @@ import ChatSidebar from "./ChatSidebar";
 import ChatHeader from "./ChatHeader";
 import { getUploadUrl, uploadFileToS3 } from "@/lib/S3";
 
-
 export default function ChatUI({ users }: { users: User[] }) {
   const [messages, setMessages] = useState<Message[]>([]);
   const [newMessage, setNewMessage] = useState("");
@@ -30,10 +29,6 @@ export default function ChatUI({ users }: { users: User[] }) {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const currentUser = useSelector((state: RootState) => state.auth.user);
   const currentUserId = currentUser?._id;
-
-  const s3Url = process.env.NEXT_PUBLIC_S3_URL;
-
-  if (!s3Url) toast.info("s3 url not specified");
 
   // const viewportRef = useRef<HTMLDivElement>(null);
 

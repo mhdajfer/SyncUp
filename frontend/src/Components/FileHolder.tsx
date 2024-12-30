@@ -11,6 +11,7 @@ import {
 } from "@/Components/ui/card";
 import { toast } from "sonner";
 import { FileIcon, Loader2, ExternalLink } from "lucide-react";
+import { S3_URL } from "@/Consts";
 
 interface FileHolderProps {
   file: {
@@ -24,16 +25,10 @@ interface FileHolderProps {
 export default function FileHolder({ file }: FileHolderProps) {
   const [isLoading, setIsLoading] = useState(false);
 
-  const s3Url = process.env.NEXT_PUBLIC_S3_URL;
-
-  if (!s3Url) {
-    toast.error("S3 URL not specified");
-  }
-
   const handleViewFile = async () => {
     setIsLoading(true);
     try {
-      const fileUrl = `${s3Url}/${file.url}`;
+      const fileUrl = `${S3_URL}/${file.url}`;
       window.open(fileUrl, "_blank");
     } catch (error) {
       console.error("Error fetching file:", error);

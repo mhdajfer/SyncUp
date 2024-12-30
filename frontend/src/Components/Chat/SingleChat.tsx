@@ -7,6 +7,7 @@ import Image from "next/image";
 import { useState } from "react";
 import { toast } from "sonner";
 import { ImageModal } from "@/Components/ImageModal";
+import { S3_URL } from "@/Consts";
 
 export default function SingleChat({
   message,
@@ -20,10 +21,6 @@ export default function SingleChat({
   const [isImageModalOpen, setIsImageModalOpen] = useState(false);
   const sender: User = message.sender as User;
   const isCurrentUser = sender._id === currentUserId;
-
-  const s3Url = process.env.NEXT_PUBLIC_S3_URL;
-
-  if (!s3Url) console.log("s3 url not specified");
 
   const viewImage = () => {
     try {
@@ -44,7 +41,7 @@ export default function SingleChat({
         overflow-hidden "
         >
           <AvatarImage
-            src={`${s3Url}/Image-${sender._id}.jpg`}
+            src={`${S3_URL}/Image-${sender._id}.jpg`}
             alt={`Avatar of ${sender.firstName}`}
           />
           <AvatarFallback className="bg-orange-400 w-full flex justify-center items-center">
@@ -64,7 +61,7 @@ export default function SingleChat({
         )}
         {message.file ? (
           <Image
-            src={`${s3Url}/Message-${message._id}.jpg`}
+            src={`${S3_URL}/Message-${message._id}.jpg`}
             alt="Sent File"
             className="rounded-lg max-w-xs mt-2 cursor-pointer"
             width={100}
@@ -94,7 +91,7 @@ export default function SingleChat({
       <ImageModal
         isOpen={isImageModalOpen}
         onClose={() => setIsImageModalOpen(false)}
-        imageUrl={`${s3Url}/Message-${message._id}.jpg`}
+        imageUrl={`${S3_URL}/Message-${message._id}.jpg`}
       />
     </div>
   );

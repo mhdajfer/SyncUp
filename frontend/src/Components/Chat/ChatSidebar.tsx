@@ -27,6 +27,7 @@ import {
 import { format } from "date-fns";
 import { Socket } from "socket.io-client";
 import MessageSkeleton from "../Skeleton/MessageSkeleton";
+import { S3_URL } from "@/Consts";
 
 export default function ChatSidebar({
   setChats,
@@ -57,9 +58,6 @@ export default function ChatSidebar({
 
   const currentUser = useSelector((state: RootState) => state.auth.user);
   const currentUserId = currentUser?._id;
-  const s3Url = process.env.NEXT_PUBLIC_S3_URL;
-
-  if (!s3Url) toast.info("s3 url not specified");
 
   const handleStartChat = async (user: User) => {
     try {
@@ -239,7 +237,7 @@ export default function ChatSidebar({
                     >
                       <Avatar className="mr-2 bg-violet-900">
                         <AvatarImage
-                          src={`${s3Url}/Image-${user._id}.jpg`}
+                          src={`${S3_URL}/Image-${user._id}.jpg`}
                           alt={user.firstName[0]}
                         />
                         <AvatarFallback>{user.firstName[0]}</AvatarFallback>
@@ -281,7 +279,7 @@ export default function ChatSidebar({
                       src={
                         chat.isGroup
                           ? ""
-                          : `${s3Url}/Image-${getOtherUserId(chat.users)}.jpg`
+                          : `${S3_URL}/Image-${getOtherUserId(chat.users)}.jpg`
                       }
                     />
                     <AvatarFallback className="bg-orange-400">
