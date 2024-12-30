@@ -669,7 +669,10 @@ export class UserController {
     next: NextFunction
   ): Promise<void> {
     try {
-      const tenantId = req.user?.tenant_id;
+      const user = await this._userUseCase.getUserByEmail(
+        req.user?.email as string
+      );
+      const tenantId = user?.tenant_id;
 
       if (!tenantId)
         throw new CustomError("no tenant_id provided", StatusCode.CONFLICT);
