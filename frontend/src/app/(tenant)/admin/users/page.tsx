@@ -23,7 +23,7 @@ export default function Page() {
       } catch (error: unknown) {
         console.log(error);
 
-        toast("No users found");
+        toast.info("No users found");
       }
     }
     getData();

@@ -31,8 +31,10 @@ import {
 } from "@/Components/ui/card";
 import { toast } from "sonner";
 import { createTenant } from "@/api/userService/user";
-import { ICreateTenant } from "@/interfaces/User";
+import { ICreateTenant, User } from "@/interfaces/User";
 import { useRouter } from "next/navigation";
+import { updateUserDetails } from "@/store/slices/authSlice";
+import { useDispatch } from "react-redux";
 
 const addressSchema = z.object({
   country: z
@@ -95,9 +97,10 @@ type FormValues = z.infer<typeof formSchema>;
 
 export default function TenantForm() {
   const router = useRouter();
+  const dispatch = useDispatch();
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
-    mode:"onChange",
+    mode: "onChange",
     defaultValues: {
       company_name: "",
       company_type: "",
@@ -124,8 +127,10 @@ export default function TenantForm() {
 
       const response = await createTenant(tenantData);
 
-      if (response.success) toast.success(response.message);
-      else toast.error(response.message);
+      if (response.success) {
+        dispatch(updateUserDetails(response.data as User));
+        toast.success(response.message);
+      } else toast.error(response.message);
 
       router.push("/admin/tenant");
     } catch (error) {
@@ -137,10 +142,10 @@ export default function TenantForm() {
   return (
     <div className="space-y-2 py-10 fixed inset-0 flex flex-col items-center justify-center bg-black bg-opacity-50 backdrop-blur-sm overflow-auto">
       <Card className="relative max-w-2xl mt-36 mx-auto">
-      <X
-        className=" h-4 w-4 absolute top-1 right-1  hover:text-gray-600 cursor-pointer hover:font-xl"
-        onClick={() => router.back()}
-      />
+        <X
+          className=" h-4 w-4 absolute top-1 right-1  hover:text-gray-600 cursor-pointer hover:font-xl"
+          onClick={() => router.back()}
+        />
         <CardHeader>
           <CardTitle>Tenant Registration</CardTitle>
           <CardDescription>Register a new tenant in the system</CardDescription>
