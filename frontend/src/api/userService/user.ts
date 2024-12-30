@@ -15,7 +15,7 @@ export const login = async (formData: {
   password: string;
 }) => {
   try {
-    const response = await userInstance.post("users/login", formData);
+    const response = await userInstance.post("/users/login", formData);
     console.log(response);
 
     return response.data as {
@@ -177,7 +177,7 @@ export const inviteUser = async (data: {
 
 export const editProfile = async (user: User) => {
   try {
-    const response = await userInstance.put(`users/${user._id}`, user);
+    const response = await userInstance.put(`/users/${user._id}`, user);
 
     return response.data as { data: User; message: string; success: boolean };
   } catch (error) {
@@ -187,7 +187,7 @@ export const editProfile = async (user: User) => {
 
 export const getUser = async (userId: string) => {
   try {
-    const response = await userInstance.get(`users/${userId}`);
+    const response = await userInstance.get(`/users/${userId}`);
 
     return response.data as { data: User; message: string; success: boolean };
   } catch (error) {
@@ -197,7 +197,7 @@ export const getUser = async (userId: string) => {
 
 export const verifyAndSendOtp = async (email: string) => {
   try {
-    const response = await userInstance.post("users/forgot-password", {
+    const response = await userInstance.post("/users/forgot-password", {
       email,
     });
 
@@ -217,7 +217,7 @@ export const googleSignup = async ({
   name: string;
 }) => {
   try {
-    const response = await userInstance.post("users/google-auth", {
+    const response = await userInstance.post("/users/google-auth", {
       name,
       image,
       email,
@@ -236,7 +236,7 @@ export const googleSignup = async ({
 
 export const updateSubscription = async (amount: number) => {
   try {
-    const response = await userInstance.post("users/update-subscription", {
+    const response = await userInstance.post("/users/update-subscription", {
       amount,
     });
 
@@ -248,7 +248,7 @@ export const updateSubscription = async (amount: number) => {
 
 export const disableSubscription = async () => {
   try {
-    const response = await userInstance.post("users/remove-subscription");
+    const response = await userInstance.post("/users/remove-subscription");
 
     return response.data as { success: boolean; message: string; data: User };
   } catch (error) {
@@ -258,7 +258,7 @@ export const disableSubscription = async () => {
 
 export const getSubscriptionHistory = async () => {
   try {
-    const response = await userInstance.post("users/history-subscription");
+    const response = await userInstance.post("/users/history-subscription");
 
     return response.data as {
       success: boolean;
@@ -273,7 +273,7 @@ export const getSubscriptionHistory = async () => {
 export const getFullSubHistory = async () => {
   try {
     const response = await userInstance.post(
-      "users/history-subscription/sAdmin"
+      "/users/history-subscription/sAdmin"
     );
 
     return response.data as {
@@ -288,7 +288,7 @@ export const getFullSubHistory = async () => {
 
 export const getSubscriptionPlan = async () => {
   try {
-    const response = await userInstance.post("users/plan");
+    const response = await userInstance.post("/users/plan");
 
     return response.data as {
       success: boolean;
@@ -304,7 +304,7 @@ export const editSubscriptionPlan = async (
   newPlan: Partial<SubscriptionPlan>
 ) => {
   try {
-    const response = await userInstance.post("users/plan/edit", { newPlan });
+    const response = await userInstance.post("/users/plan/edit", { newPlan });
 
     return response.data as {
       success: boolean;

@@ -1,6 +1,8 @@
 export const BASIC_URL = process.env.NEXT_PUBLIC_BASIC_URL;
 
-export const S3_URL = process.env.NEXT_PUBLIC_S3_URL;
+export const S3_URL =
+  process.env.NEXT_PUBLIC_S3_URL ||
+  "https://syncupcloud.s3.eu-north-1.amazonaws.com";
 
 export const TASK_CATEGORY = ["Feature", "Bug", "Testing", "Planning"];
 
