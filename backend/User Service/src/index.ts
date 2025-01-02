@@ -32,6 +32,10 @@ const port = process.env.PORT;
 
     app.listen(port, () => {
       console.log(`latest User server started on port ${port}`);
+      console.log(`${process.env.AWS_S3_BUCKET_NAME}`);
+      console.log(`${process.env.AWS_SECRET_ACCESS_KEY}`);
+      console.log(`${process.env.AWS_S3_REGION}`);
+      console.log(`${process.env.AWS_ACCESS_KEY}`);
     });
   } catch (error) {
     console.error("Failed to start server:", error);
