@@ -64,11 +64,13 @@ export default function InviteForm() {
 
         if (!tenantData._id) {
           toast.error("Create tenant first");
-          router.push("/admin/dashboard/tenant/create");
+          setTimeout(() => {
+            router.push("/admin/tenant/create");
+          }, 1000);
         }
       } catch (error) {
         toast.error("No Tenant found");
-        router.push("/admin/dashboard/tenant/create");
+        router.push("/admin/tenant/create");
       }
     }
 
