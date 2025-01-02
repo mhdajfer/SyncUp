@@ -11,47 +11,58 @@ import { useDispatch } from "react-redux";
 export default function GoogleLogin() {
   const { data: session, status } = useSession();
   const dispatch = useDispatch<AppDispatch>();
-
   const router = useRouter();
 
   useEffect(() => {
     const login = async () => {
-      if (status === "authenticated") {
-        const user = session?.user as {
+      if (status === "authenticated" && session?.user) {
+        const user = session.user as {
           email: string;
           image: string;
           name: string;
         };
+
         try {
           const response = await googleSignup(user);
-          console.log(
-            `google user is ${user},  response from the login api is ${response}`
-          );
 
           if (response.success) {
-            Cookies.set("accessToken", response.accessToken);
+            // Set tokens
+            Cookies.set("accessToken", response.accessToken, {
+              secure: true,
+              sameSite: "strict",
+            });
             localStorage.setItem("refreshToken", response.refreshToken);
 
-            console.log("logged in successfully.......", response.user.role);
+            // Update Redux state
             dispatch(
               loginSuccess({
                 accessToken: response.accessToken,
                 user: response.user,
               })
             );
-            router.push("/admin/dashboard");
+
+            // Redirect to dashboard
+            router.replace("/admin/dashboard");
+            return;
           }
+
+          // If response.success is false
+          router.replace("/login");
         } catch (error) {
-          console.error("Error during login:", error);
-          router.push("/login");
+          console.error("Error during Google login:", error);
+          router.replace("/login");
         }
       } else if (status === "unauthenticated") {
-        router.push("/login");
+        router.replace("/login");
       }
     };
 
     login();
   }, [status, session, router, dispatch]);
 
-  return <div>Logging in...</div>;
+  return (
+    <div className="min-h-screen flex items-center justify-center">
+      <div className="animate-pulse">Logging in...</div>
+    </div>
+  );
 }

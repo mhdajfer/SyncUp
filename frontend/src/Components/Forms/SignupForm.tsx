@@ -304,7 +304,14 @@ export default function SignupForm({
         <div className="mt-6 grid grid-cols-2 gap-4">
           <Button
             type="button"
-            onClick={() => SignIn()}
+            onClick={async () => {
+              try {
+                await SignIn();
+              } catch (error) {
+                toast.error("Could not sign in, please try again later");
+                console.error("Login failed:", error);
+              }
+            }}
             className="w-full flex items-center justify-center gap-2 bg-white/10 hover:bg-white/20 text-white transition-all duration-200"
           >
             <FcGoogle className="w-5 h-5" />
