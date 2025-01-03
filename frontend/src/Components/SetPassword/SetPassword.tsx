@@ -6,12 +6,13 @@ import { Button } from "@/Components/ui/button";
 import { Input } from "@/Components/ui/input";
 import { Label } from "@/Components/ui/label";
 import { AlertCircle, CheckCircle } from "lucide-react";
-import { useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { setPasswordAndCreateUser } from "@/api/userService/user";
 import { toast } from "sonner";
 
 export default function SetPassword() {
   const searchParams = useSearchParams();
+  const router = useRouter();
 
   const token = searchParams.get("token");
 
@@ -45,6 +46,9 @@ export default function SetPassword() {
     console.log(response);
     setSuccess(true);
     setError("");
+    setTimeout(() => {
+      router.replace("syncup.mhdajfer.in/login");
+    });
   };
 
   const popupVariants = {

@@ -108,8 +108,8 @@ export default function InviteForm() {
     setTimeout(() => {
       console.log(values);
       setIsSubmitting(false);
-      toast.message("Form submitted!", {
-        description: "We've received your information.",
+      toast.message("User Invited!", {
+        description: "We've shared the information.",
       });
       form.reset();
       router.back();
