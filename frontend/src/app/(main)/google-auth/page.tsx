@@ -21,19 +21,18 @@ export default function GoogleLogin() {
           image: string;
           name: string;
         };
+        console.log("session data : ", user);
 
         try {
           const response = await googleSignup(user);
 
           if (response.success) {
-            // Set tokens
             Cookies.set("accessToken", response.accessToken, {
               secure: true,
               sameSite: "strict",
             });
             localStorage.setItem("refreshToken", response.refreshToken);
 
-            // Update Redux state
             dispatch(
               loginSuccess({
                 accessToken: response.accessToken,
@@ -41,12 +40,23 @@ export default function GoogleLogin() {
               })
             );
 
-            // Redirect to dashboard
-            router.replace("/admin/dashboard");
+            const role =
+              response.user.role == "tenant-admin"
+                ? "admin"
+                : response.user.role == "sAdmin"
+                ? "super-admin"
+                : response.user.role == "pManager"
+                ? "employee/project-manager"
+                : response.user.role == "dev"
+                ? "employee/dev"
+                : response.user.role == "manager"
+                ? "employee/manager"
+                : "";
+
+            router.replace(`/${role}/dashboard`);
             return;
           }
 
-          // If response.success is false
           router.replace("/login");
         } catch (error) {
           console.error("Error during Google login:", error);
