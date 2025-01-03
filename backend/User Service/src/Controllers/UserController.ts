@@ -245,7 +245,12 @@ export class UserController {
         userData.email
       );
 
-      console.log("existingUser", existingUser);
+      if (existingUser)
+        console.log(
+          "***user already exists with email : ",
+          existingUser?.email,
+          "***"
+        );
 
       let data;
 
