@@ -103,7 +103,7 @@ export default function ChatUI({ users }: { users: User[] }) {
       const chat = newMessage.chat as Chat;
       const sender = newMessage.sender as User;
       if (!selectedChat || selectedChat._id !== chat._id) {
-        toast.success(`New message from ${sender.firstName} `);
+        return toast.success(`New message from ${sender.firstName} `);
       } else {
         setMessages((prev) => [...prev, newMessage]);
       }
