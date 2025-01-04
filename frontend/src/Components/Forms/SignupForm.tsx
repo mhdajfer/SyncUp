@@ -301,7 +301,7 @@ export default function SignupForm({
           </div>
         </div>
 
-        <div className="mt-6 grid grid-cols-2 gap-4">
+        <div className="mt-6 grid grid-cols-1">
           <Button
             type="button"
             onClick={async () => {
@@ -317,13 +317,13 @@ export default function SignupForm({
             <FcGoogle className="w-5 h-5" />
             Google
           </Button>
-          <Button
+          {/* <Button
             type="button"
             className="w-full flex items-center justify-center gap-2 bg-white/10 hover:bg-white/20 text-white transition-all duration-200"
           >
             <FaGithub className="w-5 h-5" />
-            GitHub
-          </Button>
+            GitHub */}
+          {/* </Button> */}
         </div>
 
         <p className="mt-8 text-center text-sm text-gray-400">
