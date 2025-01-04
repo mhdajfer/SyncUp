@@ -5,7 +5,6 @@ import { Label } from "@/Components/ui/label";
 import Link from "next/link";
 import React from "react";
 import { toast } from "sonner";
-import { FaGithub } from "react-icons/fa";
 import { FcGoogle } from "react-icons/fc";
 import { createUser } from "@/api/userService/user";
 import { z, ZodError } from "zod";
