@@ -1,6 +1,0 @@
-2024-12-04T11:11:17.366Z [INFO]: GET /chats/allChat 200 - 220ms
-2024-12-04T11:11:17.522Z [INFO]: GET /chats/allChat 304 - 144ms
-2024-12-04T11:11:31.644Z [INFO]: POST /chats/getMessages 200 - 186ms
-2024-12-04T11:13:08.903Z [INFO]: POST /chats/getMessages 200 - 152ms
-2024-12-04T11:13:18.980Z [INFO]: POST /chats/getMessages 200 - 239ms
-2024-12-04T11:13:22.601Z [INFO]: POST /chats/getMessages 200 - 149ms

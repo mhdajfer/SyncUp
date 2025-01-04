@@ -102,6 +102,16 @@ export default function ChatUI({ users }: { users: User[] }) {
     const messageHandler = (newMessage: Message) => {
       const chat = newMessage.chat as Chat;
       const sender = newMessage.sender as User;
+
+      setChats((prevChats) => {
+        const updatedChats = prevChats.filter((c) => c._id !== chat._id);
+        const updatedChat = {
+          ...selectedChat,
+          latestMessage: newMessage,
+          updatedAt: new Date(),
+        };
+        return [updatedChat, ...updatedChats] as Chat[];
+      });
       if (!selectedChat || selectedChat._id !== chat._id) {
         return toast.success(`New message from ${sender.firstName} `);
       } else {
@@ -159,6 +169,18 @@ export default function ChatUI({ users }: { users: User[] }) {
           setSelectedFile(null);
           socket.emit("new message", response.data);
         } else toast.error(response.message);
+
+        setChats((prevChats) => {
+          const updatedChats = prevChats.filter(
+            (c) => c._id !== selectedChat._id
+          );
+          const updatedChat = {
+            ...selectedChat,
+            latestMessage: newMessage,
+            updatedAt: new Date(),
+          };
+          return [updatedChat, ...updatedChats] as Chat[];
+        });
       } else toast.warning("No message to send");
     } catch (error: unknown) {
       if (error instanceof AxiosError) {
