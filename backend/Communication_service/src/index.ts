@@ -8,6 +8,7 @@ const io = new Server(httpServer, {
   cors: {
     origin: process.env.SOCKET_IO_ORIGIN,
     methods: ["GET", "POST"],
+    credentials: true,
   },
   allowEIO3: true,
 });

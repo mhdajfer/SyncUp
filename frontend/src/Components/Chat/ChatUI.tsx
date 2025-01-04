@@ -60,7 +60,7 @@ export default function ChatUI({ users }: { users: User[] }) {
     }
   };
 
-  const END_POINT = "http://communication-clusterid-service:3004";
+  const END_POINT = process.env.NEXT_PUBLIC_BASIC_URL;
   const [socket, setSocket] = useState<Socket | null>(null);
 
   useEffect(() => {
