@@ -6,11 +6,12 @@ import app from "./app";
 const httpServer = createServer(app);
 const io = new Server(httpServer, {
   cors: {
-    origin: process.env.SOCKET_IO_ORIGIN,
+    origin: "https://syncup.mhdajfer.in",
     methods: ["GET", "POST"],
     credentials: true,
   },
   allowEIO3: true,
+  path: "/socket.io",
 });
 
 const Port = process.env.PORT;

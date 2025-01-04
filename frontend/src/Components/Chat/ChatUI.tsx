@@ -60,45 +60,53 @@ export default function ChatUI({ users }: { users: User[] }) {
     }
   };
 
-  const END_POINT = "https://syncup.mhdajfer.in/comm";
+  const END_POINT = "https://syncup.mhdajfer.in";
   const [socket, setSocket] = useState<Socket | null>(null);
 
   useEffect(() => {
     const socketInstance = io(END_POINT, {
-      path: "/socket.io",
+      path: "/comm/socket.io",
       transports: ["websocket", "polling"],
+      reconnectionAttempts: 5,
+      reconnectionDelay: 1000,
+      timeout: 20000,
     });
-
-    setSocket(socketInstance);
-
-    socketInstance.emit("setup", currentUserId);
 
     socketInstance.on("connect", () => {
       console.log("Connected to server:", socketInstance.id);
+      socketInstance.emit("setup", currentUserId);
     });
 
     socketInstance.on("connect_error", (err) => {
       console.error("Connection error:", err);
+      toast.error("Socket connection failed");
     });
 
-    // Clean up on component unmount
+    socketInstance.on("disconnect", () => {
+      console.log("Disconnected from server");
+    });
+
+    setSocket(socketInstance);
+
     return () => {
+      socketInstance.off("connect");
+      socketInstance.off("connect_error");
       socketInstance.disconnect();
     };
   }, [END_POINT, currentUserId]);
 
   useEffect(() => {
-    if (!socket) return console.log("error in socket instance");
+    if (!socket) return;
     socket.on("message received", (newMessage: Message) => {
       const chat = newMessage.chat as Chat;
       const sender = newMessage.sender as User;
       if (!selectedChat || selectedChat._id !== chat._id) {
-        toast.success(`You have a new message from ${sender.firstName} `);
+        toast.success(`New message from ${sender.firstName} `);
       } else {
-        setMessages([...messages, newMessage]);
+        setMessages((prev) => [...prev, newMessage]);
       }
     });
-  });
+  }, [selectedChat, socket]);
 
   useEffect(() => {
     if (!currentUserId) toast.error("Authenticated user not found");
