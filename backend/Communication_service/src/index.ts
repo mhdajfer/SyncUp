@@ -11,7 +11,7 @@ const io = new Server(httpServer, {
     credentials: true,
   },
   allowEIO3: true,
-  path: "/socket.io",
+  path: "/comm/socket.io",
 });
 
 const Port = process.env.PORT;
