@@ -3,6 +3,7 @@ import { IMessage } from "../interfaces/IMessage";
 import { IChat } from "../interfaces/IChat";
 import { IUser } from "../interfaces/IUser";
 import { ISocketManager } from "../interfaces/ISocketManager";
+import { CustomError } from "../ErrorHandler/CustonError";
 
 export class SocketManager implements ISocketManager {
   private _io: Server;
@@ -27,9 +28,14 @@ export class SocketManager implements ISocketManager {
         }
       );
 
-      socket.on("setup", (id: string) => {
-        socket.join(id);
-        console.log("User connected to room:", id);
+      socket.on("setup", (chatIds: string[]) => {
+        for (let i = 0; i < chatIds.length; i++) {
+          socket.join(chatIds[i]);
+        }
+      });
+
+      socket.on("new message", (newMessage: IMessage) => {
+        this.handleNewMessage(socket, newMessage);
       });
 
       socket.on("join room", (roomId: string) => {
@@ -56,7 +62,6 @@ export class SocketManager implements ISocketManager {
         socket.to(data.to).emit("callAccepted", data.signal);
       });
 
-
       socket.on(
         "endCall",
         ({
@@ -66,40 +71,25 @@ export class SocketManager implements ISocketManager {
           userId: string;
           currentUserId: string;
         }) => {
-          console.log(userId, currentUserId)
+          console.log(userId, currentUserId);
           socket.to(userId).emit("callEnded");
           socket.to(currentUserId).emit("callEnded");
         }
       );
 
-
       // Handle disconnection
       socket.on("disconnect", () => {
         console.log("User disconnected:", socket.id);
-      });
-
-      socket.on("new message", (newMessage: IMessage) => {
-        this.handleNewMessage(socket, newMessage);
       });
     });
   }
 
   private handleNewMessage(socket: Socket, newMessage: IMessage): void {
-    console.log("New message received:", newMessage);
+    console.log("New message received.");
 
     const chat = newMessage.chat as IChat;
+    if (!chat._id) throw new CustomError("Chat ID not found", 404);
 
-    if (chat.users.length === 0) {
-      console.log("No users found in chat");
-      return;
-    }
-
-    chat.users.forEach((user: IUser) => {
-      const sender = newMessage.sender as IUser;
-
-      if (!user._id || user._id === sender._id) return;
-
-      socket.to(user._id).emit("message received", newMessage);
-    });
+    socket.to(chat._id).emit("message received", newMessage);
   }
 }

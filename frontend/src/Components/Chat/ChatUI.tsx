@@ -72,9 +72,11 @@ export default function ChatUI({ users }: { users: User[] }) {
       timeout: 20000,
     });
 
+    const chatIds = chats.map((chat) => chat._id);
+
     socketInstance.on("connect", () => {
       console.log("Connected to server:", socketInstance.id);
-      socketInstance.emit("setup", currentUserId);
+      socketInstance.emit("setup", chatIds);
     });
 
     socketInstance.on("connect_error", (err) => {
@@ -93,7 +95,7 @@ export default function ChatUI({ users }: { users: User[] }) {
       socketInstance.off("connect_error");
       socketInstance.disconnect();
     };
-  }, [END_POINT, currentUserId]);
+  }, [END_POINT, chats]);
 
   useEffect(() => {
     if (!socket) return;
