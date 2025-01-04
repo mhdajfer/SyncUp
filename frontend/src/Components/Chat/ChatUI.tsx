@@ -60,7 +60,7 @@ export default function ChatUI({ users }: { users: User[] }) {
     }
   };
 
-  const END_POINT = process.env.NEXT_PUBLIC_BASIC_URL;
+  const END_POINT = "https://syncup.mhdajfer.in/comm";
   const [socket, setSocket] = useState<Socket | null>(null);
 
   useEffect(() => {
@@ -85,7 +85,7 @@ export default function ChatUI({ users }: { users: User[] }) {
     return () => {
       socketInstance.disconnect();
     };
-  }, [currentUserId]);
+  }, [END_POINT, currentUserId]);
 
   useEffect(() => {
     if (!socket) return console.log("error in socket instance");
