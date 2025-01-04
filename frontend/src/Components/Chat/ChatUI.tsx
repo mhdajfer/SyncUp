@@ -99,7 +99,7 @@ export default function ChatUI({ users }: { users: User[] }) {
 
   useEffect(() => {
     if (!socket) return;
-    socket.on("message received", (newMessage: Message) => {
+    const messageHandler = (newMessage: Message) => {
       const chat = newMessage.chat as Chat;
       const sender = newMessage.sender as User;
       if (!selectedChat || selectedChat._id !== chat._id) {
@@ -107,7 +107,12 @@ export default function ChatUI({ users }: { users: User[] }) {
       } else {
         setMessages((prev) => [...prev, newMessage]);
       }
-    });
+    };
+
+    socket.on("message received", messageHandler);
+    return () => {
+      socket.off("message received", messageHandler);
+    };
   }, [selectedChat, socket]);
 
   useEffect(() => {
@@ -150,7 +155,7 @@ export default function ChatUI({ users }: { users: User[] }) {
 
           setMessages([...messages, response.data ?? newMsg]);
           setNewMessage("");
-          toast.success(selectedFile ? "image send" : response.message);
+          // toast.success(selectedFile ? "image send" : response.message);
           setSelectedFile(null);
           socket.emit("new message", response.data);
         } else toast.error(response.message);
