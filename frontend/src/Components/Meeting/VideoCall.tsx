@@ -382,7 +382,10 @@ export function VideoCall({ users }: { users: User[] }) {
               <div className="flex flex-col items-center gap-4 p-4 bg-gray-800 rounded-lg">
                 <p className="text-white">
                   Incoming call from:{" "}
-                  <span className="font-mono">{incominCallInfo?.from}</span>
+                  <span className="font-mono">
+                    {users.find((user) => user._id == incominCallInfo.from)
+                      ?.firstName || "someone"}
+                  </span>
                 </p>
                 <Button
                   onClick={answerCall}
