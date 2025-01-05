@@ -1,12 +1,12 @@
 import { Server, Socket } from "socket.io";
 import { IMessage } from "../interfaces/IMessage";
 import { IChat } from "../interfaces/IChat";
-import { IUser } from "../interfaces/IUser";
 import { ISocketManager } from "../interfaces/ISocketManager";
 import { CustomError } from "../ErrorHandler/CustonError";
 
 export class SocketManager implements ISocketManager {
   private _io: Server;
+  private _userSocketMap = new Map<string, string>();
 
   constructor(_io: Server) {
     this._io = _io;
@@ -19,14 +19,6 @@ export class SocketManager implements ISocketManager {
       socket.on("disconnect", () => {
         console.log("User disconnected:", socket.id);
       });
-
-      socket.on(
-        "registerUser",
-        ({ userId, socketId }: { userId: string; socketId: string }) => {
-          console.log(`Registering user: ${userId}, Socket ID: ${socketId}`);
-          socket.join(userId);
-        }
-      );
 
       socket.on("setup", (chatIds: string[]) => {
         for (let i = 0; i < chatIds.length; i++) {
@@ -42,6 +34,15 @@ export class SocketManager implements ISocketManager {
         socket.join(roomId);
         console.log("User joined room:", roomId);
       });
+
+      socket.on(
+        "registerUser",
+        ({ userId, socketId }: { userId: string; socketId: string }) => {
+          this._userSocketMap.set(userId, socketId);
+          console.log("User registered:", userId + " with socketId:", socketId);
+        }
+      );
+
       socket.on(
         "initiateCall",
         ({
@@ -53,13 +54,23 @@ export class SocketManager implements ISocketManager {
           myId: string;
           signalData: any;
         }) => {
-          console.log("video call initiated***********************", userId);
-          socket.to(userId).emit("incomingCall", { signalData, from: myId });
+          const userSocketId = this._userSocketMap.get(userId);
+
+          if (userSocketId) {
+            this._io.to(userSocketId).emit("incomingCall", {
+              from: myId,
+              signalData,
+            });
+          }
         }
       );
 
-      socket.on("answerCall", (data: any) => {
-        socket.to(data.to).emit("callAccepted", data.signal);
+      socket.on("answerCall", ({ signal, to }: { signal: any; to: string }) => {
+        const userSocketId = this._userSocketMap.get(to);
+
+        if (userSocketId) {
+          this._io.to(userSocketId).emit("callAccepted", signal);
+        }
       });
 
       socket.on(
@@ -71,14 +82,21 @@ export class SocketManager implements ISocketManager {
           userId: string;
           currentUserId: string;
         }) => {
-          console.log(userId, currentUserId);
-          socket.to(userId).emit("callEnded");
-          socket.to(currentUserId).emit("callEnded");
+          const userSocketId = this._userSocketMap.get(userId);
+
+          if (userSocketId) {
+            this._io.to(userSocketId).emit("callEnded");
+          }
         }
       );
 
-      // Handle disconnection
       socket.on("disconnect", () => {
+        for (const [userId, socketId] of this._userSocketMap.entries()) {
+          if (socketId === socket.id) {
+            this._userSocketMap.delete(userId);
+            break;
+          }
+        }
         console.log("User disconnected:", socket.id);
       });
     });

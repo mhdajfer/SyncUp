@@ -1,6 +1,12 @@
 "use client";
 
-import React, { useCallback, useEffect, useRef, useState } from "react";
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import { io, Socket } from "socket.io-client";
 import SimplePeer, { SignalData } from "simple-peer";
 import { toast } from "sonner";
@@ -9,10 +15,17 @@ import { RootState } from "@/store/store";
 import { Card, CardContent } from "@/Components/ui/card";
 import { Button } from "@/Components/ui/button";
 import Image from "next/image";
-import { Input } from "@/Components/ui/input";
 import { Phone, PhoneOff, Video, VideoOff, Mic, MicOff } from "lucide-react";
 
 import DEFAULT_IMAGE from "../../../public/DefaultImg.avif";
+import { User } from "@/interfaces/User";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "../ui/select";
 
 interface IncomingCallInfo {
   isSomeoneCalling: boolean;
@@ -20,10 +33,7 @@ interface IncomingCallInfo {
   signalData: SignalData;
 }
 
-const END_POINT = "http://communication-clusterid-service:3004";
-const socket: Socket = io(END_POINT);
-
-export function VideoCall() {
+export function VideoCall({ users }: { users: User[] }) {
   const currentUserId = useSelector(
     (state: RootState) => state.auth.user?._id
   ) as string;
@@ -36,11 +46,23 @@ export function VideoCall() {
   const [isCallAccepted, setIsCallAccepted] = useState<boolean>(false);
   const [isMuted, setIsMuted] = useState<boolean>(true);
   const [isVideoOff, setIsVideoOff] = useState<boolean>(true);
+  const [selectedUserId, setSelectedUserId] = useState<string>("");
   const [incominCallInfo, setIncominCallInfo] = useState<IncomingCallInfo>({
     isSomeoneCalling: false,
     from: "",
     signalData: {} as SignalData,
   });
+
+  const END_POINT = "https://syncup.mhdajfer.in";
+  const socket = useMemo(() => {
+    return io(END_POINT, {
+      path: "/comm/socket.io",
+      transports: ["websocket", "polling"],
+      reconnectionAttempts: 5,
+      reconnectionDelay: 1000,
+      timeout: 20000,
+    });
+  }, []);
 
   const destroyConnection = useCallback(() => {
     toast.info("Call ended successfully");
@@ -52,6 +74,40 @@ export function VideoCall() {
     }
     window.location.reload();
   }, [stream]);
+
+  const initializeSocketEvents = useCallback(
+    (socket: Socket) => {
+      socket.on("connect", () => {
+        console.log("Connected to video socket:", socket.id);
+        socket.emit("registerUser", {
+          userId: currentUserId,
+          socketId: socket.id,
+        });
+      });
+
+      socket.on(
+        "incomingCall",
+        ({ from, signalData }: { from: string; signalData: SignalData }) => {
+          setUserId(from);
+          setIncominCallInfo({ isSomeoneCalling: true, from, signalData });
+        }
+      );
+
+      socket.on("callEnded", destroyConnection);
+
+      socket.on("connect_error", (error) => {
+        console.error("Socket connection error:", error);
+        toast.error("Connection failed. Retrying...");
+      });
+
+      socket.on("disconnect", () => {
+        console.log("Disconnected from video socket");
+        toast.error("Connection lost. Reconnecting...");
+      });
+    },
+    [currentUserId, destroyConnection]
+  );
+
   const requestMediaStream = async () => {
     try {
       toast.success(`Requesting media stream ${isVideoOff}`);
@@ -69,31 +125,21 @@ export function VideoCall() {
   };
 
   useEffect(() => {
-    socket.emit("registerUser", {
-      userId: currentUserId,
-      socketId: socket.id,
-    });
-
-    socket.on("incomingCall", handleIncomingCall);
-    socket.on("callEnded", destroyConnection);
+    if (!socket || !currentUserId)
+      return console.error("socket or current user not available");
+    initializeSocketEvents(socket);
 
     return () => {
-      socket.off("incomingCall", handleIncomingCall);
-      socket.off("callEnded", destroyConnection);
+      socket.off("incomingCall");
+      socket.off("callEnded");
+      socket.off("connect");
+      socket.off("connect_error");
+      socket.off("disconnect");
+      socket.off("incomingCall");
+      socket.off("callAccepted");
+      socket.off("callEnded");
     };
-  }, [currentUserId, destroyConnection]);
-
-  const handleIncomingCall = ({
-    from,
-    signalData,
-  }: {
-    from: string;
-    signalData: SignalData;
-  }) => {
-    toast.success("Incoming call received");
-    setUserId(from);
-    setIncominCallInfo({ isSomeoneCalling: true, from, signalData });
-  };
+  }, [socket, destroyConnection, initializeSocketEvents, currentUserId]);
 
   const initiateCall = () => {
     if (userId) {
@@ -219,13 +265,26 @@ export function VideoCall() {
           <div className="grid gap-6">
             {!isCallAccepted && (
               <div className="flex flex-col sm:flex-row gap-4">
-                <Input
-                  type="text"
-                  value={userId}
-                  onChange={(e) => setUserId(e.target.value)}
-                  placeholder="Enter User ID"
-                  className="bg-gray-800 border-gray-700 text-white"
-                />
+                <Select
+                  value={selectedUserId}
+                  onValueChange={(value) => setSelectedUserId(value)}
+                >
+                  <SelectTrigger className="bg-gray-800 border-gray-700 text-white">
+                    <SelectValue placeholder={"Select user"} />
+                  </SelectTrigger>
+                  <SelectContent className="bg-gray-800 border-gray-700">
+                    {users.map((user) => (
+                      <SelectItem
+                        key={user._id}
+                        value={user._id || ""}
+                        className="text-white hover:bg-gray-700 focus:bg-gray-700"
+                      >
+                        {user.firstName + " " + user.lastName}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+
                 <Button
                   onClick={initiateCall}
                   className="bg-emerald-600 hover:bg-emerald-700 text-white"
@@ -237,7 +296,7 @@ export function VideoCall() {
             )}
 
             <div className="text-sm text-gray-400 text-center">
-              ID: <span className="font-mono">{currentUserId}</span>
+              Start Meeting
             </div>
 
             <div className="grid md:grid-cols-2 gap-6">
@@ -332,38 +391,6 @@ export function VideoCall() {
                 </Button>
               </div>
             )}
-
-            {/* <Dialog open={incominCallInfo.isSomeoneCalling}>
-              <DialogContent>
-                <DialogHeader>
-                  <DialogTitle>
-                    Incoming call from:{" "}
-                    <span className="font-mono">{incominCallInfo?.from}</span>
-                  </DialogTitle>
-                </DialogHeader>
-                <DialogFooter>
-                  <Button
-                    onClick={answerCall}
-                    className="bg-emerald-600 hover:bg-emerald-700 text-white"
-                  >
-                    <Phone className="mr-2 h-4 w-4" />
-                    Answer Call
-                  </Button>
-                  <Button
-                    onClick={() =>
-                      setIncominCallInfo((info) => ({
-                        ...info,
-                        isSomeoneCalling: false,
-                      }))
-                    }
-                    className="bg-red-600 hover:bg-red-700 text-white"
-                  >
-                    <PhoneOff className="mr-2 h-4 w-4" />
-                    Decline
-                  </Button>
-                </DialogFooter>
-              </DialogContent>
-            </Dialog> */}
           </div>
         </CardContent>
       </Card>
