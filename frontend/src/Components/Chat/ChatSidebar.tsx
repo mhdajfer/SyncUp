@@ -37,12 +37,10 @@ export default function ChatSidebar({
   users,
   setSelectedChat,
   selectedChat,
-  newMessage,
   socket,
 }: {
   chats: Chat[];
   users: User[];
-  newMessage: string;
   socket: Socket | null;
   selectedChat: Chat | null;
   setSelectedChat: (chat: Chat) => void;
@@ -293,7 +291,8 @@ export default function ChatSidebar({
                       {chat.isGroup ? chat.chat : setChatName(chat)}
                     </h3>
                     <p className="text-sm text-gray-400">
-                      {chat.latestMessage?.content || newMessage}
+                      {chat.latestMessage?.content ||
+                        (chat.latestMessage?.file ? "📎 Image" : "")}
                     </p>
                   </div>
                   {chat.updatedAt && (

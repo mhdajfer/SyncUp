@@ -167,6 +167,17 @@ export default function ChatUI({ users }: { users: User[] }) {
           }
 
           setMessages([...messages, response.data ?? newMsg]);
+          setChats((prevChats) => {
+            const updatedChats = prevChats.filter(
+              (c) => c._id !== selectedChat._id
+            );
+            const updatedChat = {
+              ...selectedChat,
+              latestMessage: response.data ?? newMsg, // Use response data or newMsg
+              updatedAt: new Date(),
+            };
+            return [updatedChat, ...updatedChats] as Chat[];
+          });
           setNewMessage("");
 
           setSelectedFile(null);
@@ -202,7 +213,6 @@ export default function ChatUI({ users }: { users: User[] }) {
         setSelectedChat={setSelectedChat}
         chats={chats}
         setChats={setChats}
-        newMessage={newMessage}
         setIsLoading={setIsLoading}
         setMessages={setMessages}
         users={users}

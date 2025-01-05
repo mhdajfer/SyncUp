@@ -60,7 +60,8 @@ export class ChatRepository implements IChatRepository {
       })
         .populate("users", "-password")
         .populate("latestMessage")
-        .populate("groupAdmin", "-password");
+        .populate("groupAdmin", "-password")
+        .sort({ updatedAt: -1 });
 
       console.log("all chats", chats);
 
