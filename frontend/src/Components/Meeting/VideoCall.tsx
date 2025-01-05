@@ -149,8 +149,9 @@ export function VideoCall({ users }: { users: User[] }) {
       });
 
       peer.on("signal", (signalData) => {
+        toast.success(selectedUserId);
         socket.emit("initiateCall", {
-          selectedUserId,
+          userId: selectedUserId,
           signalData,
           myId: currentUserId,
         });
@@ -197,7 +198,7 @@ export function VideoCall({ users }: { users: User[] }) {
   };
 
   const endCall = () => {
-    socket.emit("endCall", { selectedUserId, currentUserId });
+    socket.emit("endCall", { userId: selectedUserId, currentUserId });
     destroyConnection();
   };
 
