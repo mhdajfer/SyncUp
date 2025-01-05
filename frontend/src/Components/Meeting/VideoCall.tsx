@@ -42,7 +42,6 @@ export function VideoCall({ users }: { users: User[] }) {
   const connectionRef = useRef<SimplePeer.Instance | null>(null);
 
   const [stream, setStream] = useState<MediaStream | null>(null);
-  const [userId, setUserId] = useState<string>("");
   const [isCallAccepted, setIsCallAccepted] = useState<boolean>(false);
   const [isMuted, setIsMuted] = useState<boolean>(true);
   const [isVideoOff, setIsVideoOff] = useState<boolean>(true);
@@ -88,7 +87,7 @@ export function VideoCall({ users }: { users: User[] }) {
       socket.on(
         "incomingCall",
         ({ from, signalData }: { from: string; signalData: SignalData }) => {
-          setUserId(from);
+          setSelectedUserId(from);
           setIncominCallInfo({ isSomeoneCalling: true, from, signalData });
         }
       );
@@ -142,7 +141,7 @@ export function VideoCall({ users }: { users: User[] }) {
   }, [socket, destroyConnection, initializeSocketEvents, currentUserId]);
 
   const initiateCall = () => {
-    if (userId) {
+    if (selectedUserId) {
       const peer = new SimplePeer({
         initiator: true,
         trickle: false,
@@ -151,7 +150,7 @@ export function VideoCall({ users }: { users: User[] }) {
 
       peer.on("signal", (signalData) => {
         socket.emit("initiateCall", {
-          userId,
+          selectedUserId,
           signalData,
           myId: currentUserId,
         });
@@ -198,7 +197,7 @@ export function VideoCall({ users }: { users: User[] }) {
   };
 
   const endCall = () => {
-    socket.emit("endCall", { userId, currentUserId });
+    socket.emit("endCall", { selectedUserId, currentUserId });
     destroyConnection();
   };
 
@@ -267,7 +266,9 @@ export function VideoCall({ users }: { users: User[] }) {
               <div className="flex flex-col sm:flex-row gap-4">
                 <Select
                   value={selectedUserId}
-                  onValueChange={(value) => setSelectedUserId(value)}
+                  onValueChange={(value) => {
+                    setSelectedUserId(value);
+                  }}
                 >
                   <SelectTrigger className="bg-gray-800 border-gray-700 text-white">
                     <SelectValue placeholder={"Select user"} />
