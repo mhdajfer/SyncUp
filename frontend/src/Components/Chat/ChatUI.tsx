@@ -202,6 +202,7 @@ export default function ChatUI({ users }: { users: User[] }) {
         setSelectedChat={setSelectedChat}
         chats={chats}
         setChats={setChats}
+        newMessage={newMessage}
         setIsLoading={setIsLoading}
         setMessages={setMessages}
         users={users}
