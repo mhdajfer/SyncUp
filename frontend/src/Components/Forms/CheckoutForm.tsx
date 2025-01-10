@@ -1,8 +1,8 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 "use client";
 
-import { useEffect, useState } from "react";
-
+import { useState } from "react";
+import { CardElement, useStripe, useElements } from "@stripe/react-stripe-js";
+import { Button } from "@/Components/ui/button";
 import {
   Card,
   CardContent,
@@ -11,102 +11,113 @@ import {
   CardHeader,
   CardTitle,
 } from "@/Components/ui/card";
+import { createPaymentIntent } from "@/api/payments/create-payment-intent";
 import Loading from "../Loading-lazy/Loading";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { updateSubscription } from "@/api/userService/user";
 import { useDispatch } from "react-redux";
 import { updateUserDetails } from "@/store/slices/authSlice";
-import { Button } from "../ui/button";
-
-declare global {
-  interface Window {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    Razorpay: any;
-  }
-}
 
 export function CheckoutForm() {
+  const stripe = useStripe();
   const dispatch = useDispatch();
   const router = useRouter();
+  const elements = useElements();
   const [isProcessing, setIsProcessing] = useState(false);
   const [message, setMessage] = useState("");
 
-  useEffect(() => {
-    const script = document.createElement("script");
-    script.src = "https://checkout.razorpay.com/v1/checkout.js";
-    script.async = true;
-    document.body.appendChild(script);
-  }, []);
-
-  const handlePayment = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    if (!stripe || !elements) return console.log("strip or element not found");
+
     setIsProcessing(true);
 
     try {
+      const response = await createPaymentIntent(1000, "USD");
+      const clientSecret = response.data;
       const totalPriceString = localStorage.getItem("total-price");
+
       const totalPrice = totalPriceString ? parseFloat(totalPriceString) : 0;
 
-      const options = {
-        key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID,
-        amount: totalPrice * 100, // amount in paisa
-        currency: "INR",
-        name: "SyncUp",
-        description: "Subscription Payment",
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        handler: async (response: any) => {
-          try {
-            // Verify payment on backend
-            const updateResponse = await updateSubscription(totalPrice);
-            if (updateResponse.success) {
-              dispatch(updateUserDetails(updateResponse.data));
-              setMessage("Payment succeeded!");
-              toast.success("Subscription activated!");
-              router.back();
-            }
-          } catch (error) {
-            console.error("Verification failed:", error);
-            setMessage("Payment verification failed");
-            toast.error("Payment verification failed");
-          }
+      const result = await stripe.confirmCardPayment(clientSecret, {
+        payment_method: {
+          card: elements.getElement(CardElement)!,
         },
-        prefill: {
-          email: "user@example.com",
-        },
-        theme: {
-          color: "#6366f1",
-        },
-      };
+      });
 
-      const razorpay = new window.Razorpay(options);
-      razorpay.open();
+      if (result.error) {
+        setMessage(result.error.message || "Payment failed.");
+        toast.error(result.error.message || "Payment failed.");
+      } else if (
+        result.paymentIntent &&
+        result.paymentIntent.status === "succeeded"
+      ) {
+        setMessage("Payment succeeded!");
+        toast.success("subscription activated!");
+        const updateResponse = await updateSubscription(totalPrice);
+
+        if (updateResponse.success) {
+          dispatch(updateUserDetails(updateResponse.data));
+          toast.success("Subscription updated!");
+        }
+        router.back();
+      }
     } catch (error) {
       console.error("Payment failed:", error);
       setMessage("Something went wrong. Please try again.");
-      toast.error("Payment failed");
     } finally {
       setIsProcessing(false);
     }
   };
 
   return (
-    <form onSubmit={handlePayment} className="w-full max-w-md mx-auto">
+    <form onSubmit={handleSubmit} className="w-full max-w-md mx-auto">
       <Card>
         <CardHeader>
           <CardTitle>Complete Your Payment</CardTitle>
           <CardDescription>
-            Click below to proceed with secure payment
+            Enter your card details to process the payment
           </CardDescription>
         </CardHeader>
         <CardContent>
           <div className="grid gap-6">
-            <p className="text-center text-sm text-gray-600">
-              You will be redirected to Razorpay secure checkout
-            </p>
+            <div className="grid gap-2">
+              <label
+                htmlFor="card-element"
+                className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+              >
+                Card Details
+              </label>
+              <div className="h-11 px-3 py-2 rounded-md border border-input bg-background text-sm ring-offset-background">
+                <CardElement
+                  id="card-element"
+                  options={{
+                    style: {
+                      base: {
+                        fontSize: "16px",
+                        color: "#424770",
+                        "::placeholder": {
+                          color: "#aab7c4",
+                        },
+                      },
+                      invalid: {
+                        color: "#9e2146",
+                      },
+                    },
+                  }}
+                />
+              </div>
+            </div>
           </div>
         </CardContent>
         <CardFooter className="flex flex-col items-start space-y-2">
-          <Button type="submit" disabled={isProcessing} className="w-full">
+          <Button
+            type="submit"
+            disabled={!stripe || isProcessing}
+            className="w-full"
+          >
             {isProcessing ? (
               <>
                 <Loading />
