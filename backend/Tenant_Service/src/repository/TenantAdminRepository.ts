@@ -33,7 +33,7 @@ export class TenantAdminRepository implements ITenantAdminRepository {
     try {
       console.log("tenant : ", typeof tenantAdmin._id);
       const user = await Tenant.findOne({
-        user_id: new mongoose.Types.ObjectId(tenantAdmin._id as unknown as string),
+        tenant_id: tenantAdmin.tenant_id,
       });
       console.log(user);
 
