@@ -16,7 +16,7 @@ const TenantSchema: Schema = new Schema({
   address: { type: AddressSchema, required: true },
   phone_no: { type: String, required: true },
   domain: { type: String, default: null },
-  user_id: { type: Schema.Types.ObjectId, required: true },
+  user_id: { type: String, required: true },
   is_deleted: { type: Boolean, default: false },
 });
 
