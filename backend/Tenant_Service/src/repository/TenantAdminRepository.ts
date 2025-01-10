@@ -31,9 +31,9 @@ export class TenantAdminRepository implements ITenantAdminRepository {
   }
   async getTenant(tenantAdmin: IUser): Promise<ITenants> {
     try {
-      console.log("tenant : ", tenantAdmin._id);
+      console.log("tenant : ", typeof tenantAdmin._id);
       const user = await Tenant.findOne({
-        user_id: tenantAdmin._id,
+        user_id: new mongoose.Types.ObjectId(tenantAdmin._id as unknown as string),
       });
       console.log(user);
 
