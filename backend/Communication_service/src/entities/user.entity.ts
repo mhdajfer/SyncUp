@@ -9,6 +9,7 @@ const userSchema = new Schema({
 
   subscriptionStatus: { type: Boolean, required: true, default: false },
   subscriptionAmount: { type: Number },
+  subscriptionDate: { type: Date },
   email: {
     type: String,
     required: true,

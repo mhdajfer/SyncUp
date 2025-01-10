@@ -16,6 +16,7 @@ export interface IUser {
   role?: string;
   iat?: number;
   subscriptionStatus: boolean;
+  subscriptionDate?: string;
   subscriptionAmount?: number;
   exp?: number;
   __v?: number;

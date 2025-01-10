@@ -7,6 +7,7 @@ export interface IUser extends Document {
   email: string;
   password: string;
   subscriptionStatus: boolean;
+  subscriptionDate?: string;
   subscriptionAmount?: number;
   isBlocked?: boolean;
   age: number;
