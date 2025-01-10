@@ -1,3 +1,4 @@
+import mongoose from "mongoose";
 import { CustomError } from "../ErrorHandler/CustonError";
 import { Tenant } from "../frameworks/models";
 import { ICreateTenant, ITenants, StatusCode } from "../interfaces";
@@ -31,7 +32,9 @@ export class TenantAdminRepository implements ITenantAdminRepository {
   async getTenant(tenantAdmin: IUser): Promise<ITenants> {
     try {
       console.log("tenant : ", tenantAdmin._id);
-      const user = await Tenant.findOne({ user_id: tenantAdmin._id });
+      const user = await Tenant.findOne({
+        user_id: new mongoose.Schema.Types.ObjectId(tenantAdmin._id.toString()),
+      });
       console.log(user);
 
       if (!user)
