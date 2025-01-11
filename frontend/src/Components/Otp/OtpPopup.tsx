@@ -37,13 +37,15 @@ export function OtpPopup({ email }: { email: string }) {
       console.log(response);
 
       if (response.data.success) {
-        toast.success(response.data.message);
+        toast.success(response.data.message + " login again..");
         console.log("Verified");
 
-        router.push("/admin/dashboard");
+        setTimeout(() => {
+          router.push("/login");
+        }, 600);
       } else {
         toast.error(response.data.message);
-        router.push("/admin/signup");
+        router.push("/signup");
       }
     } catch (error) {
       console.log(error);
