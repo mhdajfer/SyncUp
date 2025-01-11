@@ -26,6 +26,8 @@ spec:
           env:
             - name: PORT
               value: "3005"
+            - name: DB_URL
+              value: "mongodb+srv://ajferaju9961:Achuaju6@cluster.p3idumj.mongodb.net/syncUp-tenant-service"
           envFrom:
             - secretRef:
                 name: app-secrets

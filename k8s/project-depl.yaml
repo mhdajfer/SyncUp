@@ -18,14 +18,19 @@ spec:
           image: ajfer/syncup-project-service
           resources:
             requests:
-              memory: "256Mi" 
+              memory: "256Mi"
               cpu: "250m"
             limits:
-              memory: "512Mi" 
+              memory: "512Mi"
               cpu: "500m"
           env:
             - name: PORT
               value: "3002"
+            - name: DB_URL
+              value: "mongodb+srv://ajferaju9961:Achuaju6@cluster.p3idumj.mongodb.net/syncUp-project-service"
+          envFrom:
+            - secretRef:
+                name: app-secrets
 ---
 apiVersion: v1
 kind: Service
