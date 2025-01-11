@@ -8,6 +8,15 @@ import { User } from "@/interfaces/User";
 import { Avatar, AvatarFallback, AvatarImage } from "@radix-ui/react-avatar";
 import { S3_URL } from "@/Consts";
 
+const ROUTE_MAP = {
+  subscriptions: "/super-admin/subscriptions",
+  tenants: "/super-admin/tenants",
+  chat: "/super-admin/chat",
+  meeting: "/super-admin/meeting",
+  profile: "/super-admin/profile",
+} as const;
+
+type RouteKey = keyof typeof ROUTE_MAP;
 
 export function SuperAdminLayout({
   logoutSuccess,
@@ -18,25 +27,22 @@ export function SuperAdminLayout({
 }) {
   const router = useRouter();
 
-
-  function onSideBarClick(val: string) {
-    switch (val) {
-      case "subscriptions":
-        router.push("/super-admin/subscriptions");
-        break;
-      case "tenants":
-        router.push("/super-admin/tenants");
-        break;
-      case "chat":
-        router.push("/super-admin/chat");
-        break;
-      case "meeting":
-        router.push("/super-admin/meeting");
-        break;
+  function onSideBarClick(val: RouteKey) {
+    try {
+      const path = ROUTE_MAP[val];
+      router.push(path);
+    } catch (error) {
+      console.error("Navigation error:", error);
     }
   }
 
-  console.log(user);
+  const handleLogout = (): void => {
+    try {
+      logoutSuccess();
+    } catch (error) {
+      console.error("Logout error:", error);
+    }
+  };
 
   return (
     <div className="h-screen w-64 bg-gray-900 text-gray-200 relative">
@@ -72,7 +78,9 @@ export function SuperAdminLayout({
           <div>
             <Avatar className=" cursor-pointer ">
               <AvatarImage
-                src={`${S3_URL}/Image-${user._id}.jpg`}
+                src={`${S3_URL}/Image-${
+                  user._id
+                }.jpg?t=${new Date().getTime()}`}
                 alt="Profile picture"
                 className="w-12 h-12 bg-cover  rounded-full"
               />
@@ -84,7 +92,7 @@ export function SuperAdminLayout({
           </div>
           <div
             className="ml-3 cursor-pointer"
-            onClick={() => router.push("/super-admin/profile")}
+            onClick={() => onSideBarClick("profile")}
           >
             <p className="text-sm font-medium hover:underline">
               {user.firstName}
@@ -94,9 +102,7 @@ export function SuperAdminLayout({
         </div>
         <div
           className="cursor-pointer hover:bg-slate-700 rounded"
-          onClick={() => {
-            logoutSuccess();
-          }}
+          onClick={handleLogout}
         >
           <CiLogout size={25} />
         </div>

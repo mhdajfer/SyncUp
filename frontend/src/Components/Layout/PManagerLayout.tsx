@@ -6,6 +6,18 @@ import { Avatar, AvatarFallback, AvatarImage } from "@radix-ui/react-avatar";
 import { User } from "@/interfaces/User";
 import { S3_URL } from "@/Consts";
 
+const ROUTE_MAP = {
+  projects: "/employee/project_manager/projects",
+  developers: "/employee/project_manager/developers",
+  dashboard: "/employee/project_manager/dashboard",
+  pManagers: "/employee/manager/dashboard/pManagers",
+  chats: "/employee/project_manager/chat",
+  meeting: "/employee/project_manager/meeting",
+  profile: "/employee/project_manager/profile",
+} as const;
+
+type RouteKey = keyof typeof ROUTE_MAP;
+
 export default function PManagerLayout({
   logoutSuccess,
   user,
@@ -14,6 +26,23 @@ export default function PManagerLayout({
   user: User;
 }) {
   const router = useRouter();
+
+  function onSideBarClick(val: RouteKey) {
+    try {
+      const path = ROUTE_MAP[val];
+      router.push(path);
+    } catch (error) {
+      console.error("Navigation error:", error);
+    }
+  }
+
+  const handleLogout = (): void => {
+    try {
+      logoutSuccess();
+    } catch (error) {
+      console.error("Logout error:", error);
+    }
+  };
 
   return (
     <div className="h-screen w-64 bg-gray-900 text-gray-200 relative">
@@ -25,28 +54,28 @@ export default function PManagerLayout({
         <SideBarItem
           icon={<FiUsers />}
           label="Dashboard"
-          onClick={() => router.push("/employee/project_manager/dashboard")}
+          onClick={() => onSideBarClick("dashboard")}
         />
         <SideBarItem
           icon={<FiUsers />}
           label="Developers"
-          onClick={() => router.push("/employee/project_manager/developers")}
+          onClick={() => onSideBarClick("developers")}
         />
 
         <SideBarItem
           icon={<FiFolder />}
           label="Projects"
-          onClick={() => router.push("/employee/project_manager/projects")}
+          onClick={() => onSideBarClick("projects")}
         />
         <SideBarItem
           icon={<FiMessageSquare />}
           label="Chats"
-          onClick={() => router.push("/employee/project_manager/chat")}
+          onClick={() => onSideBarClick("chats")}
         />
         <SideBarItem
           icon={<FiCalendar />}
           label="Meetings"
-          onClick={() => router.push("/employee/project_manager/meeting")}
+          onClick={() => onSideBarClick("meeting")}
         />
       </nav>
 
@@ -55,7 +84,9 @@ export default function PManagerLayout({
           <div>
             <Avatar className=" cursor-pointer ">
               <AvatarImage
-                src={`${S3_URL}/Image-${user._id}.jpg`}
+                src={`${S3_URL}/Image-${
+                  user._id
+                }.jpg?t=${new Date().getTime()}`}
                 alt="Profile picture"
                 className="w-12 h-12 bg-cover  rounded-full"
               />
@@ -67,7 +98,7 @@ export default function PManagerLayout({
           </div>
           <div
             className="ml-3 cursor-pointer"
-            onClick={() => router.push("/employee/project_manager/profile")}
+            onClick={() => onSideBarClick("profile")}
           >
             <p className="text-sm font-medium hover:underline">
               {user.firstName}
@@ -77,9 +108,7 @@ export default function PManagerLayout({
         </div>
         <div
           className="cursor-pointer hover:bg-slate-700 rounded"
-          onClick={() => {
-            logoutSuccess();
-          }}
+          onClick={handleLogout}
         >
           <CiLogout size={25} />
         </div>
