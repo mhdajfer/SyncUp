@@ -1,6 +1,7 @@
 node_modules
-.env
-.env.development
-.env.production
-logs
+.env*
 .dist
+logs
+*.log
+*.json
+
