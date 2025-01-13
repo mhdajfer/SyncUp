@@ -60,6 +60,19 @@ export default function ChatSidebar({
   const currentUserId = currentUser?._id;
 
   const handleStartChat = async (user: User) => {
+    if (
+      chats.find((chat) =>
+        chat.users.some((u) =>
+          typeof u === "string" ? u === user._id : u._id === user._id
+        )
+      ) &&
+      chats.find((chat) =>
+        chat.users.some((u) =>
+          typeof u === "string" ? u === user._id : u._id === user._id
+        )
+      )?.users.length == 2
+    )
+      return toast.error("Chat already exists");
     try {
       const response = await getOneChat(user._id || "");
 
@@ -120,18 +133,6 @@ export default function ChatSidebar({
 
     return typeof otherUser === "object" ? otherUser.firstName : otherUser;
   };
-
-  // const setChatImage = (chat: Chat) => {
-  //   const otherUser = chat.users.find((user) =>
-  //     typeof user !== "string"
-  //       ? user._id !== currentUserId
-  //       : user !== currentUserId
-  //   );
-
-  //   if (!otherUser) return toast.error("Issue with chat name");
-
-  //   return typeof otherUser === "object" ? otherUser.avatar : otherUser;
-  // };
 
   const handleOneChat = async (chat: Chat) => {
     try {
@@ -294,8 +295,10 @@ export default function ChatSidebar({
                       {chat.latestMessage
                         ? chat.latestMessage.file
                           ? "📎 Image"
-                          : chat.latestMessage.content || "No message"
-                        : "No message"}
+                          : chat?.latestMessage?.content ||
+                            selectedChat?.latestMessage.content ||
+                            "New Chat"
+                        : "no msg"}
                     </p>
                   </div>
                   {chat.updatedAt && (

@@ -152,7 +152,6 @@ export default function ChatUI({ users }: { users: User[] }) {
         );
 
         if (response.success && socket) {
-          const messageData = response.data;
           if (selectedFile) {
             const fileName = `Message-${response.data._id}.jpg`;
             const uploadResponse = await getUploadUrl(fileName, "image/jpeg");
@@ -168,13 +167,16 @@ export default function ChatUI({ users }: { users: User[] }) {
           }
 
           setMessages([...messages, response.data ?? newMsg]);
+          setSelectedChat((prevChat) =>
+            prevChat ? { ...prevChat, latestMessage: newMsg } : null
+          );
           setChats((prevChats) => {
             const updatedChats = prevChats.filter(
               (c) => c._id !== selectedChat._id
             );
             const updatedChat = {
               ...selectedChat,
-              latestMessage: messageData,
+              latestMessage: newMsg,
               updatedAt: new Date(),
             };
             return [updatedChat, ...updatedChats] as Chat[];
