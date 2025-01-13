@@ -26,6 +26,14 @@ import {
   SelectTrigger,
   SelectValue,
 } from "../ui/select";
+import { CallHistory } from "./CallHistory";
+import { Call } from "@/interfaces/Call";
+import {
+  createCallRecord,
+  getCallHistory,
+  updateStatus,
+} from "@/api/Communication/chatApis";
+import { AxiosError } from "axios";
 
 interface IncomingCallInfo {
   isSomeoneCalling: boolean;
@@ -46,6 +54,7 @@ export function VideoCall({ users }: { users: User[] }) {
   const [isMuted, setIsMuted] = useState<boolean>(true);
   const [isVideoOff, setIsVideoOff] = useState<boolean>(true);
   const [selectedUserId, setSelectedUserId] = useState<string>("");
+  const [callRecord, setCallRecord] = useState<Call[]>([]);
   const [incominCallInfo, setIncominCallInfo] = useState<IncomingCallInfo>({
     isSomeoneCalling: false,
     from: "",
@@ -63,7 +72,57 @@ export function VideoCall({ users }: { users: User[] }) {
     });
   }, []);
 
-  const destroyConnection = useCallback(() => {
+  const RecordCall = async (
+    type: "incoming" | "outgoing",
+    otherUserId: string
+  ) => {
+    try {
+      let callData: Call = {
+        user: currentUserId,
+        otherUserId,
+        type,
+        startTime: new Date(),
+        status: "ongoing",
+      };
+
+      const response = await createCallRecord(callData);
+
+      callData = {
+        ...callData,
+        user: users.find((user) => user._id === currentUserId) as User,
+        otherUserId: users.find((user) => user._id === otherUserId) as User,
+      };
+
+      if (response.success) {
+        setCallRecord((prev) => [...prev, callData]);
+      }
+    } catch (error) {
+      if (error instanceof AxiosError) {
+        toast.error(error.response?.data.error);
+      } else console.log("error while creating call record", error);
+    }
+  };
+
+  const destroyConnection = useCallback(async () => {
+    try {
+      const response = await updateStatus();
+
+      if (response.success) {
+        setCallRecord((prev) =>
+          prev.map((call) => {
+            if (call.status !== "ongoing") {
+              return { ...call, status: "completed" };
+            }
+            return call;
+          })
+        );
+      }
+    } catch (error) {
+      if (error instanceof AxiosError) {
+        toast.error(error.response?.data.error);
+      }
+    }
+
     toast.info("Call ended successfully");
     if (connectionRef.current) {
       connectionRef.current.destroy();
@@ -124,6 +183,21 @@ export function VideoCall({ users }: { users: User[] }) {
   };
 
   useEffect(() => {
+    async function getHistory() {
+      try {
+        const response = await getCallHistory();
+
+        if (response.success) {
+          setCallRecord(response.data);
+        }
+      } catch (error) {
+        if (error instanceof AxiosError) {
+          toast.error(error.response?.data.error);
+        } else console.log("Error accessing history");
+      }
+    }
+
+    getHistory();
     if (!socket || !currentUserId)
       return console.error("socket or current user not available");
     initializeSocketEvents(socket);
@@ -140,7 +214,7 @@ export function VideoCall({ users }: { users: User[] }) {
     };
   }, [socket, destroyConnection, initializeSocketEvents, currentUserId]);
 
-  const initiateCall = () => {
+  const initiateCall = async () => {
     if (selectedUserId) {
       const peer = new SimplePeer({
         initiator: true,
@@ -169,12 +243,14 @@ export function VideoCall({ users }: { users: User[] }) {
       });
 
       connectionRef.current = peer;
+
+      await RecordCall("outgoing", selectedUserId);
     } else {
       toast.error("Please enter a user ID to initiate a call");
     }
   };
 
-  const answerCall = () => {
+  const answerCall = async () => {
     setIsCallAccepted(true);
 
     const peer = new SimplePeer({
@@ -195,9 +271,12 @@ export function VideoCall({ users }: { users: User[] }) {
 
     peer.signal(incominCallInfo.signalData);
     connectionRef.current = peer;
+
+    await RecordCall("incoming", incominCallInfo.from);
   };
 
   const endCall = () => {
+    socket.emit("endCall", { userId: selectedUserId, currentUserId });
     socket.emit("endCall", { userId: selectedUserId, currentUserId });
     destroyConnection();
   };
@@ -247,7 +326,6 @@ export function VideoCall({ users }: { users: User[] }) {
             });
         }
       } else if (!newState) {
-        // If no stream is active, request new media stream
         requestMediaStream();
       }
       return newState;
@@ -386,6 +464,10 @@ export function VideoCall({ users }: { users: User[] }) {
                     {users.find((user) => user._id == incominCallInfo.from)
                       ?.firstName || "someone"}
                   </span>
+                  <span className="font-mono">
+                    {users.find((user) => user._id == incominCallInfo.from)
+                      ?.firstName || "someone"}
+                  </span>
                 </p>
                 <Button
                   onClick={answerCall}
@@ -396,6 +478,9 @@ export function VideoCall({ users }: { users: User[] }) {
                 </Button>
               </div>
             )}
+          </div>
+          <div className="mt-8">
+            <CallHistory history={callRecord} />
           </div>
         </CardContent>
       </Card>

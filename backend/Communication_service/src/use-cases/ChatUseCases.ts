@@ -1,5 +1,5 @@
 import { IChat } from "../interfaces/IChat";
-import { IChatRepository } from "../interfaces";
+import { ICall, IChatRepository } from "../interfaces";
 import { IChatUseCases } from "../interfaces";
 import { IMessage } from "../interfaces";
 import { IUser } from "../interfaces";
@@ -65,6 +65,39 @@ export class ChatUseCases implements IChatUseCases {
       const messages = await this._chatRepository.getMessages(chatId);
 
       return messages;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async createCallRecord(data: ICall, userId: string): Promise<ICall[]> {
+    try {
+      const callRecord = await this._chatRepository.createCallRecord(
+        data,
+        userId
+      );
+
+      return callRecord;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async getCallHistory(userId: string): Promise<ICall[]> {
+    try {
+      const callHistory = await this._chatRepository.getCallHistory(userId);
+
+      return callHistory;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async updateCallRecord(userId: string): Promise<ICall[]> {
+    try {
+      const callRecord = await this._chatRepository.updateCallRecord(userId);
+
+      return callRecord;
     } catch (error) {
       throw error;
     }

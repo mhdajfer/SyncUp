@@ -15,3 +15,4 @@ export { IGroupChatRepository } from "./IGroupChatRepository";
 export { IUserRepository } from "./IUserRepository";
 export { IUserUseCases } from "./IUserUseCases";
 export { StatusCode } from "./StatusCode";
+export { ICall } from "./ICall";

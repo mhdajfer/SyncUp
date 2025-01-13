@@ -1,7 +1,8 @@
 import { Chat } from "../frameworks/models";
 import { Message } from "../frameworks/models";
 import { User } from "../frameworks/models";
-import { IChat } from "../interfaces";
+import CallModel from "../frameworks/models/callModel";
+import { ICall, IChat } from "../interfaces";
 import { IChatRepository } from "../interfaces";
 import { IMessage } from "../interfaces";
 import { IUser } from "../interfaces";
@@ -116,6 +117,54 @@ export class ChatRepository implements IChatRepository {
       console.log(messages);
 
       return messages as unknown as IMessage[];
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async createCallRecord(data: ICall, userId: string): Promise<ICall[]> {
+    try {
+      console.log("call data : ", data);
+
+      await CallModel.create(data);
+
+      const callRecord = await CallModel.find({ user: userId }).populate(
+        "user",
+        "otherUserId"
+      );
+
+      return callRecord as unknown as ICall[];
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async getCallHistory(userId: string): Promise<ICall[]> {
+    try {
+      const callRecords = await CallModel.find({
+        user: userId,
+      })
+        .populate("user", "firstName email")
+        .populate("otherUserId", "firstName email");
+
+      return callRecords as unknown as ICall[];
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async updateCallRecord(userId: string): Promise<ICall[]> {
+    try {
+      await CallModel.updateMany(
+        { user: userId, status: { $eq: "ongoing" } },
+        { $set: { status: "completed" } }
+      );
+
+      const callRecords = await CallModel.find({
+        user: userId,
+      });
+
+      return callRecords as unknown as ICall[];
     } catch (error) {
       throw error;
     }

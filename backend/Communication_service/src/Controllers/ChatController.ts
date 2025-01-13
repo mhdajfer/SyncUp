@@ -1,7 +1,7 @@
-import { NextFunction, Request, Response } from "express";
+import { NextFunction, Request, response, Response } from "express";
 import { CustomRequest } from "../interfaces/CustomRequest";
 import { CustomError } from "../ErrorHandler/CustonError";
-import { IChatUseCases } from "../interfaces";
+import { ICall, IChatUseCases } from "../interfaces";
 import { StatusCode } from "../interfaces/StatusCode";
 
 export class ChatController {
@@ -116,6 +116,85 @@ export class ChatController {
         .json({ success: true, message: "retrieved messages", data: messages });
     } catch (error) {
       console.log("error while getting messages", error);
+      next(error);
+    }
+  }
+
+  async createCallRecord(
+    req: CustomRequest,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> {
+    try {
+      const data: ICall = req.body;
+      const userId = req.user?._id;
+
+      if (!userId) throw new CustomError("User not found", StatusCode.CONFLICT);
+
+      const callRecord = await this._chatUseCases.createCallRecord(
+        data,
+        userId
+      );
+
+      res.status(StatusCode.CREATED).json({
+        success: true,
+        message: "call record created successfully",
+        data: callRecord,
+      });
+    } catch (error) {
+      console.log("error while creating call record", error);
+      next(error);
+    }
+  }
+
+  async getCallRecords(
+    req: CustomRequest,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> {
+    try {
+      const userId = req.user?._id;
+
+      if (!userId) throw new CustomError("User not found", StatusCode.CONFLICT);
+
+      const callRecords = await this._chatUseCases.getCallHistory(userId);
+
+      console.log(callRecords);
+
+      res.status(StatusCode.OK).json({
+        success: true,
+        message: "call records retrieved successfully",
+        data: callRecords,
+      });
+    } catch (error) {
+      console.log("error while getting call records", error);
+      next(error);
+    }
+  }
+
+  async updateCallRecord(
+    req: CustomRequest,
+    res: Response,
+    next: NextFunction
+  ) {
+    try {
+      const userId = req.user?._id;
+
+      if (!userId) {
+        throw new CustomError("User not found", StatusCode.CONFLICT);
+      }
+
+      const updatedCallRecord = await this._chatUseCases.updateCallRecord(
+        userId
+      );
+
+      res.status(StatusCode.OK).json({
+        success: true,
+        message: "call record updated successfully",
+        data: updatedCallRecord,
+      });
+    } catch (error) {
+      console.log("error while updating call record", error);
       next(error);
     }
   }

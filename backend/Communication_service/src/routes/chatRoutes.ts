@@ -36,4 +36,22 @@ router.post(
   chatController.getMessages.bind(chatController)
 );
 
+router.post(
+  "/createCall",
+  userAuth,
+  chatController.createCallRecord.bind(chatController)
+);
+
+router.get(
+  "/getHistory",
+  userAuth,
+  chatController.getCallRecords.bind(chatController)
+);
+
+router.get(
+  "/updateStatus",
+  userAuth,
+  chatController.updateCallRecord.bind(chatController)
+);
+
 export default router;

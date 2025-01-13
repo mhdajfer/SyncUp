@@ -1,4 +1,5 @@
 import { userInstance } from "@/axios";
+import { Call } from "@/interfaces/Call";
 import { Chat } from "@/interfaces/Chat";
 import { Message } from "@/interfaces/Message";
 import { User } from "@/interfaces/User";
@@ -100,6 +101,36 @@ export const removeMember = async (userId: string, chatId: string) => {
     );
 
     return response.data as Response & { data: Chat };
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const createCallRecord = async (data: Call) => {
+  try {
+    const response = await userInstance.post("/comm/chats/createCall", data);
+
+    return response.data as { success: boolean; message: string; data: Call[] };
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const getCallHistory = async () => {
+  try {
+    const response = await userInstance.get("/comm/chats/getHistory");
+
+    return response.data as { success: boolean; message: string; data: Call[] };
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const updateStatus = async () => {
+  try {
+    const response = await userInstance.get("/comm/chats/updateStatus");
+
+    return response.data as { success: boolean; message: string; data: Call[] };
   } catch (error) {
     throw error;
   }
