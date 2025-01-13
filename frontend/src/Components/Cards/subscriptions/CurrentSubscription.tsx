@@ -240,8 +240,10 @@ export function CurrentSubscriptions({
                     Price: {sub.amount}/month
                   </p>
                   <p className="text-sm text-gray-400">
-                    {user.subscriptionStatus &&
-                      `Next renewal: ${formattedDate}`}
+                    {user.subscriptionStatus ?
+                      `Next renewal: ${formattedDate}`
+                    :
+                    `Validity: 30 days`}
                   </p>
                   {role === "admin" ? (
                     user.subscriptionStatus ? (
