@@ -1,3 +1,4 @@
+import mongoose from "mongoose";
 import { CustomError } from "../ErrorHandler/CustonError";
 import { Tenant } from "../frameworks/models";
 import { ICreateTenant, ITenants, StatusCode } from "../interfaces";
@@ -19,7 +20,8 @@ export class TenantAdminRepository implements ITenantAdminRepository {
 
       const response: ITenants = await newData.save();
 
-      if (!response) throw new CustomError("tenant not created", StatusCode.CONFLICT);
+      if (!response)
+        throw new CustomError("tenant not created", StatusCode.CONFLICT);
 
       return response;
     } catch (error) {
@@ -29,10 +31,23 @@ export class TenantAdminRepository implements ITenantAdminRepository {
   }
   async getTenant(tenantAdmin: IUser): Promise<ITenants> {
     try {
-      const user = await Tenant.findOne({ user_id: tenantAdmin._id });
+      console.log("tenant : ", typeof tenantAdmin._id);
+      const user = await Tenant.findOne({
+        $or: [
+          {
+            user_id: new mongoose.Types.ObjectId(
+              tenantAdmin._id as unknown as string
+            ),
+          },
+          { user_id: tenantAdmin._id },
+          { tenant_id: tenantAdmin.tenant_id },
+        ],
+      });
+
       console.log(user);
 
-      if (!user) throw new CustomError("No tenant found", StatusCode.BAD_REQUEST);
+      if (!user)
+        throw new CustomError("No tenant found", StatusCode.BAD_REQUEST);
 
       return user as unknown as ITenants;
     } catch (error) {

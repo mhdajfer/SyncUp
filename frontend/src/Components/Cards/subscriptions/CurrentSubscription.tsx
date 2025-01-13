@@ -37,6 +37,7 @@ import { Badge } from "@/Components/ui/badge";
 import { Input } from "@/Components/ui/input";
 import { SubscriptionPlan } from "@/interfaces/SubscriptionPlan";
 import { AxiosError } from "axios";
+import { addDays, format } from "date-fns";
 
 export function CurrentSubscriptions({
   role = "admin",
@@ -148,6 +149,15 @@ export function CurrentSubscriptions({
       toast.error("Failed to update subscription");
     }
   };
+  let formattedDate: string | undefined;
+  if (user.subscriptionDate) {
+    const actualDate = new Date(user.subscriptionDate);
+
+    const futureDate = addDays(actualDate, 30);
+
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    formattedDate = format(futureDate, "dd MMM yyyy");
+  }
 
   return (
     <Card className="bg-gray-800 border-gray-700 w-full">
@@ -230,7 +240,7 @@ export function CurrentSubscriptions({
                     Price: {sub.amount}/month
                   </p>
                   <p className="text-sm text-gray-400">
-                    Next renewal: {Date.now().toString()}
+                    Next renewal: {formattedDate}
                   </p>
                   {role === "admin" ? (
                     user.subscriptionStatus ? (

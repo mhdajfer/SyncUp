@@ -291,7 +291,11 @@ export default function ChatSidebar({
                       {chat.isGroup ? chat.chat : setChatName(chat)}
                     </h3>
                     <p className="text-sm text-gray-400">
-                      {chat.latestMessage?.content || "New Chat"}
+                      {chat.latestMessage
+                        ? chat.latestMessage.file
+                          ? "📎 Image"
+                          : chat.latestMessage.content || "No message"
+                        : "No message"}
                     </p>
                   </div>
                   {chat.updatedAt && (

@@ -10,6 +10,7 @@ export interface IUser {
   avatar?: string;
   age: number;
   subscriptionStatus: boolean;
+  subscriptionDate?: string;
   subscriptionAmount?: number;
   phoneNumber?: number;
   isVerified?: boolean;

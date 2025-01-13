@@ -8,6 +8,7 @@ export interface User {
   password: string;
   isBlocked?: boolean;
   subscriptionStatus: boolean;
+  subscriptionDate?: string;
   subscriptionAmount?: number;
   age: number;
   phoneNumber?: number;

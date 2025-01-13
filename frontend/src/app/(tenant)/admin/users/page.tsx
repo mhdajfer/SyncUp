@@ -16,10 +16,8 @@ export default function Page() {
   useEffect(() => {
     async function getData() {
       try {
-        const usersList = await getAllUsers();
-        setUserList(
-          usersList.data.filter((user) => user._id !== currentUserId)
-        );
+        const result = await getAllUsers();
+        setUserList(result.data.filter((user) => user._id !== currentUserId));
       } catch (error: unknown) {
         console.log(error);
 

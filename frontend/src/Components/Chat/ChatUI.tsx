@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Send, File, X } from "lucide-react";
 import { Button } from "@/Components/ui/button";
 import { Input } from "@/Components/ui/input";
@@ -30,16 +30,15 @@ export default function ChatUI({ users }: { users: User[] }) {
   const currentUser = useSelector((state: RootState) => state.auth.user);
   const currentUserId = currentUser?._id;
 
-  // const viewportRef = useRef<HTMLDivElement>(null);
+  const viewportRef = useRef<HTMLDivElement>(null);
 
-  // const scrollToTop = () => {
-  //   if (viewportRef.current) {
-  //     viewportRef.current.scrollTo({
-  //       top: viewportRef.current.scrollHeight,
-  //       behavior: "smooth",
-  //     });
-  //   }
-  // };
+  const scrollToBottom = () => {
+    setTimeout(() => {
+      if (viewportRef.current) {
+        viewportRef.current.scrollIntoView({ behavior: "instant" });
+      }
+    }, 3000);
+  };
 
   const clearFile = () => {
     setSelectedFile(null);
@@ -47,6 +46,10 @@ export default function ChatUI({ users }: { users: User[] }) {
       (document.getElementById("file-upload") as HTMLInputElement).value = "";
     }
   };
+
+  useEffect(() => {
+    scrollToBottom();
+  }, [messages]);
 
   const getAllChats = async () => {
     try {
@@ -149,6 +152,7 @@ export default function ChatUI({ users }: { users: User[] }) {
         );
 
         if (response.success && socket) {
+          const messageData = response.data;
           if (selectedFile) {
             const fileName = `Message-${response.data._id}.jpg`;
             const uploadResponse = await getUploadUrl(fileName, "image/jpeg");
@@ -164,10 +168,22 @@ export default function ChatUI({ users }: { users: User[] }) {
           }
 
           setMessages([...messages, response.data ?? newMsg]);
+          setChats((prevChats) => {
+            const updatedChats = prevChats.filter(
+              (c) => c._id !== selectedChat._id
+            );
+            const updatedChat = {
+              ...selectedChat,
+              latestMessage: messageData,
+              updatedAt: new Date(),
+            };
+            return [updatedChat, ...updatedChats] as Chat[];
+          });
           setNewMessage("");
-          // toast.success(selectedFile ? "image send" : response.message);
+
           setSelectedFile(null);
           socket.emit("new message", response.data);
+          setTimeout(scrollToBottom, 100);
         } else toast.error(response.message);
 
         setChats((prevChats) => {
@@ -215,25 +231,26 @@ export default function ChatUI({ users }: { users: User[] }) {
             />
           )}
 
-        {selectedChat ? (
-          <ScrollArea className="flex-grow p-4">
-            {isLoading ? (
-              <div className="flex flex-col space-y-8 p-10">
-                <MessageSkeleton />
-                <MessageSkeleton />
-                <MessageSkeleton />
+        {selectedChat && !isLoading ? (
+          <ScrollArea className="flex-grow p-4 overflow-y-auto ">
+            {messages.map((message) => (
+              <div key={message._id}>
+                <SingleChat
+                  currentUserId={currentUserId}
+                  message={message}
+                  isGroup={selectedChat.isGroup}
+                />
               </div>
-            ) : (
-              messages.map((message) => (
-                <div key={message._id}>
-                  <SingleChat
-                    currentUserId={currentUserId}
-                    message={message}
-                    isGroup={selectedChat.isGroup}
-                  />
-                </div>
-              ))
-            )}
+            ))}
+            <div ref={viewportRef}></div>
+          </ScrollArea>
+        ) : selectedChat && isLoading ? (
+          <ScrollArea className="flex-grow p-4 overflow-y-auto ">
+            <div className="flex flex-col space-y-8 p-10">
+              <MessageSkeleton />
+              <MessageSkeleton />
+              <MessageSkeleton />
+            </div>
           </ScrollArea>
         ) : (
           <NoChatComponent />

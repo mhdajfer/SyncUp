@@ -30,7 +30,7 @@ export function CheckoutForm() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!stripe || !elements) return;
+    if (!stripe || !elements) return console.log("strip or element not found");
 
     setIsProcessing(true);
 

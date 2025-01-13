@@ -6,6 +6,17 @@ import { User } from "@/interfaces/User";
 import { Avatar, AvatarFallback, AvatarImage } from "@radix-ui/react-avatar";
 import { S3_URL } from "@/Consts";
 
+const ROUTE_MAP = {
+  projects: "/employee/dev/projects",
+  developers: "/employee/dev/developers",
+  dashboard: "/employee/dev/dashboard",
+  chats: "/employee/dev/chat",
+  meeting: "/employee/dev/meeting",
+  profile: "/employee/dev/profile",
+} as const;
+
+type RouteKey = keyof typeof ROUTE_MAP;
+
 export default function DevLayout({
   logoutSuccess,
   user,
@@ -15,26 +26,23 @@ export default function DevLayout({
 }) {
   const router = useRouter();
 
-  function onSideBarClick(val: string) {
-    switch (val) {
-      case "projects":
-        router.push("/employee/dev/projects");
-        break;
-      case "developers":
-        router.push("/employee/dev/developers");
-        break;
-      case "dashboard":
-        router.push("/employee/dev/dashboard");
-        break;
-      case "chats":
-        router.push("/employee/dev/chat");
-        break;
-
-      case "meeting":
-        router.push("/employee/dev/meeting");
-        break;
+  function onSideBarClick(val: RouteKey) {
+    try {
+      const path = ROUTE_MAP[val];
+      router.push(path);
+    } catch (error) {
+      console.error("Navigation error:", error);
     }
   }
+
+  const handleLogout = (): void => {
+    try {
+      logoutSuccess();
+    } catch (error) {
+      console.error("Logout error:", error);
+    }
+  };
+
   return (
     <div className="h-screen w-64 bg-gray-900 text-gray-200 relative">
       <div className="flex items-center justify-center h-20 border-b border-gray-700">
@@ -73,7 +81,7 @@ export default function DevLayout({
         <div className="flex">
           <Avatar className=" cursor-pointer ">
             <AvatarImage
-              src={`${S3_URL}/Image-${user._id}.jpg`}
+              src={`${S3_URL}/Image-${user._id}.jpg?t=${new Date().getTime()}`}
               alt="Profile picture"
               className="w-12 h-12 bg-cover  rounded-full"
             />
@@ -84,7 +92,7 @@ export default function DevLayout({
           </Avatar>
           <div
             className="ml-3 cursor-pointer"
-            onClick={() => router.push("/employee/dev/profile")}
+            onClick={() => onSideBarClick("profile")}
           >
             <p className="text-sm font-medium hover:underline">
               {user.firstName}
@@ -94,9 +102,7 @@ export default function DevLayout({
         </div>
         <div
           className="cursor-pointer hover:bg-slate-700 rounded"
-          onClick={() => {
-            logoutSuccess();
-          }}
+          onClick={handleLogout}
         >
           <CiLogout size={25} />
         </div>

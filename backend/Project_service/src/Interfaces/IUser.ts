@@ -13,6 +13,7 @@ export interface IUser {
   isDeleted?: boolean;
   subscriptionStatus: boolean;
   subscriptionAmount?: number;
+  subscriptionDate?: string;
   tenant_id: string;
   role?: string;
   iat?: number;

@@ -7,6 +7,7 @@ const userSchema = new Schema({
   lastName: { type: String, required: true, trim: true },
   subscriptionStatus: { type: Boolean, required: true, default: false },
   subscriptionAmount: { type: Number },
+  subscriptionDate: { type: Date },
   email: {
     type: String,
     required: true,

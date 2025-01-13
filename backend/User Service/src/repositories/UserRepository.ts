@@ -16,7 +16,8 @@ export class UserRepository implements IUserRepository {
       const newUser = new Invitee(invitee);
 
       const data = await newUser.save();
-      if (!data) throw new CustomError("invitee not created", StatusCode.BAD_REQUEST);
+      if (!data)
+        throw new CustomError("invitee not created", StatusCode.BAD_REQUEST);
 
       return data as IUserInvite;
     } catch (error) {
@@ -253,6 +254,7 @@ export class UserRepository implements IUserRepository {
       const updateFields = {
         subscriptionStatus: true,
         subscriptionAmount: amount,
+        subscriptionDate: new Date(Date.now()).toISOString(),
       };
 
       await User.updateMany(
@@ -288,6 +290,7 @@ export class UserRepository implements IUserRepository {
       const updateFields = {
         subscriptionStatus: false,
         subscriptionAmount: null,
+        subscriptionDate: null,
       };
 
       await User.updateMany(

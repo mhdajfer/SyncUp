@@ -67,8 +67,8 @@ export default function TenantCard() {
       } catch (error: unknown) {
         if (error instanceof AxiosError && error.response) {
           toast.message("Create a new tenant");
-        }
-        toast.error("No Tenant found");
+        } else toast.error("No Tenant found");
+
         console.log("Error retrieving tenant", error);
       }
     }
@@ -297,7 +297,7 @@ export default function TenantCard() {
           </CardContent>
         </Card>
       ) : (
-        <div className="w-full justify-center items-center">
+        <div className="w-full flex justify-center items-center">
           <Button
             onClick={() => {
               router.push("/admin/tenant/create");

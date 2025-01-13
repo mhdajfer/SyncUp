@@ -97,6 +97,8 @@ export default function ShowProfile({ initialUser }: { initialUser: User }) {
     }
   };
 
+  const timestamp = new Date().getTime();
+
   return (
     <Card className="w-full px-16 bg-gray-900 text-white border border-gray-800">
       <CardHeader>
@@ -114,7 +116,7 @@ export default function ShowProfile({ initialUser }: { initialUser: User }) {
               src={
                 avatarPreview ||
                 user.avatar ||
-                `${S3_URL}/Image-${user._id}.jpg`
+                `${S3_URL}/Image-${user._id}.jpg?t=${timestamp}`
               }
               alt="Profile picture"
             />
