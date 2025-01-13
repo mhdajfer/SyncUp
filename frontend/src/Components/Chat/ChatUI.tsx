@@ -108,14 +108,19 @@ export default function ChatUI({ users }: { users: User[] }) {
 
       setChats((prevChats) => {
         const updatedChats = prevChats.filter((c) => c._id !== chat._id);
+        const correctChat = prevChats.find((c) => c._id == chat._id);
+        console.log("updated chats :", updatedChats);
         const updatedChat = {
-          ...selectedChat,
+          ...correctChat,
           latestMessage: newMessage,
           updatedAt: new Date(),
         };
+        console.log("updatedChat", updatedChat);
         return [updatedChat, ...updatedChats] as Chat[];
       });
+      console.log("message received", newMessage);
       if (!selectedChat || selectedChat._id !== chat._id) {
+        console.log("message toasted");
         return toast.success(`New message from ${sender.firstName} `);
       } else {
         setMessages((prev) => [...prev, newMessage]);
