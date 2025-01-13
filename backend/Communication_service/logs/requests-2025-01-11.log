@@ -1,0 +1,2 @@
+2025-01-11T06:33:46.234Z [INFO]: GET /comm/chats/allChat 200 - 82ms
+2025-01-11T06:33:46.316Z [INFO]: GET /comm/chats/allChat 304 - 67ms
