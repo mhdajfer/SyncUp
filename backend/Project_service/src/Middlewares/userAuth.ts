@@ -12,14 +12,17 @@ export default function userAuth(
     const token = req.header("Authorization");
 
     if (!token)
-      throw new CustomError("token not found", StatusCode.UNAUTHORIZED);
+      return next(new CustomError("token not found", StatusCode.UNAUTHORIZED));
 
     if (!process.env.JWT_AUTHSECRET)
-      throw new CustomError("secret key not provided", StatusCode.NOT_FOUND);
+      return next(
+        new CustomError("secret key not provided", StatusCode.NOT_FOUND)
+      );
 
     const user = jwt.verify(token, process.env.JWT_AUTHSECRET);
 
-    if (!user) throw new CustomError("user not found", StatusCode.UNAUTHORIZED);
+    if (!user)
+      return next(new CustomError("user not found", StatusCode.UNAUTHORIZED));
 
     req.user = user;
 
