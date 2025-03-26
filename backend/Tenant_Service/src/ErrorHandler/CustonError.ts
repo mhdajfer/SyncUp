@@ -1,4 +1,4 @@
-import { StatusCode } from "../interfaces/StatusCode";
+import { StatusCode } from "../Shared/interfaces/StatusCode";
 
 export class CustomError extends Error {
   public statusCode: StatusCode;

@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from "express";
 import { CustomError } from "./CustonError";
-import { StatusCode } from "../Interfaces/StatusCode";
+import { StatusCode } from "../Shared/Interfaces/StatusCode";
 
 export const errorHandler = (
   err: CustomError,

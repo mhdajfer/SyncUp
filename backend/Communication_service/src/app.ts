@@ -1,9 +1,9 @@
 import express from "express";
-import { connectConsumers } from "./events/Consumers";
-import { connectDB } from "./frameworks/mongo/connect";
-import CommunicationRoutes from "./routes/index";
+import { connectConsumers } from "./Infrastructure/kafka/Consumers";
+import { connectDB } from "./Config/database/connect";
+import CommunicationRoutes from "./Interface/routes/index";
 import { errorHandler } from "./ErrorHandler/ErrorHandler";
-import { requestLogger } from "./Middlewares/requestLogger";
+import { requestLogger } from "./Interface/Middlewares/requestLogger";
 import dotenv from "dotenv";
 
 const app = express();

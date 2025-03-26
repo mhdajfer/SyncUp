@@ -1,8 +1,8 @@
 import express from "express";
 import cors from "cors";
-import projectRoutes from "./Routes/project-routes";
+import projectRoutes from "./Interface/Routes/project-routes";
 import { errorHandler } from "./ErrorHandler/ErrorHandler";
-import { requestLogger } from "./Middlewares/requestLogger";
+import { requestLogger } from "./Interface/Middlewares/requestLogger";
 
 export const createApp = (): express.Application => {
   const app = express();

@@ -1,9 +1,9 @@
 import express, { NextFunction, Request, Response } from "express";
 import cors from "cors";
 import cookieParser from "cookie-parser";
-import userRoute from "./routes/user.routes";
+import userRoute from "./Interface/routes/user.routes";
 import { errorHandler } from "./ErrorHandler/ErrorHandler";
-import { requestLogger } from "./Middlewares/requestLogger";
+import { requestLogger } from "./Interface/Middlewares/requestLogger";
 
 export const createApp = (): express.Application => {
   const app = express();

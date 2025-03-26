@@ -1,9 +1,9 @@
 import express from "express";
 import cors from "cors";
 import cookieParser from "cookie-parser";
-import tenantAdminRoutes from "./routes/tenantRouter";
+import tenantAdminRoutes from "./Interface/routes/tenantRouter";
 import { errorHandler } from "./ErrorHandler/ErrorHandler";
-import { requestLogger } from "./middlewares/requestLogger";
+import { requestLogger } from "./Interface/middlewares/requestLogger";
 
 export const createApp = (): express.Application => {
   const app = express();

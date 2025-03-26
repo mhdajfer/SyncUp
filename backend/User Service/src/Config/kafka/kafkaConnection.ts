@@ -1,5 +1,5 @@
 import { Consumer, Kafka, Producer } from "kafkajs";
-import { IKafkaConnection } from "../../interfaces/IKafkaConnection";
+import { IKafkaConnection } from "../../Shared/interfaces/IKafkaConnection";
 
 const kafkaInstance = new Kafka({
   clientId: process.env.SERVICE || "syncUp-client",

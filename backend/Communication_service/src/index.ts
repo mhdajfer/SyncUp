@@ -1,6 +1,6 @@
 import { createServer } from "http";
 import { Server } from "socket.io";
-import { SocketManager } from "./Utils/SocketManager";
+import { SocketManager } from "./Shared/Utils/SocketManager";
 import app from "./app";
 
 const httpServer = createServer(app);

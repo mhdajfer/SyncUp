@@ -1,7 +1,7 @@
 import dotenv from "dotenv";
 import { createApp } from "./app";
-import { connectDB } from "./frameworks/mongo/connect";
-import { connectConsumers } from "./events/Consumers";
+import { connectDB } from "./Config/database/connect";
+import { connectConsumers } from "./Infrastructure/kafka/Consumers";
 
 if (process.env.NODE_ENV === "production") {
   dotenv.config({ path: ".env.production" });
