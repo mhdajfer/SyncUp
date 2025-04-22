@@ -31,7 +31,7 @@ export const getUploadSignedUrl = async (
     const command = new PutObjectCommand({
       Bucket: "syncupbucket",
       Key: key,
-      ContentType: contentType,
+      ContentType: "application/pdf",
     });
 
     const signedUrl = await getSignedUrl(s3Client, command, {
