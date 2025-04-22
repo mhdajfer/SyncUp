@@ -25,9 +25,6 @@ import { motion } from "framer-motion";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { AxiosError } from "axios";
 import { FileUpload } from "../FileUpload";
-import { fileTypeExtensionMap } from "@/Consts";
-import { useSelector } from "react-redux";
-import { RootState } from "@/store/store";
 import { getUploadUrl, uploadFileToS3 } from "@/lib/S3";
 
 export interface UserDetails {
@@ -75,7 +72,7 @@ export default function ProjectForm() {
   const [file, setFile] = useState<File | null>(null);
   const [error, setError] = useState<string | null>(null);
 
-  const currentUserId = useSelector((state: RootState) => state.auth.user?._id);
+  // const currentUserId = useSelector((state: RootState) => state.auth.user?._id);
 
   const {
     register,
@@ -107,11 +104,21 @@ export default function ProjectForm() {
       const data = getValues();
 
       if (file) {
-        const fileExtension = fileTypeExtensionMap[file.type];
+        // const fileExtension = fileTypeExtensionMap[file.type];
+        const fileExtension = file.name.split(".").pop() || "";
+        if (!fileExtension) {
+          toast.error("Invalid file type");
+          return;
+        }
 
-        const fileName = "Doc-" + currentUserId + fileExtension;
+        const sanitizedProjectName = data.name
+          .toLowerCase()
+          .replace(/[^a-z0-9]/g, "-");
+        const fileName = `${sanitizedProjectName}.${fileExtension}`;
 
         const response = await getUploadUrl(fileName, file.type);
+
+        console.log("got upload url : ", response.uploadUrl);
 
         if (response.success) {
           const { uploadUrl } = response;

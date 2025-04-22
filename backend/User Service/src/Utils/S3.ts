@@ -16,7 +16,7 @@ if (process.env.NODE_ENV === "production") {
   dotenv.config();
 }
 const s3Client = new S3Client({
-  region: process.env.AWS_S3_REGION || "us-east-1",
+  region: process.env.AWS_S3_REGION || "eu-north-1",
   credentials: {
     accessKeyId: process.env.AWS_ACCESS_KEY as string,
     secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY as string,
@@ -29,7 +29,7 @@ export const getUploadSignedUrl = async (
 ): Promise<string | null> => {
   try {
     const command = new PutObjectCommand({
-      Bucket: process.env.AWS_S3_BUCKET_NAME,
+      Bucket: "syncupbucket",
       Key: key,
       ContentType: contentType,
     });
@@ -54,7 +54,7 @@ export const deleteAvatarIfExists = async (avatarUrl?: string) => {
   console.log(key, avatarUrl);
 
   const deleteCommand = new DeleteObjectCommand({
-    Bucket: process.env.AWS_S3_BUCKET_NAME,
+    Bucket: process.env.AWS_S3_BUCKET_NAME || "syncupbucket",
     Key: key,
   });
 
