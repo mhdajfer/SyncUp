@@ -43,7 +43,7 @@ export class ProjectControllers {
 
       res
         .status(StatusCode.CREATED)
-        .json({ success: true, result, message: "project created" });
+        .json({ success: true, project: result, message: "project created" });
     } catch (error) {
       console.log(`Error while creating project ${error}`);
 

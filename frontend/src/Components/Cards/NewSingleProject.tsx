@@ -90,8 +90,7 @@ export default function NewSingleProject({ role }: { role: string }) {
     async function getProjectandDeveloper() {
       const project = await getOneProject(projectId);
 
-      const createrId = project.data.created_by;
-      const url = "Doc-" + createrId + ".pdf";
+      const url = "Doc-" + project.data?._id + ".pdf";
       setFileUrl(url);
 
       const response = await getDevelopers();
