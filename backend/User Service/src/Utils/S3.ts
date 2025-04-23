@@ -16,7 +16,7 @@ if (process.env.NODE_ENV === "production") {
   dotenv.config();
 }
 const s3Client = new S3Client({
-  region: process.env.AWS_S3_REGION || "eu-north-1",
+  region: process.env.AWS_S3_REGION as string,
   credentials: {
     accessKeyId: process.env.AWS_ACCESS_KEY as string,
     secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY as string,
@@ -29,9 +29,9 @@ export const getUploadSignedUrl = async (
 ): Promise<string | null> => {
   try {
     const command = new PutObjectCommand({
-      Bucket: "syncupbucket",
+      Bucket: "inkspirecloud",
       Key: key,
-      ContentType: "application/pdf",
+      ContentType: contentType,
     });
 
     const signedUrl = await getSignedUrl(s3Client, command, {

@@ -26,7 +26,7 @@ export const uploadFileToS3 = async (
   try {
     const options = {
       headers: {
-        "Content-Type": "application/pdf",
+        "Content-Type": file.type,
       },
     };
     console.log("Uploading file:", file.name, "Size:", file.size);

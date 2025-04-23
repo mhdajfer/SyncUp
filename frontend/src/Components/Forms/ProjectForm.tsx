@@ -103,38 +103,41 @@ export default function ProjectForm() {
     try {
       const data = getValues();
 
-      if (file) {
-        // const fileExtension = fileTypeExtensionMap[file.type];
-        const fileExtension = file.name.split(".").pop() || "";
-        if (!fileExtension) {
-          toast.error("Invalid file type");
-          return;
-        }
-
-        const sanitizedProjectName = data.name
-          .toLowerCase()
-          .replace(/[^a-z0-9]/g, "-");
-        const fileName = `${sanitizedProjectName}.${fileExtension}`;
-
-        const response = await getUploadUrl(fileName, file.type);
-
-        console.log("got upload url : ", response.uploadUrl);
-
-        if (response.success) {
-          const { uploadUrl } = response;
-
-          if (!uploadUrl)
-            return toast.error("didn't get url for the image upload");
-
-          await uploadFileToS3(uploadUrl, file);
-        }
-      }
-
       const response: CreateProjectResponse = await createProject({
         ...data,
       });
 
       if (response.success) {
+        if (file) {
+          // const fileExtension = fileTypeExtensionMap[file.type];
+          // const fileExtension = file.name.split(".").pop() || "";
+          // if (!fileExtension) {
+          //   toast.error("Invalid file type");
+          //   return;
+          // }
+          if (file.type !== "application/pdf") {
+            toast.error("Only PDF files are allowed");
+            return;
+          }
+
+          // const sanitizedProjectName = data.name
+          //   .toLowerCase()
+          //   .replace(/[^a-z0-9]/g, "-");
+          const fileName = `Doc-${response.project._id}.pdf`;
+
+          const urlResponse = await getUploadUrl(fileName, "application/pdf");
+
+          console.log("got upload url : ", urlResponse.uploadUrl);
+
+          if (urlResponse.success) {
+            const { uploadUrl } = urlResponse;
+
+            if (!uploadUrl)
+              return toast.error("didn't get url for the image upload");
+
+            await uploadFileToS3(uploadUrl, file);
+          }
+        }
         toast.success(response.message);
         router.push("/employee/manager/dashboard/projects");
       } else {
@@ -336,7 +339,7 @@ export default function ProjectForm() {
                 setFile(newFile);
                 setError(null);
               }}
-              accept=".pdf,.doc,.docx"
+              accept=".pdf"
               maxSize={5000000}
               error={error}
             />
