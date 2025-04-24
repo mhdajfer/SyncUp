@@ -10,7 +10,7 @@ const nextConfig = {
       },
       {
         protocol: "https",
-        hostname: "syncupcloud.s3.eu-north-1.amazonaws.com",
+        hostname: "inkspirecloud.s3.eu-north-1.amazonaws.com",
         port: "",
         pathname: "/**",
       },
