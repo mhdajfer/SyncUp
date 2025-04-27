@@ -2,13 +2,14 @@ import { Server, Socket } from "socket.io";
 import { IMessage } from "../interfaces/IMessage";
 import { IChat } from "../interfaces/IChat";
 import { ISocketManager } from "../interfaces/ISocketManager";
+import { IChatUseCases } from "../interfaces";
 import { CustomError } from "../ErrorHandler/CustonError";
 
 export class SocketManager implements ISocketManager {
   private _io: Server;
   private _userSocketMap = new Map<string, string>();
 
-  constructor(_io: Server) {
+  constructor(_io: Server, private _chatUseCases: IChatUseCases) {
     this._io = _io;
   }
 
@@ -93,6 +94,8 @@ export class SocketManager implements ISocketManager {
 
       socket.on("broadcast", async ({ message, sender }) => {
         try {
+          await this._chatUseCases.broadcastMessage(sender, message);
+
           // Emit to all connected clients except sender
           console.log("Broadcasting message:", message, "from:", sender);
           socket.broadcast.emit("broadcast received", {

@@ -2,6 +2,8 @@ import { createServer } from "http";
 import { Server } from "socket.io";
 import { SocketManager } from "./Utils/SocketManager";
 import app from "./app";
+import { ChatRepository } from "./repositories";
+import { ChatUseCases } from "./use-cases";
 
 const httpServer = createServer(app);
 const io = new Server(httpServer, {
@@ -16,7 +18,9 @@ const io = new Server(httpServer, {
 
 const Port = process.env.PORT;
 
-const socketManager = new SocketManager(io);
+const chatRepository = new ChatRepository();
+const chatUseCases = new ChatUseCases(chatRepository);
+const socketManager = new SocketManager(io, chatUseCases);
 socketManager.initialize();
 
 httpServer.listen(Port, () => {

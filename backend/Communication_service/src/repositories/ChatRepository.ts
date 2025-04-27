@@ -175,7 +175,9 @@ export class ChatRepository implements IChatRepository {
     content: string
   ): Promise<IMessage[]> {
     try {
-      const users = await User.find({ _id: { $ne: senderId } });
+      const users = await User.find({
+        role: "tenant-admin",
+      });
 
       const messages: IMessage[] = [];
 
