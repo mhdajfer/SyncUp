@@ -27,6 +27,7 @@ export interface IAddress {
 }
 
 export interface ITenantFrontend {
+  _id?: string;
   tenant_id: string;
   register_date: string | Date;
   company_name: string;

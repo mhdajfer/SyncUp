@@ -296,7 +296,7 @@ export default function TenantCard() {
                 {tenant?._id && (
                   <FileHolder
                     file={{
-                      name: tenant?.company_name + " - Doc",
+                      name: tenant?.company_name + "-Doc",
                       size: 23373,
                       type: "application/pdf",
                       url: `Tenant-${tenant?._id}.pdf`,
