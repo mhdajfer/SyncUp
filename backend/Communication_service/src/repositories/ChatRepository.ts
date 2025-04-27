@@ -169,4 +169,51 @@ export class ChatRepository implements IChatRepository {
       throw error;
     }
   }
+
+  async broadcastMessage(
+    senderId: string,
+    content: string
+  ): Promise<IMessage[]> {
+    try {
+      const users = await User.find({ _id: { $ne: senderId } });
+
+      const messages: IMessage[] = [];
+
+      // Create individual messages for each user
+      for (const user of users) {
+        let chat = await Chat.create({
+          chat: "singleChat",
+          users: [senderId, user._id],
+        });
+
+        const msgData = {
+          sender: senderId,
+          content: content,
+          chat: chat._id,
+          file: false,
+        };
+
+        const message = await Message.create(msgData);
+        await Chat.findByIdAndUpdate(chat._id, { latestMessage: message._id });
+
+        const populatedMessage = await Message.findById(message._id)
+          .populate("sender", "-password")
+          .populate({
+            path: "chat",
+            populate: {
+              path: "users",
+              select: "firstName lastName email",
+            },
+          });
+
+        if (populatedMessage) {
+          messages.push(populatedMessage as unknown as IMessage);
+        }
+      }
+
+      return messages;
+    } catch (error) {
+      throw error;
+    }
+  }
 }

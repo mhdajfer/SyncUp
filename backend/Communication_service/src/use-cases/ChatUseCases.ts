@@ -102,4 +102,20 @@ export class ChatUseCases implements IChatUseCases {
       throw error;
     }
   }
+
+  async broadcastMessage(
+    senderId: string,
+    message: string
+  ): Promise<IMessage[]> {
+    try {
+      const response = await this._chatRepository.broadcastMessage(
+        senderId,
+        message
+      );
+
+      return response;
+    } catch (error) {
+      throw error;
+    }
+  }
 }

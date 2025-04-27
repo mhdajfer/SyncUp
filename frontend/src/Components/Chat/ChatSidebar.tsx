@@ -51,10 +51,12 @@ export default function ChatSidebar({
   const [userSearchQuery, setUserSearchQuery] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
   const [isCreateGroupOpen, setIsCreateGroupOpen] = useState(false);
+  const [broadcastOpen, setBroadcastOpen] = useState(false);
   const [isAddUserOpen, setIsAddUserOpen] = useState(false);
   const [groupName, setGroupName] = useState("");
   const [isChatLoading, setIsChatLoading] = useState<boolean>(true);
   const [selectedParticipants, setSelectedParticipants] = useState<User[]>([]);
+  const [broadcastMessage, setBroadcastMessage] = useState("");
 
   const currentUser = useSelector((state: RootState) => state.auth.user);
   const currentUserId = currentUser?._id;
@@ -86,6 +88,28 @@ export default function ChatSidebar({
         toast.error(error.response?.data.error);
       } else toast.error("error while getting messages");
     }
+  };
+
+  const handleBroadcast = async () => {
+    if (broadcastMessage.trim() !== "") {
+      try {
+        const response = socket?.emit("broadcast", {
+          message: broadcastMessage,
+          sender: currentUserId,
+        });
+
+        if (response) {
+          toast.success("Broadcast sent successfully");
+          console.log("Broadcast sent successfully", response);
+          setBroadcastOpen(false);
+          setBroadcastMessage("");
+        }
+      } catch (error: unknown) {
+        if (error instanceof AxiosError) {
+          toast.error(error.response?.data.error);
+        } else toast.error("error while sending broadcast");
+      }
+    } else toast.error("Please enter a message to send");
   };
   const handleCreateGroup = async () => {
     if (groupName.trim() !== "" && selectedParticipants.length > 0) {
@@ -312,6 +336,36 @@ export default function ChatSidebar({
           )}
         </ScrollArea>
         <div className="p-4 border-t border-gray-800">
+          <Dialog open={broadcastOpen} onOpenChange={setBroadcastOpen}>
+            <DialogTrigger asChild>
+              <Button
+                className="w-full bg-violet-950 border-gray-700 text-neutral-400 hover:bg-violet-950 hover:text-white cursor-pointer "
+                variant="outline"
+              >
+                {" "}
+                Broadcast
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="bg-gray-800 text-gray-100">
+              <DialogHeader>
+                <DialogTitle>Broadcast</DialogTitle>
+              </DialogHeader>
+              <div className="space-y-4">
+                <div>
+                  <Label htmlFor="group-name">Message to Organisations</Label>
+                  <Input
+                    id="group-name"
+                    value={broadcastMessage}
+                    onChange={(e) => setBroadcastMessage(e.target.value)}
+                    className="bg-gray-700 border-gray-600 text-gray-100"
+                  />
+                </div>
+                <Button onClick={handleBroadcast} className="w-full">
+                  Send
+                </Button>
+              </div>
+            </DialogContent>
+          </Dialog>
           <Dialog open={isCreateGroupOpen} onOpenChange={setIsCreateGroupOpen}>
             <DialogTrigger asChild>
               <Button

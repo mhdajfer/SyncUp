@@ -17,4 +17,5 @@ export interface IChatUseCases {
   createCallRecord(data: ICall, userId: string): Promise<ICall[]>;
   getCallHistory(userId: string): Promise<ICall[]>;
   updateCallRecord(userId: string): Promise<ICall[]>;
+  broadcastMessage(senderId: string, message: string): Promise<IMessage[]>;
 }

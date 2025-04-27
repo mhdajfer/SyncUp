@@ -54,4 +54,10 @@ router.get(
   chatController.updateCallRecord.bind(chatController)
 );
 
+router.post(
+  "/broadcast",
+  userAuth,
+  chatController.broadcastMessage.bind(chatController)
+);
+
 export default router;

@@ -134,6 +134,19 @@ export default function ChatUI({ users }: { users: User[] }) {
   }, [selectedChat, socket]);
 
   useEffect(() => {
+    if (!socket) return;
+
+    socket.on("broadcast received", ({ message, sender }) => {
+      toast.info(`Broadcast from ${sender}: ${message}`);
+      getAllChats();
+    });
+
+    return () => {
+      socket.off("broadcast received");
+    };
+  }, [socket]);
+
+  useEffect(() => {
     if (!currentUserId) toast.error("Authenticated user not found");
     getAllChats();
   }, [currentUserId]);

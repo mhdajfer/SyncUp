@@ -18,4 +18,5 @@ export interface IChatRepository {
   createCallRecord(data: ICall, userId: string): Promise<ICall[]>;
   getCallHistory(userId: string): Promise<ICall[]>;
   updateCallRecord(userId: string): Promise<ICall[]>;
+  broadcastMessage(senderId: string, content: string): Promise<IMessage[]>;
 }

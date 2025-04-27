@@ -198,4 +198,36 @@ export class ChatController {
       next(error);
     }
   }
+
+  async broadcastMessage(
+    req: CustomRequest,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> {
+    try {
+      const senderId = req.user?._id;
+      const { message } = req.body;
+
+      if (!senderId || !message) {
+        throw new CustomError(
+          "User not found or message is empty",
+          StatusCode.BAD_REQUEST
+        );
+      }
+
+      const messages = await this._chatUseCases.broadcastMessage(
+        senderId,
+        message
+      );
+
+      res.status(StatusCode.OK).json({
+        success: true,
+        message: "Broadcast sent successfully",
+        data: messages,
+      });
+    } catch (error) {
+      console.log("Error while broadcasting message", error);
+      next(error);
+    }
+  }
 }

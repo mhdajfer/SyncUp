@@ -27,6 +27,7 @@ export class SocketManager implements ISocketManager {
       });
 
       socket.on("new message", (newMessage: IMessage) => {
+        console.log("New message event received:", newMessage);
         this.handleNewMessage(socket, newMessage);
       });
 
@@ -89,6 +90,19 @@ export class SocketManager implements ISocketManager {
           }
         }
       );
+
+      socket.on("broadcast", async ({ message, sender }) => {
+        try {
+          // Emit to all connected clients except sender
+          console.log("Broadcasting message:", message, "from:", sender);
+          socket.broadcast.emit("broadcast received", {
+            message,
+            sender,
+          });
+        } catch (error) {
+          console.error("Error handling broadcast:", error);
+        }
+      });
 
       socket.on("disconnect", () => {
         for (const [userId, socketId] of this._userSocketMap.entries()) {
