@@ -1,6 +1,6 @@
 "use client";
 
-import React, {  useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { LogTimeDisplay } from "@/lib/date-format";
 
 import {
@@ -47,6 +47,7 @@ export function TaskCards({ task }: { task: Task }) {
           >
             {task.title}
           </h3>
+          <p>{typeof task.projectId === "object" && task.projectId.name}</p>
           <div
             className="flex flex-wrap gap-4"
             ref={setNodeRef}

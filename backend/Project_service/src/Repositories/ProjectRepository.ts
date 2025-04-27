@@ -182,7 +182,7 @@ export class ProjectRepository implements IProjectRepository {
     try {
       const tasks = await taskModel
         .find({ assignee: assignee })
-        .populate("assignee")
+        .populate("assignee projectId")
         .exec();
 
       return tasks as unknown as Task[];

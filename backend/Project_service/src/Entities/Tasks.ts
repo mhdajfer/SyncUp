@@ -15,7 +15,7 @@ const TaskSchema: Schema = new Schema({
   },
   projectId: {
     type: Types.ObjectId,
-    ref: "User",
+    ref: "Project",
     required: true,
   },
   category: {

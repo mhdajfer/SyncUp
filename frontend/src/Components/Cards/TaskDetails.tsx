@@ -25,7 +25,7 @@ import { useSelector } from "react-redux";
 import { RootState } from "@/store/store";
 import LogTime from "../Log-time/LogTime";
 
-export default function TaskDetails() {
+export default function TaskDetails({ role }: { role?: string }) {
   const { taskId }: { taskId: string } = useParams();
   const [developers, setDevelopers] = useState<UserType[]>([]);
   const [task, setTask] = useState<Task>({
@@ -157,183 +157,190 @@ export default function TaskDetails() {
             }}
             className="space-y-4"
           >
-            <div>
-              <label
-                htmlFor="title"
-                className="block text-sm font-medium text-gray-400"
-              >
-                Title
-              </label>
-              <input
-                type="text"
-                id="title"
-                name="title"
-                value={editedTask.title}
-                onChange={handleChange}
-                className="mt-1 block w-full px-3 py-2 bg-gray-800 border border-gray-700 rounded-md text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
-              />
-            </div>
-            <div>
-              <label
-                htmlFor="status"
-                className="block text-sm font-medium text-gray-400"
-              >
-                Status
-              </label>
-              <select
-                id="status"
-                name="status"
-                value={editedTask.status}
-                onChange={handleChange}
-                className="mt-1 block w-full px-3 py-2 bg-gray-800 border border-gray-700 rounded-md text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
-              >
-                <option value="Not Started">Not Started</option>
-                <option value="In Progress">In Progress</option>
-                <option value="Completed">Completed</option>
-              </select>
-            </div>
-            <div>
-              <label
-                htmlFor="desc"
-                className="block text-sm font-medium text-gray-400"
-              >
-                Description
-              </label>
-              <div
-                className="mb-3"
-                onClick={(e) => e.stopPropagation()}
-                onKeyDown={(e) => e.stopPropagation()}
-              >
-                {editedTask.desc && (
-                  <Tiptap
-                    content={editedTask.desc}
-                    setContent={(content) =>
-                      setEditedTask((prev) => ({ ...prev, desc: content }))
-                    }
+            {role === "dev" ? (
+              // Developer can only edit status
+              <div>
+                <label
+                  htmlFor="status"
+                  className="block text-sm font-medium text-gray-400"
+                >
+                  Status
+                </label>
+                <select
+                  id="status"
+                  name="status"
+                  value={editedTask.status}
+                  onChange={handleChange}
+                  className="mt-1 block w-full px-3 py-2 bg-gray-800 border border-gray-700 rounded-md text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                >
+                  <option value="Not Started">Not Started</option>
+                  <option value="In Progress">In Progress</option>
+                  <option value="Completed">Completed</option>
+                </select>
+              </div>
+            ) : (
+              // Non-dev users can edit all fields
+              <>
+                <div>
+                  <label
+                    htmlFor="title"
+                    className="block text-sm font-medium text-gray-400"
+                  >
+                    Title
+                  </label>
+                  <input
+                    type="text"
+                    id="title"
+                    name="title"
+                    value={editedTask.title}
+                    onChange={handleChange}
+                    className="mt-1 block w-full px-3 py-2 bg-gray-800 border border-gray-700 rounded-md text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
                   />
-                )}
-              </div>
-            </div>
+                </div>
+                <div>
+                  <label
+                    htmlFor="desc"
+                    className="block text-sm font-medium text-gray-400"
+                  >
+                    Description
+                  </label>
+                  <div
+                    className="mb-3"
+                    onClick={(e) => e.stopPropagation()}
+                    onKeyDown={(e) => e.stopPropagation()}
+                  >
+                    {editedTask.desc && (
+                      <Tiptap
+                        content={editedTask.desc}
+                        setContent={(content) =>
+                          setEditedTask((prev) => ({ ...prev, desc: content }))
+                        }
+                      />
+                    )}
+                  </div>
+                </div>
 
-            <div>
-              <label
-                htmlFor="assignee"
-                className="block text-sm font-medium text-gray-400"
-              >
-                Assignee
-              </label>
-              <select
-                name="assignee"
-                id="assignee"
-                className="mt-1 block w-full px-3 py-2 bg-gray-800 border border-gray-700 rounded-md text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
-                value={
-                  typeof editedTask.assignee === "string"
-                    ? editedTask.assignee
-                    : editedTask.assignee?._id
-                }
-                onChange={handleChange}
-              >
-                {developers.length > 0 &&
-                  developers.map((developer) => (
-                    <option key={developer._id} value={developer._id}>
-                      {developer.firstName} {developer.lastName}
-                    </option>
-                  ))}
-              </select>
-            </div>
-            <div>
-              <label
-                htmlFor="category"
-                className="block text-sm font-medium text-gray-400"
-              >
-                Category
-              </label>
-              <select
-                name="category"
-                id="category"
-                className="mt-1 block w-full px-3 py-2 bg-gray-800 border border-gray-700 rounded-md text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
-                value={editedTask.category}
-                onChange={handleChange}
-              >
-                {TASK_CATEGORY.map((category, i) => (
-                  <option key={i} value={category}>
-                    {category}
-                  </option>
-                ))}
-              </select>
-            </div>
+                <div>
+                  <label
+                    htmlFor="assignee"
+                    className="block text-sm font-medium text-gray-400"
+                  >
+                    Assignee
+                  </label>
+                  <select
+                    name="assignee"
+                    id="assignee"
+                    className="mt-1 block w-full px-3 py-2 bg-gray-800 border border-gray-700 rounded-md text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    value={
+                      typeof editedTask.assignee === "string"
+                        ? editedTask.assignee
+                        : editedTask.assignee?._id
+                    }
+                    onChange={handleChange}
+                  >
+                    {developers.length > 0 &&
+                      developers.map((developer) => (
+                        <option key={developer._id} value={developer._id}>
+                          {developer.firstName} {developer.lastName}
+                        </option>
+                      ))}
+                  </select>
+                </div>
+                <div>
+                  <label
+                    htmlFor="category"
+                    className="block text-sm font-medium text-gray-400"
+                  >
+                    Category
+                  </label>
+                  <select
+                    name="category"
+                    id="category"
+                    className="mt-1 block w-full px-3 py-2 bg-gray-800 border border-gray-700 rounded-md text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    value={editedTask.category}
+                    onChange={handleChange}
+                  >
+                    {TASK_CATEGORY.map((category, i) => (
+                      <option key={i} value={category}>
+                        {category}
+                      </option>
+                    ))}
+                  </select>
+                </div>
 
-            <div>
-              <label
-                htmlFor="priority"
-                className="block text-sm font-medium text-gray-400"
-              >
-                Priority
-              </label>
-              <select
-                id="priority"
-                name="priority"
-                value={editedTask.priority}
-                onChange={handleChange}
-                className="mt-1 block w-full px-3 py-2 bg-gray-800 border border-gray-700 rounded-md text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
-              >
-                <option value="Low">Low</option>
-                <option value="Medium">Medium</option>
-                <option value="High">High</option>
-              </select>
-            </div>
-            <div className="flex space-x-28">
-              <div>
-                <label
-                  htmlFor="start_date"
-                  className="block text-sm font-medium text-gray-400"
-                >
-                  New Start Date
-                </label>
-                <input
-                  type="date"
-                  id="start_date"
-                  name="start_date"
-                  min={new Date().toISOString().split("T")[0]}
-                  value={editedTask.due_date}
-                  onChange={handleChange}
-                  className="mt-1 block w-full px-3 py-2 bg-gray-800 border border-gray-700 rounded-md text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
-                />
-              </div>
-              <div>
-                <label
-                  htmlFor="due_date"
-                  className="block text-sm font-medium text-gray-400"
-                >
-                  New Due Date
-                </label>
-                <input
-                  type="date"
-                  id="due_date"
-                  name="due_date"
-                  min={editedTask.start_date}
-                  value={editedTask.due_date}
-                  onChange={handleChange}
-                  className="mt-1 block w-full px-3 py-2 bg-gray-800 border border-gray-700 rounded-md text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
-                />
-              </div>
-            </div>
-            <div>
-              <label
-                htmlFor="remarks"
-                className="block text-sm font-medium text-gray-400"
-              >
-                Remarks
-              </label>
-              <textarea
-                id="remarks"
-                name="remarks"
-                value={editedTask.remarks}
-                onChange={handleChange}
-                rows={2}
-                className="mt-1 block w-full px-3 py-2 bg-gray-800 border border-gray-700 rounded-md text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
-              ></textarea>
-            </div>
+                <div>
+                  <label
+                    htmlFor="priority"
+                    className="block text-sm font-medium text-gray-400"
+                  >
+                    Priority
+                  </label>
+                  <select
+                    id="priority"
+                    name="priority"
+                    value={editedTask.priority}
+                    onChange={handleChange}
+                    className="mt-1 block w-full px-3 py-2 bg-gray-800 border border-gray-700 rounded-md text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  >
+                    <option value="Low">Low</option>
+                    <option value="Medium">Medium</option>
+                    <option value="High">High</option>
+                  </select>
+                </div>
+                <div className="flex space-x-28">
+                  <div>
+                    <label
+                      htmlFor="start_date"
+                      className="block text-sm font-medium text-gray-400"
+                    >
+                      New Start Date
+                    </label>
+                    <input
+                      type="date"
+                      id="start_date"
+                      name="start_date"
+                      min={new Date().toISOString().split("T")[0]}
+                      value={editedTask.due_date}
+                      onChange={handleChange}
+                      className="mt-1 block w-full px-3 py-2 bg-gray-800 border border-gray-700 rounded-md text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    />
+                  </div>
+                  <div>
+                    <label
+                      htmlFor="due_date"
+                      className="block text-sm font-medium text-gray-400"
+                    >
+                      New Due Date
+                    </label>
+                    <input
+                      type="date"
+                      id="due_date"
+                      name="due_date"
+                      min={editedTask.start_date}
+                      value={editedTask.due_date}
+                      onChange={handleChange}
+                      className="mt-1 block w-full px-3 py-2 bg-gray-800 border border-gray-700 rounded-md text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    />
+                  </div>
+                </div>
+                <div>
+                  <label
+                    htmlFor="remarks"
+                    className="block text-sm font-medium text-gray-400"
+                  >
+                    Remarks
+                  </label>
+                  <textarea
+                    id="remarks"
+                    name="remarks"
+                    value={editedTask.remarks}
+                    onChange={handleChange}
+                    rows={2}
+                    className="mt-1 block w-full px-3 py-2 bg-gray-800 border border-gray-700 rounded-md text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  ></textarea>
+                </div>
+              </>
+            )}
             <div className="flex justify-end space-x-4">
               <button
                 type="button"
