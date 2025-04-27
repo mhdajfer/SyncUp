@@ -19,7 +19,7 @@ export interface Task {
   _id?: string;
   comments: Comment[];
   title: string;
-  projectId: string;
+  projectId: string | Project;
   status: string;
   category: string;
   desc?: string;
