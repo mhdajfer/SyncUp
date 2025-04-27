@@ -96,7 +96,10 @@ export class ProjectRepository implements IProjectRepository {
       const newUser = await newData.save();
 
       if (!newUser)
-        throw new CustomError("user not created in tenant service", StatusCode.CONFLICT);
+        throw new CustomError(
+          "user not created in tenant service",
+          StatusCode.CONFLICT
+        );
 
       return newUser.toObject() as IUser;
     } catch (error) {
@@ -182,11 +185,12 @@ export class ProjectRepository implements IProjectRepository {
     try {
       const tasks = await taskModel
         .find({ assignee: assignee })
-        .populate("assignee")
+        .populate("assignee projectId")
         .exec();
 
       return tasks as unknown as Task[];
     } catch (error) {
+      console.error("Error fetching tasks:", error);
       throw error;
     }
   }
