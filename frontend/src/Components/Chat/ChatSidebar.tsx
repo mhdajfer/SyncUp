@@ -336,36 +336,38 @@ export default function ChatSidebar({
           )}
         </ScrollArea>
         <div className="p-4 border-t border-gray-800">
-          <Dialog open={broadcastOpen} onOpenChange={setBroadcastOpen}>
-            <DialogTrigger asChild>
-              <Button
-                className="w-full bg-violet-950 border-gray-700 text-neutral-400 hover:bg-violet-950 hover:text-white cursor-pointer "
-                variant="outline"
-              >
-                {" "}
-                Broadcast
-              </Button>
-            </DialogTrigger>
-            <DialogContent className="bg-gray-800 text-gray-100">
-              <DialogHeader>
-                <DialogTitle>Broadcast</DialogTitle>
-              </DialogHeader>
-              <div className="space-y-4">
-                <div>
-                  <Label htmlFor="group-name">Message to Organisations</Label>
-                  <Input
-                    id="group-name"
-                    value={broadcastMessage}
-                    onChange={(e) => setBroadcastMessage(e.target.value)}
-                    className="bg-gray-700 border-gray-600 text-gray-100"
-                  />
-                </div>
-                <Button onClick={handleBroadcast} className="w-full">
-                  Send
+          {currentUser?.role === "sAdmin" && (
+            <Dialog open={broadcastOpen} onOpenChange={setBroadcastOpen}>
+              <DialogTrigger asChild>
+                <Button
+                  className="w-full bg-violet-950 border-gray-700 text-neutral-400 hover:bg-violet-950 hover:text-white cursor-pointer "
+                  variant="outline"
+                >
+                  {" "}
+                  Broadcast
                 </Button>
-              </div>
-            </DialogContent>
-          </Dialog>
+              </DialogTrigger>
+              <DialogContent className="bg-gray-800 text-gray-100">
+                <DialogHeader>
+                  <DialogTitle>Broadcast</DialogTitle>
+                </DialogHeader>
+                <div className="space-y-4">
+                  <div>
+                    <Label htmlFor="group-name">Message to Organisations</Label>
+                    <Input
+                      id="group-name"
+                      value={broadcastMessage}
+                      onChange={(e) => setBroadcastMessage(e.target.value)}
+                      className="bg-gray-700 border-gray-600 text-gray-100"
+                    />
+                  </div>
+                  <Button onClick={handleBroadcast} className="w-full">
+                    Send
+                  </Button>
+                </div>
+              </DialogContent>
+            </Dialog>
+          )}
           <Dialog open={isCreateGroupOpen} onOpenChange={setIsCreateGroupOpen}>
             <DialogTrigger asChild>
               <Button

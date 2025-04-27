@@ -183,10 +183,17 @@ export class ChatRepository implements IChatRepository {
 
       // Create individual messages for each user
       for (const user of users) {
-        let chat = await Chat.create({
-          chat: "singleChat",
-          users: [senderId, user._id],
+        let chat = await Chat.findOne({
+          users: { $all: [senderId, user._id] },
+          isGroup: false,
         });
+
+        if (!chat) {
+          chat = await Chat.create({
+            chat: "singleChat",
+            users: [senderId, user._id],
+          });
+        }
 
         const msgData = {
           sender: senderId,
