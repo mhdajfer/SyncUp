@@ -30,6 +30,7 @@ import { useRouter } from "next/navigation";
 import { useSelector } from "react-redux";
 import { RootState } from "@/store/store";
 import { User as IUser } from "@/interfaces/User";
+import FileHolder from "../FileHolder";
 
 export default function TenantCard() {
   const user = useSelector((state: RootState) => state.auth.user) as IUser;
@@ -62,8 +63,8 @@ export default function TenantCard() {
           tenantData.register_date
         ).toLocaleDateString();
 
-        setTenant(tenantData);
-        setEditedTenant(tenantData);
+        setTenant(tenantData as ITenantFrontend);
+        setEditedTenant(tenantData as ITenantFrontend);
       } catch (error: unknown) {
         if (error instanceof AxiosError && error.response) {
           toast.message("Create a new tenant");
@@ -292,6 +293,16 @@ export default function TenantCard() {
                   label="Address"
                   value={`${tenant.address.street}, ${tenant.address.state} ${tenant.address.postal_code}, ${tenant.address.country}`}
                 />
+                {tenant?._id && (
+                  <FileHolder
+                    file={{
+                      name: tenant?.company_name + " - Doc",
+                      size: 23373,
+                      type: "application/pdf",
+                      url: `Tenant-${tenant?._id}.pdf`,
+                    }}
+                  />
+                )}
               </>
             )}
           </CardContent>
