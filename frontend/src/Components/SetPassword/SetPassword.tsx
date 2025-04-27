@@ -47,7 +47,7 @@ export default function SetPassword() {
     setSuccess(true);
     setError("");
     setTimeout(() => {
-      router.replace("syncup.mhdajfer.in/login");
+      router.push("/login");
     });
   };
 

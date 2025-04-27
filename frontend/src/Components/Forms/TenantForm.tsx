@@ -36,6 +36,9 @@ import { useRouter } from "next/navigation";
 import { updateUserDetails } from "@/store/slices/authSlice";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "@/store/store";
+import { FileUpload } from "../FileUpload";
+import { useState } from "react";
+import { getUploadUrl, uploadFileToS3 } from "@/lib/S3";
 
 const addressSchema = z.object({
   country: z
@@ -99,6 +102,8 @@ type FormValues = z.infer<typeof formSchema>;
 export default function TenantForm() {
   const router = useRouter();
   const dispatch = useDispatch();
+  const [file, setFile] = useState<File | null>(null);
+  const [error, setError] = useState<string | null>(null);
   const currentUser = useSelector(
     (state: RootState) => state.auth.user
   ) as User;
@@ -136,6 +141,27 @@ export default function TenantForm() {
       };
 
       if (response.success) {
+        if (file) {
+          if (file.type !== "application/pdf") {
+            toast.error("Only PDF files are allowed");
+            return;
+          }
+
+          const fileName = `Tenant-${response.data?._id}.pdf`;
+
+          const urlResponse = await getUploadUrl(fileName, "application/pdf");
+
+          console.log("got upload url : ", urlResponse.uploadUrl);
+
+          if (urlResponse.success) {
+            const { uploadUrl } = urlResponse;
+
+            if (!uploadUrl)
+              return toast.error("didn't get url for the image upload");
+
+            await uploadFileToS3(uploadUrl, file);
+          }
+        }
         const tenantId = response.data.tenant_id as string;
         dispatch(
           updateUserDetails({
@@ -302,6 +328,17 @@ export default function TenantForm() {
                         <FormMessage />
                       </FormItem>
                     )}
+                  />
+                </div>
+                <div>
+                  <FileUpload
+                    onFileChange={(newFile: File | null) => {
+                      setFile(newFile);
+                      setError(null);
+                    }}
+                    accept=".pdf"
+                    maxSize={5000000}
+                    error={error}
                   />
                 </div>
               </div>

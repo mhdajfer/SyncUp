@@ -3,6 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/Components/ui/card";
 import { Label } from "@/Components/ui/label";
 import { ITenant } from "@/interfaces/User";
 import { X } from "lucide-react";
+import FileHolder from "../FileHolder";
 
 export default function TenantDetails({
   tenant,
@@ -78,6 +79,18 @@ export default function TenantDetails({
             <div className="text-lg">
               {tenant.address.street}, {tenant.address.state},{" "}
               {tenant.address.postal_code}, {tenant.address.country}
+            </div>
+          </div>
+          <div>
+            <div>
+              <FileHolder
+                file={{
+                  name: tenant?.company_name + " - Doc",
+                  size: 23373,
+                  type: "application/pdf",
+                  url: `Tenant-${tenant?._id}.pdf`,
+                }}
+              />
             </div>
           </div>
         </CardContent>
