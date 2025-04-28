@@ -1,7 +1,9 @@
 "use client";
 import { getProjectTasks, getProjects } from "@/api/projectService/project";
+import { getDevelopers } from "@/api/userService/user";
 import ManagerDashboard from "@/Components/Dashboard/ManagerDashboard";
 import { Project, Task } from "@/interfaces/Project";
+import { User } from "@/interfaces/User";
 import { RootState } from "@/store/store";
 import { FC, useEffect, useState } from "react";
 import { useSelector } from "react-redux";
@@ -10,6 +12,7 @@ import { toast } from "sonner";
 const Page: FC = () => {
   const [tasks, setTasks] = useState<Task[]>([]);
   const [projects, setProjects] = useState<Project[]>([]);
+  const [developers, setDevelopers] = useState<User[]>([]);
 
   const userId = useSelector((state: RootState) => state.auth.user?._id);
   useEffect(() => {
@@ -52,11 +55,31 @@ const Page: FC = () => {
     getAllProjects();
   }, [projects.length, userId]);
 
+  useEffect(() => {
+    const fetchDevelopers = async () => {
+      try {
+        const response = await getDevelopers();
+        if (response.success) {
+          setDevelopers(response.data);
+        }
+      } catch (error) {
+        toast.error("Error fetching developers");
+        console.error(error);
+      }
+    };
+
+    fetchDevelopers();
+  }, []);
+
   console.log(tasks);
   return (
     <>
       {tasks && projects && (
-        <ManagerDashboard tasks={tasks} projects={projects} />
+        <ManagerDashboard
+          tasks={tasks}
+          projects={projects}
+          developers={developers}
+        />
       )}
     </>
   );
