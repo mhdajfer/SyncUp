@@ -7,15 +7,19 @@ import { Project, Task } from "@/interfaces/Project";
 import { Button } from "../ui/button";
 import ExcelJS from "exceljs";
 import { saveAs } from "file-saver";
+import { User } from "@/interfaces/User";
+import EmployeeEfficiency from "./EmployeeEfficiency";
 
 const COLORS = ["#0088FE", "#00C49F", "#FFBB28"];
 
 export default function ManagerDashboard({
   projects,
   tasks,
+  developers,
 }: {
   tasks: Task[];
   projects: Project[];
+  developers: User[];
 }) {
   const exportToExcel = async () => {
     const workbook = new ExcelJS.Workbook();
@@ -84,6 +88,7 @@ export default function ManagerDashboard({
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-28">
         <ProjectOverview projects={projects} />
         <TaskProgress tasks={tasks} />
+        <EmployeeEfficiency tasks={tasks} developers={developers} />
       </div>
     </div>
   );
@@ -209,29 +214,6 @@ function TaskProgress({ tasks }: { tasks: Task[] }) {
             </div>
           </div>
         ))}
-        {/* <div className="mt-6">
-          <h3 className="text-sm font-semibold mb-2">Overall Task Timeline</h3>
-          <div className="relative pt-1">
-            <div className="flex mb-2 items-center justify-between">
-              <div>
-                <span className="text-xs font-semibold inline-block py-1 px-2 uppercase rounded-full text-teal-600 bg-teal-200">
-                  {tasks[0].start_date}
-                </span>
-              </div>
-              <div className="text-right">
-                <span className="text-xs font-semibold inline-block py-1 px-2 uppercase rounded-full text-teal-600 bg-teal-200">
-                  {tasks[tasks.length - 1].due_date}
-                </span>
-              </div>
-            </div>
-            <div className="overflow-hidden h-2 mb-4 text-xs flex rounded bg-gray-700">
-              <div
-                style={{ width: "45%" }}
-                className="shadow-none flex flex-col text-center whitespace-nowrap text-white justify-center bg-teal-500"
-              ></div>
-            </div>
-          </div>
-        </div> */}
       </CardContent>
     </Card>
   );
