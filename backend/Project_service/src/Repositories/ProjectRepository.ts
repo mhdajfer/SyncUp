@@ -22,7 +22,7 @@ export class ProjectRepository implements IProjectRepository {
 
   async getAllProjects(managerId: string): Promise<IProject[]> {
     try {
-      const projectList = await Project.find({ managerId });
+      const projectList = await Project.find({ created_by: managerId });
 
       return projectList as unknown as IProject[];
     } catch (error) {
@@ -63,8 +63,7 @@ export class ProjectRepository implements IProjectRepository {
         .populate("developers")
         .exec();
 
-      if (!project)
-        throw new CustomError("Project not found", StatusCode.BAD_REQUEST);
+      if (!project) throw new CustomError("Project not found", StatusCode.BAD_REQUEST);
 
       return project as unknown as IProject;
     } catch (error) {
@@ -97,10 +96,7 @@ export class ProjectRepository implements IProjectRepository {
       const newUser = await newData.save();
 
       if (!newUser)
-        throw new CustomError(
-          "user not created in tenant service",
-          StatusCode.CONFLICT
-        );
+        throw new CustomError("user not created in tenant service", StatusCode.CONFLICT);
 
       return newUser.toObject() as IUser;
     } catch (error) {

@@ -93,8 +93,7 @@ export class ProjectUseCases implements IProjectUseCases {
     try {
       const project = await this._projectRepository.addTasks(data);
 
-      if (!project)
-        throw new CustomError("project not found", StatusCode.CONFLICT);
+      if (!project) throw new CustomError("project not found", StatusCode.CONFLICT);
 
       return project;
     } catch (error) {
@@ -118,8 +117,7 @@ export class ProjectUseCases implements IProjectUseCases {
     try {
       const taskDetails = await this._projectRepository.getOneTask(taskId);
 
-      if (!taskDetails)
-        throw new CustomError("taskDetails not found", StatusCode.CONFLICT);
+      if (!taskDetails) throw new CustomError("taskDetails not found", StatusCode.CONFLICT);
 
       return taskDetails;
     } catch (error) {
@@ -131,8 +129,7 @@ export class ProjectUseCases implements IProjectUseCases {
     try {
       const updatedTask = await this._projectRepository.editTask(data);
 
-      if (!updatedTask)
-        throw new CustomError("Task not found", StatusCode.CONFLICT);
+      if (!updatedTask) throw new CustomError("Task not found", StatusCode.CONFLICT);
 
       return updatedTask;
     } catch (error) {
@@ -157,8 +154,7 @@ export class ProjectUseCases implements IProjectUseCases {
         projectId
       );
 
-      if (!project)
-        throw new CustomError("Member already exists", StatusCode.CONFLICT);
+      if (!project) throw new CustomError("Member already exists", StatusCode.CONFLICT);
 
       return project;
     } catch (error) {
