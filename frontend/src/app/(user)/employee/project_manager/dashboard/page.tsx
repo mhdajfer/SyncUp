@@ -71,6 +71,22 @@ const Page: FC = () => {
     fetchDevelopers();
   }, []);
 
+  useEffect(() => {
+    const fetchDevelopers = async () => {
+      try {
+        const response = await getDevelopers();
+        if (response.success) {
+          setDevelopers(response.data);
+        }
+      } catch (error) {
+        toast.error("Error fetching developers");
+        console.error(error);
+      }
+    };
+
+    fetchDevelopers();
+  }, []);
+
   console.log(tasks);
   return (
     <>
