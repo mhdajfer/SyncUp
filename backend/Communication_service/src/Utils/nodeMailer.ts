@@ -1,99 +1,51 @@
 import { Resend } from "resend";
 
-interface EmailTemplate {
-  subject: string;
-  html: string;
-}
-
-interface EmailService {
-  sendEmail(to: string, template: EmailTemplate): Promise<void>;
-}
-
-interface TaskAssignmentTemplateData {
-  taskName: string;
-  taskDetails: string;
-  dueDate?: string;
-  otp?: number;
-  link?: string;
-}
-
-class EmailTemplateGenerator {
-  static generateTaskAssignmentTemplate(data: TaskAssignmentTemplateData): EmailTemplate {
-    const { taskName, taskDetails, dueDate, otp, link } = data;
-    
-    const html = `
-      <div style="font-family: Arial, sans-serif; font-size: 16px; color: #333;">
-        <h2 style="color: #4CAF50;">New Task Assigned</h2>
-        <p>Dear user,</p>
-        <p>A new task has been assigned to you. Please find the details below:</p>
-        <p><strong>Task Name:</strong> ${taskName}</p>
-        <p><strong>Task Details:</strong> ${taskDetails}</p>
-        ${dueDate ? `<p><strong>Due Date:</strong> ${dueDate}</p>` : ''}
-        ${otp ? `<p><strong>One-Time Password (OTP):</strong> ${otp}</p>` : ''}
-        ${link ? `<p><strong>Link:</strong> <a href="${link}">${link}</a></p>` : ''}
-        <p>Please review the task and ensure its completion${dueDate ? ' by the due date' : ''}.</p>
-        <p>Best regards,</p>
-        <p>TeamSync</p>
-      </div>
-    `;
-
-    return {
-      subject: `New Task Assigned: ${taskName}`,
-      html
-    };
-  }
-}
-
-class ResendEmailService implements EmailService {
-  private resend: Resend;
-  private readonly fromEmail: string;
-
-  constructor(apiKey: string, fromEmail: string) {
-    if (!apiKey) throw new Error('Resend API key is required');
-    this.resend = new Resend(apiKey);
-    this.fromEmail = fromEmail;
-  }
-
-  async sendEmail(to: string, template: EmailTemplate): Promise<void> {
-    try {
-      await this.resend.emails.send({
-        from: this.fromEmail,
-        to,
-        subject: template.subject,
-        html: template.html,
-      });
-    } catch (error) {
-      console.error('Failed to send email:', error);
-      throw new Error('Email sending failed');
-    }
-  }
-}
-
 export const sendMail = async (
   email: string,
   taskName: string,
   taskDetails: string,
   otp: number,
   link: string
-): Promise<void> => {
-  try {
-    const emailService = new ResendEmailService(
-      process.env.RESEND_API_KEY!,
-      'syncUpOnBoarding@resend.com'
-    );
+) => {
+  console.log(
+    email,
+    taskName,
+    taskDetails,
+    "***************************************************************"
+  );
 
-    const template = EmailTemplateGenerator.generateTaskAssignmentTemplate({
-      taskName,
-      taskDetails,
-      otp,
-      link
-    });
+  const resend = new Resend(process.env.RESEND_API_KEY!);
+  const emailData = `
+      <div style="font-family: Arial, sans-serif; font-size: 16px; color: #333;">
+        <h2 style="color: #4CAF50;">New Project Assigned</h2>
+        <p>Dear user,</p>
+        <p>We are pleased to inform you that a new task has been assigned to you.</p>
+        <p><strong>Task Name:</strong> ${taskName}</p>
+        <p><strong>Task Details:</strong></p>
+        ${
+          otp.toString().length > 1
+            ? `<p><strong>One-Time Password (OTP):</strong> ${otp}</p>`
+            : ""
+        }
+        ${
+          link.length > 1
+            ? `<p><strong>Link:</strong> <a href="${link}">${link}</a></p>`
+            : ""
+        }
+        <p>Please review the task details and get started at your earliest convenience.</p>
+        <p>If you have any questions, please feel free to reach out.</p>
+        <p>Best regards,</p>
+        <p>TeamSync</p>
+      </div>
+    `;
 
-    await emailService.sendEmail(email, template);
-  } catch (error) {
-    console.error('Error in sendMail:', error);
-    throw error;
-  }
+  const data = await resend.emails.send({
+    from: "syncUpOnBoarding@resend.com",
+    to: email,
+    subject: `New Task Assigned: ${taskName}`,
+    html: emailData,
+  });
+  console.log("Email sent successfully:", data);
 };
 
 export const sendTaskAssignedMail = async (
@@ -101,22 +53,37 @@ export const sendTaskAssignedMail = async (
   taskName: string,
   taskDetails: string,
   dueDate: string
-): Promise<void> => {
-  try {
-    const emailService = new ResendEmailService(
-      process.env.RESEND_API_KEY!,
-      'syncup@resend.dev'
-    );
+) => {
+  console.log(
+    email,
+    taskName,
+    taskDetails,
+    dueDate,
+    "***************************************************************"
+  );
 
-    const template = EmailTemplateGenerator.generateTaskAssignmentTemplate({
-      taskName,
-      taskDetails,
-      dueDate
-    });
+  const resend = new Resend(process.env.RESEND_API_KEY!);
 
-    await emailService.sendEmail(email, template);
-  } catch (error) {
-    console.error('Error in sendTaskAssignedMail:', error);
-    throw error;
-  }
+  const mailData = `
+      <div style="font-family: Arial, sans-serif; font-size: 16px; color: #333;">
+        <h2 style="color: #4CAF50;">New Task Assigned</h2>
+        <p>Dear user,</p>
+        <p>A new task has been assigned to you. Please find the details below:</p>
+        <p><strong>Task Name:</strong> ${taskName}</p>
+        <p><strong>Task Details:</strong> ${taskDetails}</p>
+        <p><strong>Due Date:</strong> ${dueDate}</p>
+        <p>Please review the task and ensure its completion by the due date. If you have any questions, reach out to your manager or the team lead.</p>
+        <p>Best regards,</p>
+        <p>TeamSync</p>
+      </div>
+    `;
+
+  const data = await resend.emails.send({
+    from: "syncup@resend.dev",
+    to: email,
+    subject: `New Task Assigned: ${taskName}`,
+    html: mailData,
+  });
+
+  console.log("Email sent successfully:", data);
 };
