@@ -14,7 +14,7 @@ export const sendMail = async (
     "***************************************************************"
   );
 
-  const resend = new Resend(process.env.RESEND_API_KEY!);
+  const resend = new Resend(process.env.EMAIL_API_KEY!);
   const emailData = `
       <div style="font-family: Arial, sans-serif; font-size: 16px; color: #333;">
         <h2 style="color: #4CAF50;">New Project Assigned</h2>
@@ -62,28 +62,33 @@ export const sendTaskAssignedMail = async (
     "***************************************************************"
   );
 
-  const resend = new Resend(process.env.RESEND_API_KEY!);
+  try {
+    const resend = new Resend(process.env.EMAIL_API_KEY!);
 
-  const mailData = `
-      <div style="font-family: Arial, sans-serif; font-size: 16px; color: #333;">
-        <h2 style="color: #4CAF50;">New Task Assigned</h2>
-        <p>Dear user,</p>
-        <p>A new task has been assigned to you. Please find the details below:</p>
-        <p><strong>Task Name:</strong> ${taskName}</p>
-        <p><strong>Task Details:</strong> ${taskDetails}</p>
-        <p><strong>Due Date:</strong> ${dueDate}</p>
-        <p>Please review the task and ensure its completion by the due date. If you have any questions, reach out to your manager or the team lead.</p>
-        <p>Best regards,</p>
-        <p>TeamSync</p>
-      </div>
+    const mailData = `
+    <div style="font-family: Arial, sans-serif; font-size: 16px; color: #333;">
+    <h2 style="color: #4CAF50;">New Task Assigned</h2>
+    <p>Dear user,</p>
+    <p>A new task has been assigned to you. Please find the details below:</p>
+    <p><strong>Task Name:</strong> ${taskName}</p>
+    <p><strong>Task Details:</strong> ${taskDetails}</p>
+    <p><strong>Due Date:</strong> ${dueDate}</p>
+    <p>Please review the task and ensure its completion by the due date. If you have any questions, reach out to your manager or the team lead.</p>
+    <p>Best regards,</p>
+    <p>TeamSync</p>
+    </div>
     `;
 
-  const data = await resend.emails.send({
-    from: "syncup@resend.dev",
-    to: email,
-    subject: `New Task Assigned: ${taskName}`,
-    html: mailData,
-  });
+    const data = await resend.emails.send({
+      from: "syncup@resend.dev",
+      to: email,
+      subject: `New Task Assigned: ${taskName}`,
+      html: mailData,
+    });
 
-  console.log("Email sent successfully:", data);
+    console.log("Email sent successfully:", data);
+  } catch (error) {
+    console.error("Error sending email:", error);
+    throw new Error("Failed to send email");
+  }
 };
