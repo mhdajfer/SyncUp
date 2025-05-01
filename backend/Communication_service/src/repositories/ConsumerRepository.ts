@@ -1,7 +1,7 @@
 import { IConsumerRepository } from "../interfaces";
 import { Task } from "../interfaces";
 import { IUserInvite } from "../interfaces";
-import { sendMail, sendTaskAssignedMail } from "../Utils/nodeMailer";
+import { sendMail, sendTaskAssignedMail } from "../Utils/EmailUtil";
 
 export class ConsumerRepository implements IConsumerRepository {
   async sendOtp(

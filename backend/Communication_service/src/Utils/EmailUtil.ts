@@ -6,16 +6,10 @@ export const sendMail = async (
   taskDetails: string,
   otp: number,
   link: string
-) => {
-  console.log(
-    email,
-    taskName,
-    taskDetails,
-    "***************************************************************"
-  );
-
-  const resend = new Resend(process.env.EMAIL_API_KEY!);
-  const emailData = `
+): Promise<void> => {
+  try {
+    const resend = new Resend(process.env.EMAIL_API_KEY!);
+    const emailData = `
       <div style="font-family: Arial, sans-serif; font-size: 16px; color: #333;">
         <h2 style="color: #4CAF50;">New Project Assigned</h2>
         <p>Dear user,</p>
@@ -39,13 +33,17 @@ export const sendMail = async (
       </div>
     `;
 
-  const data = await resend.emails.send({
-    from: "syncUpOnBoarding@mhdajfer.in",
-    to: email,
-    subject: `New Task Assigned: ${taskName}`,
-    html: emailData,
-  });
-  console.log("Email sent successfully:", data);
+    await resend.emails.send({
+      from: "syncUpOnBoarding@mhdajfer.in",
+      to: email,
+      subject: `New Task Assigned: ${taskName}`,
+      html: emailData,
+    });
+    console.log("Email sent successfully");
+  } catch (error) {
+    console.error("Error sending email:", error);
+    throw new Error("Failed to send email");
+  }
 };
 
 export const sendTaskAssignedMail = async (
@@ -53,15 +51,7 @@ export const sendTaskAssignedMail = async (
   taskName: string,
   taskDetails: string,
   dueDate: string
-) => {
-  console.log(
-    email,
-    taskName,
-    taskDetails,
-    dueDate,
-    "***************************************************************"
-  );
-
+): Promise<void> => {
   try {
     const resend = new Resend(process.env.EMAIL_API_KEY!);
 
@@ -79,14 +69,14 @@ export const sendTaskAssignedMail = async (
     </div>
     `;
 
-    const data = await resend.emails.send({
+    await resend.emails.send({
       from: "syncup@mhdajfer.in",
       to: email,
       subject: `New Task Assigned: ${taskName}`,
       html: mailData,
     });
 
-    console.log("Email sent successfully:", data);
+    console.log("Email sent successfully");
   } catch (error) {
     console.error("Error sending email:", error);
     throw new Error("Failed to send email");
