@@ -40,7 +40,7 @@ export const sendMail = async (
     `;
 
   const data = await resend.emails.send({
-    from: "syncUpOnBoarding@resend.com",
+    from: "syncUpOnBoarding@mhdajfer.in",
     to: email,
     subject: `New Task Assigned: ${taskName}`,
     html: emailData,
@@ -80,7 +80,7 @@ export const sendTaskAssignedMail = async (
     `;
 
     const data = await resend.emails.send({
-      from: "syncup@resend.dev",
+      from: "syncup@mhdajfer.in",
       to: email,
       subject: `New Task Assigned: ${taskName}`,
       html: mailData,
